@@ -1,0 +1,100 @@
+
+#comment-form {
+    margin-bottom: 2em;
+}
+
+#comment-list {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+    /*
+    #comment-list a {
+        color: #2e3436;
+    }
+    */
+
+    #comment-list ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        margin-left: 3.4em;
+
+    }
+
+    #comment-list li.comment {
+        margin: 0em;
+        /*margin-top: 12px; /*0.5em;*/
+        padding: 0; /*12px; /*0.5em;*/
+        padding-top: 8px;
+    }
+
+    #comment-list > li.comment {
+        border: 1px solid #ccc;
+        border-color #ccc #eaeaea #eaeaea #ccc; 
+        background-color: #fff;
+        padding: 8px;
+        margin-bottom: 14px;
+        /*background: url(r16.gif);*/
+        /*line-height: 24px;*/
+    }
+
+
+        #comment-list li.comment > div.properties {
+            color: #888a85;
+            font-size: 7.5pt;
+            padding: 1px 0 5px;
+        }
+
+            div.properties > a.upvote {
+                font-weight: bold;
+            }
+
+            div.properties > a.score {
+                display: none;
+            }
+
+            div.properties > span.name {
+                font-weight: bold;
+            }
+
+            div.properties > a.report {
+                font-weight: bold;
+            }
+
+        #comment-list li.comment > div.text {
+            margin-left: 0.9em;
+        }
+
+        #comment-list li.comment > div.text > p {
+            margin: 0;
+            padding: 0 0 8px 0;
+            line-height: 16px;
+        }
+
+        #comment-list li.comment > div.footer {
+            /*display: none;*/
+            margin-left: 1.3em;
+            padding: 1px 0;
+            font-size: 7.5pt;
+            font-weight: bold;
+            /*font-size: 75%;*/
+        }
+
+        #comment-list li.comment > div.footer form.comment-form {
+            font-size: 10pt;
+            margin-left: 2em;
+        }
+
+    #comment-list ol > form.comment-form {
+        margin-top: 1em;
+    }
+
+    #comment-list form.comment-form > textarea {
+            width: 75%;
+            height: 8em;
+    }
+
+

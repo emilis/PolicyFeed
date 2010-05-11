@@ -1,0 +1,33 @@
+<div id="comment-form">
+<noscript>Komentarais bus patogiau naudotis, jei įsijungsite JavaScript.</noscript>
+</div>
+<%
+
+print('<ol id="comment-list">');
+
+var dict = {};
+var root = newObject("PolicyFeed/Comments/Item");
+
+for (var comment in comments)
+{
+    dict[comment.id] = comment;
+}
+
+for (var id in dict)
+{
+    var comment = dict[id];
+    if (!comment.parent_id)
+        root.addChild(comment);
+    else
+        dict[ comment.parent_id ].addChild(comment);
+}
+
+print( root._children.map(function(comment) { return comment.toHtml(); }).join("\n"));
+
+print('</ol>');
+
+%>
+<script type="text/javascript">
+PolicyFeedComments.init("<%=thread_id%>");
+</script>
+

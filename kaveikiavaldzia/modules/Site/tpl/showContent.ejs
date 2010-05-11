@@ -1,0 +1,93 @@
+<%
+
+var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+
+var title;
+var side;
+var html;
+var breadcrumbs;
+
+
+function css()
+{
+    var html = "";
+    for (var i=0; i<arguments.length; i++)
+        html += '<link rel="stylesheet" type="text/css" href="' + config.FILES_URL + '/' + arguments[i] + '.css?123">';
+    return html;
+}
+
+function javascript()
+{
+    var html = "";
+    for (var i=0; i<arguments.length; i++)
+        html += '<script type="text/javascript" src="' + config.FILES_URL + '/' + arguments[i] + '.js?123"></script>';
+    return html;
+}
+
+
+%><!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>KąVeikiaValdžia: <%= title %></title>
+        <%
+
+        print(css(
+            "KaVeikiaValdzia/KaVeikiaValdzia",
+            "PolicyFeed/Comments",
+            "PolicyFeed/PolicyFeed"));
+
+        print('<script type="text/javascript">var WEB_URL = "', config.WEB_URL, '"; var FILES_URL = "', config.FILES_URL, '"; </script>');
+
+        print(javascript(
+            "jquery/jquery",
+            "PolicyFeed/Comments",
+            "PolicyFeed/PolicyFeed",
+            "PolicyFeed/Calendar"));
+
+        %>
+    </head>
+    <body>
+        <div id="header">
+            <a id="logo" href="<%= config.WEB_URL %>/"><img src="<%= site_files %>/logo.gif"></a>
+            <ul id="top-menu">
+                <li><a href="<%= config.WEB_URL %>/">Naujausi dokumentai</a></li>
+                <li><a href="<%= config.WEB_URL %>/pages/apie">Apie projektą</a></li>
+                <li><a href="<%= config.WEB_URL %>/pages/pasiulymai">Jūsų pasiūlymai</a></li>
+            </ul>
+        </div>
+        <div id="side">
+            <div><form id="search" method="GET" action="<%= config.WEB_URL %>/docs/search/">
+                    <input id="search-q" name="q">
+                    <input id="search-submit" type="submit" value="Ieškoti">
+            </form></div>
+            <%= side %>
+            <!--
+            <div><img src="<%= site_files %>/calendar.gif"></div>
+                        -->
+            <%= links %>
+        </div>
+        <div id="content"><%
+
+            if (breadcrumbs)
+            {
+                print('<div id="breadcrumbs"><a href="' + config.WEB_URL + '/">Pradžia</a> » ');
+                for (var i=0; i<breadcrumbs.length; i++)
+                {
+                    print('<a href="' + config.WEB_URL + breadcrumbs[i][0] + '">' + breadcrumbs[i][1] + '</a> » ');
+                }
+                print('</div>');
+            }
+
+
+            if (title)
+                print('<h1>', title, '</h1>');
+
+                print(html);
+
+        %>
+        </div>
+<div><a href="http://interdata.lt/" title="Hostingu remia UAB Interdata"><img src="<%= site_files %>/interdata.gif" alt="Hostingu remia UAB Interdata" border="0"></a></div>
+        <p id="footer">Šios svetainės medžiaga leidžiama naudotis laisvai, be jokių apribojimų. Kai kurių dokumentų autoriai gali norėti ginti savo autorines teises.</p>
+    </body>
+</html>

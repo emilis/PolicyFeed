@@ -1,0 +1,92 @@
+<%
+
+import("config");
+
+returnVar("side", 
+    loadObject("PolicyFeed/Calendar").showBlock()
+    + loadObject("Site").showBlock("source_filters")
+    );
+
+switch(mode)
+{
+    case "byDate":
+        //returnVar("title", date);
+        returnVar("breadcrumbs", []);
+        break;
+    case "search":
+        returnVar("title", 'Paieškos "' + query.replace(/</g, "&lt;") + '" rezultatai:');
+        //returnVar("breadcrumbs", []);
+        break;
+    default:
+        returnVar("title", "Naujausi dokumentai");
+}
+
+var wdays = [
+    "sekmadienis",
+    "pirmadienis",
+    "antradienis",
+    "trečiadienis",
+    "ketvirtadienis",
+    "penktadienis",
+    "šeštadienis"
+    ];
+
+function isoToJsDate(str)
+{
+    var d = new Date();
+    d.setFullYear(str.substr(0, 4));
+    d.setMonth(parseInt(str.substr(5,2), 10) - 1);
+    d.setDate(str.substr(8, 2));
+    if (str.length > 10)
+    {
+        d.setHours(str.substr(11, 2));
+        d.setMinutes(str.substr(14, 2));
+        d.setSeconds(str.substr(17, 2));
+    }
+    return d;
+}
+
+%>
+<div id="document-list">
+<%
+
+var day = "";
+var dday = "";
+var wday = "";
+var url = "";
+
+var count = 0;    
+for each(var doc in docs)
+{
+    count++;
+    if (doc.published.substr)
+        dday = doc.published.substr(0, 10);
+    if (dday != day)
+    {
+        wday = wdays[isoToJsDate(dday).getDay()];
+        print('<h2 class="day">' + dday + ', ' + wday + '</h2>');
+        day = dday;
+    }
+
+    url = config.WEB_URL + "/docs/" + doc.id + "/";
+
+    print('<div id="doc-' + doc.id + '" class="document-link">');
+    //print('<span class="source ' + doc.meta.short_source + '">' + doc.meta.short_source + '</span>');
+    print('<span class="source"><img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.meta.short_source.toLowerCase() + '.gif" align="top"></span>');
+    print('<span class="props">');
+    print('<a class="link" href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">Išskleisti</a>');
+        // print HH:MM:
+        print(' <span class="time">' + doc.published.substr(11, 5) + '</span>');
+    print('</span>');
+    print('<h3><a href="' + url + '">' + doc.meta.title);
+    if (doc.comment_count)
+        print('</a> <a href="' + url + '#comments" class="comments">(' + doc.comment_count + ')');
+    print('</a></h3>');
+    print('</div>');
+}
+
+if (count < 1)
+    print('<p class="warning">Pagal jūsų kriterijus sistema dokumentų nerado.</p>');
+
+%>
+</div>

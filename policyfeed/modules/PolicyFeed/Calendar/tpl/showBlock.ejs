@@ -1,0 +1,92 @@
+<%
+
+function isoToJsDate(str)
+{
+    var d = new Date();
+    d.setFullYear(str.substr(0, 4));
+    d.setMonth(parseInt(str.substr(5,2), 10) - 1);
+    d.setDate(str.substr(8, 2));
+    if (str.length > 10)
+    {
+        d.setHours(str.substr(11, 2));
+        d.setMinutes(str.substr(14, 2));
+        d.setSeconds(str.substr(17, 2));
+    }
+    return d;
+}
+
+
+function showCalendar(year, month, active_days)
+{
+    if (month < 10)
+        month = "0" + month;
+
+    var ad = {};
+    for each (var i in active_days)
+        ad[i] = true;
+
+    var html = '<div><table id="calendar" cellspacing="1" border="0"><thead>';
+    html += '<tr><th><a onclick="PolicyFeedCalendar.prevMonth()">&lt;</a></th><th><a onclick="PolicyFeedCalendar.prevYear()">&laquo;</a></th>';
+    html += '<th colspan="3" class="title">' + year + '-' + month + '</th>';
+    html += '<th><a onclick="PolicyFeedCalendar.nextYear()">&raquo;</a></th><th><a onclick="PolicyFeedCalendar.nextMonth()">&gt;</a></th></tr>';
+    html += '<tr class="wd"><th>Pr</th><th>An</th><th>Tr</th><th>Kt</th><th>Pn</th><th>Št</th><th>Sk</th></tr>';
+    html += "</thead><tbody>";
+
+    var d = isoToJsDate(year + "-" + month + "-01");
+
+    var first = d.getDay();
+    if (first == 0)
+        first = 6;
+    else
+        first--;
+
+    // first week empty cells:
+    html +="<tr>";
+    for (var i=0; i<first; i++)
+        html += "<td>&nbsp;</td>";
+    
+    i = 1;
+    d = isoToJsDate(year + "-" + month + "-" + i);
+    var day = "";
+    var today = new Date().format("yyyy-MM-dd");
+
+    while (d.getDate() == i)
+    {
+        if (d.getDay() == 1 && i > 1)
+            html += '<tr>';
+
+        day = d.format("yyyy-MM-dd");
+
+        if (day == today)
+            html += '<td class="today">';
+        else if (i in ad)
+            html += '<td class="active">';
+        else
+            html += '<td>';
+
+        if (i in ad)
+            html += '<a href="' + config.WEB_URL + '/docs/bydate/' + day + '/">' + i + '</a>';
+        else
+            html += i;
+        
+        html += '</td>';
+        
+        if (d.getDay() == 0)
+            html += '</tr>';
+
+        i++;
+        d = isoToJsDate(year + "-" + month + "-" + i);
+    }
+
+    html += '</tbody></table></div>';
+
+    return html;
+}
+
+
+print(showCalendar(
+    year,
+    month,
+    days
+    ));
+

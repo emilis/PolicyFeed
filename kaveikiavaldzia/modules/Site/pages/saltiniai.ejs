@@ -1,0 +1,21 @@
+<%
+
+returnVar("title", "Šaltiniai");
+
+var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+
+%>
+<p>Šiuo metu svetainėje pateikiama informacija surinkta iš šių šaltinių:</p>
+
+<ul>
+    <li><p><img src="<%= site_files %>/lrs-ps.gif" alt="LRS-PS" align="top"> <a href="http://www3.lrs.lt/pls/inter/w5_show?p_r=119&p_k=1">Seimo Pranešimai spaudai</a> (<a href="http://www3.lrs.lt/pls/inter/lrs_rss.pranesimai_spaudai">RSS</a>)</p></li>
+
+    <li><p><img src="<%= site_files %>/lrs-db.gif" alt="LRS-DB" align="top"> <a href="http://www3.lrs.lt/pls/inter/w5_sale.ses_pos?p_ses_id=84">Seimo posėdžių darbotvarkės</a>.</p></li>
+
+    <li><p><img src="<%= site_files %>/lrs-ta.gif" alt="LRS-TA" align="top"> Seimo Teisės aktų projektai (<a href="http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai">RSS</a>).</p></li>
+
+    <li><p><img src="<%= site_files %>/lrv-na.gif" alt="LRV-NA" align="top"> <a href="http://www.lrv.lt/naujienos/">Vyriausybės naujienos</a> (<a href="http://www.lrv.lt/rss/rss.php?cats=1-9-3-2-7-6-8-10-11-12-13-14-15-16-17-18-19-20-21-22-23&lang=lt">RSS</a>).</p></li>
+
+    <li><p><img src="<%= site_files %>/lrv-db.gif" alt="LRV-DB" align="top"> <a href="http://www.lrv.lt/veikla/darbotvarkes/">Vyriausybės darbotvarkės</a>.</p></li>
+</ul>
+

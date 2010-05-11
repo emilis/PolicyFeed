@@ -1,0 +1,17 @@
+<%
+
+returnVar("title", "Jūsų pasiūlymai");
+
+%>
+<p>Labai laukiame jūsų pasiūlymų, pastabų, pranešimų apie pastebėtas klaidas.</p>
+
+<p>Siūlome juos surašyti pasinaudojant komentarų forma žemiau. Jei norite, kad susisiektume su jumis &mdash; neužmirškite nurodyti savo el. pašto adreso.</p>
+
+<p>Jei nenorite, kad jūsų žinutė būtų matoma visiems, parašykite mums <a href="mailto:emilis.d@gmail.com">el. paštu</a>.</p>
+
+<div id="comments">
+<h2>Pasiūlymai</h2>
+<%= loadObject("PolicyFeed/Comments").showThread("pages/pasiulymai") %>
+</div>
+
+

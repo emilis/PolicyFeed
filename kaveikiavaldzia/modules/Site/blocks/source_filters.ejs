@@ -1,0 +1,31 @@
+<div><h3>Filtravimas / santrumpos:</h3>
+    <ul id="legend"><%
+
+        var sources = {
+            "lrs-ps": "Seimo pranešimai spaudai",
+            "lrs-db": "Seimo darbotvarkės",
+            "lrs-ta": "Seimo teisės aktų projektai",
+            "lrv-na": "Vyriausybės naujienos",
+            "lrv-db": "Vyriausybės darbotvarkės"
+            };
+
+        for (var source in sources)
+        {
+            print('<li><a href="',
+                config.WEB_URL,
+                '/docs/search/?q=',
+                source.toUpperCase(),
+                '"><img src="',
+                config.FILES_URL,
+                '/KaVeikiaValdzia/', 
+                source,
+                '.gif" align="top">&nbsp; ',
+                sources[source],
+                '</a></li>');
+        }
+
+    %>
+    </ul>
+    <div align="right"><a href="<%= config.WEB_URL %>/pages/saltiniai">nuorodos į šaltinius...</a></div>
+</div>
+

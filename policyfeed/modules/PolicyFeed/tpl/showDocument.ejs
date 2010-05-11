@@ -1,0 +1,76 @@
+<%
+
+var config = require("config");
+
+returnVar("title", doc.meta.title);
+
+// breadcrumbs:
+//*
+var day = doc.published.substr(0, 10);
+
+var breadcrumbs = [
+    [ "/docs/bydate/" + day + "/", day ]
+    ];
+
+returnVar("breadcrumbs", breadcrumbs);
+//*/
+
+%><div id="document">
+<%=doc.html%>
+</strong></em></b></i></u></s></tt></h1></h2></h3></h4></h5></h6></a>
+</div>
+
+<div id="comments">
+<h2>Komentarai</h2>
+<%= loadObject("PolicyFeed/Comments").showThread("docs/" + vars.doc.id) %>
+</div>
+<%
+
+// --- Side --- --- ----------------------------------------------------------
+
+var side = '<div style="font-size: 13px;">';
+var icons = '<img align="top" src="' + config.FILES_URL + '/KaVeikiaValdzia/';
+
+icons = {
+    ext: icons + 'ext.png">',
+    search: icons + 'search.png">',
+    script: icons + 'script.png">'
+    };
+
+// Komentarai + šaltinis:
+side += '<p class="outset" style="margin-top: 0;"><a href="' + doc.meta.url + '">'
+    + '<img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.meta.short_source.toLowerCase() + '.gif" border="0" align="top">'
+    + ' Originalus dokumentas</a> ' + icons.ext + '</p>';
+
+
+// Teisės akto meniu:
+if (doc.meta.teises_aktas)
+{
+    var ta = doc.meta.teises_aktas;
+    //side += '<div>'; //<h3>Teisės akto informacija:</h3>';
+
+    // rusis, numeris, statusas, susije, word
+    side += '<p class="outset">Rūšis: ' + ta.rusis + '<br>\n';
+    side += 'Numeris: <a href="' + config.WEB_URL + '/docs/search/?q=' + ta.numeris + '">' + ta.numeris + '</a> ' + icons.search + '<br>\n';
+    if (ta.statusas)
+        side += "Statusas: " + ta.statusas + "<br>\n";
+    if (ta.susije)
+        side += '<br><a href="' + ta.susije + '">Susiję teisės aktai</a> ' + icons.ext;
+    if (ta.word)
+        side += '<br><a href="' + ta.word + '">Word dokumentas</a> ' + icons.ext;
+
+    //side += '</div>';
+}
+
+//side += '</div>';
+
+
+// Techninė info:
+//side += '<div><h3>Techninė informacija:</h3>'
+side += '<p class="outset">Publikuotas:<br>' + doc.published.substr(0, 19) + '<br>'
+    + 'Atnaujintas DB:<br>' + doc.updated.substr(0, 19) + '<br><br>'
+    + '<a href="' + config.WEB_URL + '/docs/' + doc.id + '.json/">Duomenys JSON formatu</a> ' + icons.script + '</p>';
+
+side += '</div>';
+
+returnVar("side", side);
