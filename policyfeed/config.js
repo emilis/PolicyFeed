@@ -1,7 +1,7 @@
 module.shared = true;
 
 exports.httpConfig = {
-  staticDir: 'static'
+    staticDir: './static'
 };
 
 exports.urls = [
@@ -25,23 +25,28 @@ exports.urls = [
 
 /*
 exports.middleware = [
-    //'helma/middleware/etag',
-    //'helma/middleware/responselog' //,
-    //'helma/middleware/profiler'
-    ];
+    'ringo/middleware/gzip',
+    'ringo/middleware/etag',
+    'ringo/middleware/responselog',
+    'ringo/middleware/error',
+    'ringo/middleware/notfound'
+    // 'ringo/middleware/profiler'
+];
 //*/
 
+// the JSGI app
 exports.app = require('ringo/webapp').handleRequest;
 
 /*
 exports.macros = [
-    'helma/skin/macros',
-    'helma/skin/filters'
-    ];
+    './helpers',
+    'ringo/skin/macros',
+    'ringo/skin/filters'
+];
 */
 
-exports.charset = 'UTF-8',
-exports.contentType = 'text/html'
+exports.charset = 'UTF-8';
+exports.contentType = 'text/html';
 
 
 // --- Gluestick constants: ---
