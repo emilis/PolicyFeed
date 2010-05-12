@@ -45,7 +45,7 @@
 
 
 
-import("file", "file");
+var fs = require("fs");
 
 
 /**
@@ -97,14 +97,14 @@ exports.fetch = function(tpl_file_name, vars)
 exports.fetchObject = function(tpl_file_name, vars, output_var_name)
 {
     // Read template file contents:
-    if (!file.exists(tpl_file_name))
+    if (!fs.exists(tpl_file_name))
         return '<p class="error">ctl/Template.js: template file "' + tpl_file_name + '" not found.</p>';
 
     if (!output_var_name)
         output_var_name = "html";
 
 
-    var code = this.compileCode( file.read(tpl_file_name) );
+    var code = this.compileCode( fs.read(tpl_file_name) );
 
 
     // Build vars object:

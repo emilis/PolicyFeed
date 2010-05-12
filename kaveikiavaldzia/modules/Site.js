@@ -17,10 +17,10 @@
     along with KąVeikiaValdžia.lt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import("file");
+import("fs");
 
 // These get used a lot:
-exports.dirname = file.dirname(module.path) + "/Site";
+exports.dirname = fs.directory(module.path) + "/Site";
 exports.template = loadObject("ctl/Template");
 
 

@@ -118,7 +118,7 @@ exports.showDocumentFormat = function(req, id, format)
 exports.showContent = function(tpl, content)
 {
     var template = loadObject("ctl/Template");
-    var tpl_file = require("file").dirname(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
+    var tpl_file = require("fs").directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
 
     return loadObject("Site").showContent(
         template.fetchObject(tpl_file, content) );
