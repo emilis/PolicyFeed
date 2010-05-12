@@ -49,6 +49,11 @@ exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
 
 
+
+require.paths.unshift(module.directory + "../kaveikiavaldzia");
+
+
+
 // --- Gluestick constants: ---
 
 var WEB_DIR = "/home/www/policyfeed/policyfeed";
@@ -74,7 +79,7 @@ exports.gluestick = {
         DB: "ctl/DB/MySQL",
         DB_new: "ctl/DB/MySQL",
         Events: "ctl/Events",
-        Site: "KaVeikiaValdzia/Site",
+        //Site: "KaVeikiaValdzia/Site",
         WebMapper: "ctl/WebMapper"
     }
 };
