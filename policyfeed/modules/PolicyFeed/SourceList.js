@@ -22,7 +22,7 @@ exports.list = {};
 
 exports._constructor = function(obj_config)
 {
-    import("file");
+    import("fs");
     import("config");
 
     if (!obj_config)
@@ -30,7 +30,7 @@ exports._constructor = function(obj_config)
     if (!obj_config.sources_dir)
         obj_config.sources_dir = config.MODULES_DIR + "/PolicyFeed/sources";
 
-    var source_names = file.list(obj_config.sources_dir);
+    var source_names = fs.list(obj_config.sources_dir);
     for each (var name in source_names)
     {
         if (name[0] != ".")

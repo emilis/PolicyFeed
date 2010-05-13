@@ -18,7 +18,7 @@
 */
 
 import("config");
-import("file");
+import("fs");
 import("core/date");
 
 
@@ -28,11 +28,11 @@ import("core/date");
 exports.logEvent = function(name, data)
 {
     var path = config.DATA_DIR + "/log/" + new Date().format("yyyy/MM");
-    if (!file.exists(path))
-        file.mkdirs(path);
+    if (!fs.exists(path))
+        fs.makeTree(path);
     path += new Date().format("/dd") + ".log";
 
-    var stream = file.open(path, "a+");
+    var stream = fs.open(path, "a+");
 
     name = name.replace(/\n/g, '\\n');
     data = this.dataToString(data).replace(/\n/g, '\\n');    

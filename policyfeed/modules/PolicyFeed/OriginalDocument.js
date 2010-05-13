@@ -154,15 +154,15 @@ exports.setFieldsFromStream = function(stream, content_type)
         this.id = this.uniqid();
 
     // requirements to save file:
-    import("file");
+    import("fs");
     import("core/date");
 
     // save file:
     var dir_name = data_dir + (new Date().format("/yyyy/MM/dd"));
-    if (!file.exists(dir_name))
-        file.mkdirs(dir_name);
+    if (!fs.exists(dir_name))
+        fs.makeTree(dir_name);
     var file_name = dir_name + "/" + this.id + ".orig";
-    file.write(file_name, stream.read());
+    fs.write(file_name, stream.read());
 
     this.meta.original_file = file_name;
 
@@ -176,11 +176,11 @@ exports.setFieldsFromStream = function(stream, content_type)
 
             // Set html field:
             var html_file_name = dir_name + "/" + this.id + ".html";
-            this.html = file.read(html_file_name);
+            this.html = fs.read(html_file_name);
             this.meta.converted_by = "abiword";
 
             // Remove converted HTML to save disk space:
-            //file.remove(html_file_name);
+            //fs.remove(html_file_name);
             loadObject("Events").create("PolicyFeed/OriginalDocument:setFieldsFromStream-debug", ["html_file_name", html_file_name]);
 
             return true;

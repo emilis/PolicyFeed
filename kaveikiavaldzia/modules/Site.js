@@ -74,7 +74,7 @@ exports.showPage = function(req, name)
 
     var file_name = this.dirname + "/pages/" + name + ".ejs";
 
-    if (!file.exists(file_name))
+    if (!fs.exists(file_name))
         return loadObject("WebMapper").returnHtml(this.showError(404));
     else
     {

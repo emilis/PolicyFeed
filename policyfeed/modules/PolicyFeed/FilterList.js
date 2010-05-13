@@ -17,7 +17,7 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import("file");
+import("fs");
 import("config");
 import("modules/htmlunit", "htmlunit");
 
@@ -44,7 +44,7 @@ exports._constructor = function(obj_config)
     if (!obj_config.sources_dir)
         obj_config.sources_dir = config.MODULES_DIR + "/PolicyFeed/filters";
 
-    var source_names = file.list(obj_config.sources_dir);
+    var source_names = fs.list(obj_config.sources_dir);
     for each (var name in source_names)
     {
         if (name[0] != ".")
@@ -69,7 +69,7 @@ exports.processDocument = function(doc)
     var page = htmlunit.getPageFromHtml(doc.html, doc.meta.url, "filters");
 
     // Inject jQuery:
-    var jquery = file.read(config.LIB_DIR + "/jquery/jquery.js");
+    var jquery = fs.read(config.LIB_DIR + "/jquery/jquery.js");
     page.executeJavaScript(jquery);
 
     var result = false;

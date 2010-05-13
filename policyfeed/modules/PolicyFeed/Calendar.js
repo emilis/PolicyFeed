@@ -36,7 +36,7 @@ exports.getActiveDays = function(req)
  */
 exports.showBlock = function()
 {
-    var tpl_file = require("file").dirname(module.path) + "/Calendar/tpl/showBlock.ejs";
+    var tpl_file = require("fs").directory(module.path) + "/Calendar/tpl/showBlock.ejs";
 
     var d = new Date();
     var year = d.getFullYear();
