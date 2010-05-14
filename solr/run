@@ -1,0 +1,1 @@
+java -jar start.jar -Dsolr.solr.home=solr-out/ -Dsolr.data.dir=solr-data
