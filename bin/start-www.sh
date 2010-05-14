@@ -1,1 +1,1 @@
-ringojs/bin/ringo -i policyfeed/main.js
+ringojs/bin/ringo -i policyfeed/www.js
