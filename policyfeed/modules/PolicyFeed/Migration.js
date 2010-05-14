@@ -1,7 +1,6 @@
 
 var db = loadObject("DB");
-var db_new = loadObject("DB_new");
-
+var ddb = loadObject("PolicyFeed/DocumentDb");
 // original_id to new added_id:
 exports.oid2addid = {};
 // original_id to doc_id:
@@ -13,6 +12,7 @@ exports.migrate = function() {
     print(new Date());
     this.docs();
 
+    /*
     print(new Date());
     this.originals();
 
@@ -21,13 +21,14 @@ exports.migrate = function() {
 
     print(new Date());
     this.comments();
+    */
 
     print(new Date());
 }
 
 exports.docs = function() {
 
-    var sql = "select * from docs";
+    var sql = "select * from docs order by published asc";
 
     var rs = db.query(sql);
     if (!rs.first())
@@ -38,12 +39,25 @@ exports.docs = function() {
     {
         var doc = db.get_row(rs);
         try {
-            doc.meta = JSON.parse(doc.meta);
+            var data = JSON.parse(doc.meta);
         } catch (e) {
             print(doc.meta);
             print(e);
         }
 
+        data.id = doc.id;
+        data.original_id = doc.original_id;
+        data.updated = doc.updated;
+        data.published = doc.published;
+        data.comment_count = doc.comment_count;
+        data.html = doc.html;
+
+        var id = doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id;
+
+        ddb.write(id, data);
+
+
+        /*
         // new document:
         var sql = "insert into docs (id, comment_count) values(?,?)";
         var added_id = db_new.prepared_query(sql, [doc.id, doc.comment_count]);
@@ -66,6 +80,7 @@ exports.docs = function() {
         // add revision to document
         sql = "update docs set convertion=? where added_id=?";
         db_new.prepared_query(sql, [revision.id, added_id]);
+        */
     }
 
     rs.getStatement().close();
