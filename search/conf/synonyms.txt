@@ -1,0 +1,7 @@
+#some test synonym mappings unlikely to appear in real input text
+aaa => aaaa
+bbb => bbbb1 bbbb2
+ccc => cccc1,cccc2
+a\=>a => b\=>b
+a\,a => b\,b
+fooaaa,baraaa,bazaaa
