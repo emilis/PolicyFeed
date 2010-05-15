@@ -40,13 +40,15 @@
 
 
  <fields>
-   <field name="id" type="integer" indexed="true" stored="true" required="true" /> 
+   <field name="id" type="string" indexed="true" stored="true" required="true" /> 
    <field name="published" type="date" indexed="true" stored="true"/>
-   <field name="document" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="source" type="string" indexed="true" stored="true"/>
+   <field name="title" type="text" indexed="true" stored="true"/>
+   <field name="html" type="text" indexed="true" stored="true" multiValued="true"/>
  </fields>
 
  <uniqueKey>id</uniqueKey>
 
- <defaultSearchField>document</defaultSearchField>
+ <defaultSearchField>html</defaultSearchField>
  <solrQueryParser defaultOperator="AND"/>
 </schema>
