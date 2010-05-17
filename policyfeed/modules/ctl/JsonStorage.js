@@ -27,7 +27,7 @@ var triggers = {
 };
 
 
-// --- Common operations: ---
+// --- File operations: ---
 
 
 /**
@@ -92,6 +92,88 @@ exports.write = function(id, data) {
     return true;
 }
 
+
+/**
+ *
+ */
+exports.copy = function(from, to) {
+    from = path + from;
+    if (fs.isDirectory(from))
+        fs.copy(from, path + to);
+
+    from = from + ".json";
+    if (fs.exists(from))
+        fs.copy(from, path + to + ".json");
+}
+
+
+/**
+ *
+ */
+exports.move = function(from, to) {
+    from = path + from;
+    if (fs.isDirectory(from))
+        fs.move(from, path + to);
+
+    from = from + ".json";
+    if (fs.exists(from))
+        fs.move(from, path + to + ".json");
+}
+
+// --- Listing ---
+
+var fwd_iter = function(path) {
+    for each (var item in fs.list(path).sort()) {
+        item = path + "/" + item;
+        if (fs.isFile(item))
+            yield item;
+        else if (fs.isDirectory(item)) {
+            for each (item in fwd_iter(item))
+                yield item;
+        }
+    }
+    throw StopIteration;
+}
+
+var rev_iter = function(path) {
+    for each (var item in fs.list(path).sort().reverse()) {
+        item = path + "/" + item;
+        if (fs.isFile(item))
+            yield item;
+        else if (fs.isDirectory(item)) {
+            for each (item in rev_iter(item))
+                yield item;
+        }
+    }
+    throw StopIteration;
+}
+
+
+exports.iterate = function(upath, options) {
+    options = options || {};
+    var { reverse, pattern, limit} = options;
+
+    upath = path + upath;
+
+    if (reverse)
+        var gen = rev_iter(upath);
+    else
+        var gen = fwd_iter(upath);
+
+    for each (var fpath in gen) {
+        if (pattern === undefined || fpath.match(pattern))
+            yield JSON.parse(fs.read(fpath));
+        if (limit !== undefined) {
+            if (!limit) {
+                gen.close();
+                throw StopIteration;
+            }
+            else limit--;
+        }
+    }
+
+    throw StopIteration;
+}
 
 // --- Triggers: ---
 
