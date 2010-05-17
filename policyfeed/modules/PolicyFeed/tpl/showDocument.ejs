@@ -2,7 +2,15 @@
 
 var config = require("config");
 
-returnVar("title", doc.meta.title);
+if (doc.meta)
+{
+    doc.title = doc.meta.title;
+    doc.url = doc.meta.url;
+    doc.short_source = doc.meta.short_source;
+    doc.teises_aktas = doc.meta.teises_aktas;
+}
+
+returnVar("title", doc.title);
 
 // breadcrumbs:
 //*
@@ -38,15 +46,15 @@ icons = {
     };
 
 // Komentarai + šaltinis:
-side += '<p class="outset" style="margin-top: 0;"><a href="' + doc.meta.url + '">'
-    + '<img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.meta.short_source.toLowerCase() + '.gif" border="0" align="top">'
+side += '<p class="outset" style="margin-top: 0;"><a href="' + doc.url + '">'
+    + '<img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.short_source.toLowerCase() + '.gif" border="0" align="top">'
     + ' Originalus dokumentas</a> ' + icons.ext + '</p>';
 
 
 // Teisės akto meniu:
-if (doc.meta.teises_aktas)
+if (doc.teises_aktas)
 {
-    var ta = doc.meta.teises_aktas;
+    var ta = doc.teises_aktas;
     //side += '<div>'; //<h3>Teisės akto informacija:</h3>';
 
     // rusis, numeris, statusas, susije, word

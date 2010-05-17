@@ -29,9 +29,12 @@ exports.showDocumentList = function(req)
 {
     print("PolicyFeed.showDocumentList", loadObject("ctl/Request").getRemoteAddr(req));
 
+
+
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "list",
+            //"docs": loadObject("ctl/JsonStorage").iterate("/docs/", { reverse: true, limit: 100})
             "docs": newObject("PolicyFeed/DocumentList").getLatest(100)
             }));
 }
@@ -76,14 +79,24 @@ exports.showDocument = function(req, id)
 {
     print("PolicyFeed.showDocument", id, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = newObject("PolicyFeed/Document");
-    if (!doc.read(id))
-        return "404 - Document not found.";
+    if (id.indexOf("/") > -1)
+    {
+        var doc = loadObject("ctl/JsonStorage").read("/docs/" + id + "/doc");
+        if (!doc)
+            return "404 - Document not found.";
+    }
     else
-        return WebMapper.returnHtml(
-            this.showContent("showDocument", {
-                "doc": doc
-                }));
+    {
+        var doc = newObject("PolicyFeed/Document");
+        if (!doc.read(id))
+            return "404 - Document not found.";
+    }
+
+
+    return WebMapper.returnHtml(
+        this.showContent("showDocument", {
+            "doc": doc
+            }));
 }
 
 
