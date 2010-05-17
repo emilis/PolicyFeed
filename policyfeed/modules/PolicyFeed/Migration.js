@@ -12,10 +12,11 @@ exports.migrate = function() {
     print(new Date());
     this.docs();
 
-    /*
+    
     print(new Date());
     this.originals();
 
+    /*
     print(new Date());
     this.create_listings();
 
@@ -26,6 +27,10 @@ exports.migrate = function() {
     print(new Date());
 }
 
+
+/**
+ *
+ */
 exports.docs = function() {
 
     var sql = "select * from docs order by published asc";
@@ -52,75 +57,55 @@ exports.docs = function() {
         data.comment_count = doc.comment_count;
         data.html = doc.html;
 
-        var id = doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id + "/doc";
+        var id = "/docs/" + doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id + "/doc";
 
         new_db.write(id, data);
-
-        /*
-        // new document:
-        var sql = "insert into docs (id, comment_count) values(?,?)";
-        var added_id = db_new.prepared_query(sql, [doc.id, doc.comment_count]);
-
-        // update original_id indexes:
-        this.oid2did[doc.original_id] = doc.id;
-        this.oid2addid[doc.original_id] = added_id;
-
-        // revision:
-        var revision = doc.meta;
-        revision.original_id = doc.original_id;
-        revision.updated = doc.updated;
-        revision.published = doc.published;
-        revision.html = doc.html;
-
-        sql = "insert into convertions (doc_id, body) values(?,?)";
-        
-        revision.id = db_new.prepared_query(sql, [doc.id, JSON.stringify(revision)]);;
-
-        // add revision to document
-        sql = "update docs set convertion=? where added_id=?";
-        db_new.prepared_query(sql, [revision.id, added_id]);
-        */
     }
 
     rs.getStatement().close();
 }
 
 
+/**
+ *
+ */
 exports.originals = function() {
     var sql = "select * from originals";
 
     var rs = db.query(sql);
-
     if (!rs.first())
         return false;
 
     rs.beforeFirst();
-    while (rs.next()) {
+    while (rs.next())
+    {
         var original = db.get_row(rs);
-        original.meta = JSON.parse(original.meta);
+        try {
+            var data = JSON.parse(original.meta);
+        } catch (e) {
+            print(original.meta);
+            print(e);
+        }
 
-        // revision:
-        var revision = original.meta;
-        revision.updated = original.updated;
-        revision.published = original.published;
-        revision.source = original.source;
-        revision.url = original.url;
-        revision.html = original.html;
+        data.id         = original.id;
+        data.updated    = original.updated;
+        data.published  = original.published;
+        data.source     = original.source;
+        data.url        = original.url
+        data.html       = original.html;
 
-        sql = "insert into originals (doc_id, body) values(?,?)";
-        revision.id = db_new.prepared_query(sql, [ this.oid2did[original.id], JSON.stringify(revision) ]);
+        var id = "/originals/" + original.published.substr(0, 10).replace(/-/g, "/") + "/" + original.id + "/doc";
 
-        // add revision to document
-        sql = "update docs set original=? where added_id=?";
-        db_new.prepared_query(sql, [ revision.id, this.oid2addid[original.id] ]);
+        new_db.write(id, data);
     }
 
     rs.getStatement().close();
-
 }
 
 
-
+/**
+ *
+ */
 exports.create_listings = function() {
     
     var sql = "select docs.id as doc_id, docs.convertion as convertion, convertions.created as updated, convertions.body as body, docs.comment_count as comment_count from docs, convertions where convertions.id = docs.convertion";
@@ -147,6 +132,9 @@ exports.create_listings = function() {
 }
 
 
+/**
+ *
+ */
 exports.comments = function() {
 
     var sql=" insert into policyfeed.comments (updated, parent_id, thread_id, author, user_id, score, text) (select updated, parent_id, thread_id, author, user_id, score, text from govsrvr.comments)";
