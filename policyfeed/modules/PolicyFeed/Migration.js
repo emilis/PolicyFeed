@@ -1,6 +1,6 @@
 
 var db = loadObject("DB");
-var ddb = loadObject("PolicyFeed/DocumentDb");
+var new_db = loadObject("ctl/JsonStorage");
 // original_id to new added_id:
 exports.oid2addid = {};
 // original_id to doc_id:
@@ -52,10 +52,9 @@ exports.docs = function() {
         data.comment_count = doc.comment_count;
         data.html = doc.html;
 
-        var id = doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id;
+        var id = doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id + "/doc";
 
-        ddb.write(id, data);
-
+        new_db.write(id, data);
 
         /*
         // new document:

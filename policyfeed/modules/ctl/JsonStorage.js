@@ -14,7 +14,7 @@ import("ringo/scheduler");
 /**
  * Path where document data is stored.
  */
-var path = config.DATA_DIR + "/DocumentDB/";
+var path = config.DATA_DIR + "/JsonStorage/";
 
 
 /**
