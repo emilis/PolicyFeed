@@ -3,7 +3,7 @@ module.shared = true;
 import("fs");
 
 exports.httpConfig = {
-    staticDir: module.directory + 'static/'
+    staticDir: fs.absolute(module.directory + '../policyfeed/static/')
 };
 
 exports.urls = [
@@ -54,7 +54,7 @@ exports.contentType = 'text/html';
 
 // --- Gluestick constants: ---
 
-var WEB_DIR = "/home/www/policyfeed/policyfeed";
+var WEB_DIR = fs.absolute(module.directory + "../policyfeed");
 var WEB_URL = "http://localhost:8080";
 exports.WEB_DIR = WEB_DIR;
 exports.WEB_URL = WEB_URL;
