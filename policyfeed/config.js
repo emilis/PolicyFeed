@@ -8,8 +8,8 @@ exports.httpConfig = {
 
 exports.urls = [
     // docs:
-    [ /docs\/(\d+)\.(json)/,    "modules/PolicyFeed", "showDocumentFormat" ],
-    [ /docs\/(\d+)/,            "modules/PolicyFeed", "showDocument" ],
+    [ /docs\/([0-9\/]+)\.(json)/,    "modules/PolicyFeed", "showDocumentFormat" ],
+    [ /docs\/([0-9\/]+)/,            "modules/PolicyFeed", "showDocument" ],
     [ /docs\/bydate/,           "modules/PolicyFeed", "showListByDate" ],
     [ /docs\/search/,           "modules/PolicyFeed", "search" ],
     [ /docs\/?$/,               "modules/PolicyFeed", "showDocumentList" ],
