@@ -93,7 +93,7 @@ exports.getObjectConfig = function(name, new_config)
 /**
  * Get object by name.
  *
- * @param string name Object name (relative to "modules/")
+ * @param string name Object name 
  * @param optional Object new_config Additional configuration for the object.
  * @return Object An object created from the parameters.
  */
@@ -118,10 +118,10 @@ exports.loadObject = function(name, new_config)
         // Cache miss.
         if (interfaces[name] != undefined)
             // Require an implementation of an interface:
-            var obj = newObject(name, new_config); //require("modules/" + interfaces[name]);
+            var obj = newObject(name, new_config); //require(interfaces[name]);
         else
         {
-            var obj = require("modules/" + name);
+            var obj = require(name);
 
             // Execute _constructor() method if exists:
             if (obj._constructor)
@@ -144,7 +144,7 @@ exports.loadObject = function(name, new_config)
 /**
  * Get a new object instance by name.
  *
- * @param string name Object name (relative to "modules/")
+ * @param string name Object name 
  * @param optional Object new_config Additional configuration for the object.
  */
 exports.newObject = function(name, new_config)
@@ -154,9 +154,9 @@ exports.newObject = function(name, new_config)
         // Create a template in cache:
         if (interfaces[name] != undefined)
             // Require an implementation of an interface:
-            new_cache[name] = require("modules/" + interfaces[name]);
+            new_cache[name] = require(interfaces[name]);
         else
-            new_cache[name] = require("modules/" + name);
+            new_cache[name] = require(name);
     }
 
     var obj = new_cache[name].clone(false, true);
@@ -181,12 +181,12 @@ exports.clearCache = function()
 /**
  * Provides a crutch for people needing OOP class extension mechanism.
  *
- * @param mixed parentObject Parent object or parent object name (relative to "modules/").
+ * @param mixed parentObject Parent object or parent object name.
  */
 exports.extendObject = function(parentObject)
 {
     if (typeof(parentObject) == "string")
-        parentObject = require("modules/" + parentObject);
+        parentObject = require(parentObject);
 
     for (var propName in parentObject)
     {

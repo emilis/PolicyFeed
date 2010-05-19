@@ -1,10 +1,10 @@
 #!/usr/bin/env ringo
 
 // prepend the web app's directory to the module search path
-require.paths.unshift(module.directory);
+require.paths.push(module.directory);
 
 // Load Gluestick framework functions:
-require("load.gluestick");
+require("load-gluestick");
 
 // Main script to start application
 if (require.main == module)

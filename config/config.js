@@ -10,21 +10,21 @@ exports.httpConfig = {
 
 exports.urls = [
     // docs:
-    [ /docs\/([0-9\/]+)\.(json)/,    "modules/PolicyFeed", "showDocumentFormat" ],
-    [ /docs\/([0-9\/]+)/,            "modules/PolicyFeed", "showDocument" ],
-    [ /docs\/bydate/,           "modules/PolicyFeed", "showListByDate" ],
-    [ /docs\/search/,           "modules/PolicyFeed", "search" ],
-    [ /docs\/?$/,               "modules/PolicyFeed", "showDocumentList" ],
+    [ /docs\/([0-9\/]+)\.(json)/,    "PolicyFeed", "showDocumentFormat" ],
+    [ /docs\/([0-9\/]+)/,            "PolicyFeed", "showDocument" ],
+    [ /docs\/bydate/,           "PolicyFeed", "showListByDate" ],
+    [ /docs\/search/,           "PolicyFeed", "search" ],
+    [ /docs\/?$/,               "PolicyFeed", "showDocumentList" ],
 
     // cron jobs:
-    [ /cron\/crawl/,            "modules/PolicyFeed/Crawler",   "webCrawl" ],
-    [ /cron\/convert/,          "modules/PolicyFeed/Converter", "webConvert" ],
+    [ /cron\/crawl/,            "PolicyFeed/Crawler",   "webCrawl" ],
+    [ /cron\/convert/,          "PolicyFeed/Converter", "webConvert" ],
 
     // static pages:
-    [ /pages\/(.+)/,            "modules/KaVeikiaValdzia/Site", "showPage" ],
+    [ /pages\/(.+)/,            "KaVeikiaValdzia/Site", "showPage" ],
 
-    // Default mapping by request parameters. See: modules/WebMapper mapRequest().
-    [ /.*/, 'modules/ctl/WebMapper'] 
+    // Default mapping by request parameters. See: ctl/WebMapper.mapRequest().
+    [ /.*/, 'ctl/WebMapper'] 
 ];
 
 /*
@@ -88,7 +88,7 @@ exports.gluestick = {
 
 exports.DB = {
     host: "localhost",
-    db_name: "govsrvr",
+    db_name: "policyfeed",
     user: "root",
     password: "",
     useUnicode: "yes",

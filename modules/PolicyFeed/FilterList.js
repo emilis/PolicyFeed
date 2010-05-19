@@ -19,7 +19,7 @@
 
 import("fs");
 import("config");
-import("modules/htmlunit", "htmlunit");
+import("htmlunit");
 
 exports.list = {};
 
