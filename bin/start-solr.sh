@@ -1,3 +1,3 @@
 #TODO root fix pagal start-www
 
-java -jar lib/jetty/start.jar -Dsolr.solr.home=search -Dsolr.data.dir=data/solr
+java -jar lib/jetty/start.jar -Dsolr.solr.home=search -Dsolr.data.dir=data/solr config/config/jetty-solr.xml
