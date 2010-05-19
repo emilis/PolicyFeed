@@ -44,7 +44,7 @@
    <field name="published" type="date" indexed="true" stored="true"/>
    <field name="source" type="string" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
-   <field name="html" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="html" type="text" indexed="true" stored="true"/>
  </fields>
 
  <uniqueKey>id</uniqueKey>
