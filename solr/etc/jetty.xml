@@ -1,34 +1,18 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 
-<!-- =============================================================== -->
-<!-- Configure the Jetty Server                                      -->
-<!--                                                                 -->
-<!-- Documentation of this file format can be found at:              -->
-<!-- http://docs.codehaus.org/display/JETTY/jetty.xml                -->
-<!--                                                                 -->
-<!-- =============================================================== -->
-
-
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
-
-    <!-- =========================================================== -->
-    <!-- Server Thread Pool                                          -->
-    <!-- =========================================================== -->
-    <Set name="ThreadPool">
-      <!-- Default queued blocking threadpool 
-      -->
-      <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
-        <Set name="minThreads">10</Set>
-        <Set name="maxThreads">200</Set>
-      </New>
-    </Set>
-
-
 
     <!-- =========================================================== -->
     <!-- Set connectors                                              -->
     <!-- =========================================================== -->
+
+  <!-- =========================================================== -->
+  <!-- Deploy all webapps in webapps-plus                          -->
+  <!-- =========================================================== -->
+  <!-- Uncomment the following to set up a WebAppDeployer that will -->
+  <!-- deploy webapps from a directory called webapps-plus. Note    -->
+  <!-- that you will need to create this directory first!           -->
 
     <Call name="addConnector">
       <Arg>
@@ -44,26 +28,6 @@
           </New>
       </Arg>
     </Call>
-
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <!-- To add a HTTPS SSL connector                                    -->
-    <!-- mixin jetty-ssl.xml:                                            -->
-    <!--   java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml           -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <!-- To add a HTTP blocking connector                                -->
-    <!-- mixin jetty-bio.xml:                                            -->
-    <!--   java -jar start.jar etc/jetty.xml etc/jetty-bio.xml           -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <!-- To allow Jetty to be started from xinetd                        -->
-    <!-- mixin jetty-xinetd.xml:                                         -->
-    <!--   java -jar start.jar etc/jetty.xml etc/jetty-xinetd.xml        -->
-    <!--                                                                 -->
-    <!-- See jetty-xinetd.xml for further instructions.                  -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
     <!-- =========================================================== -->
     <!-- Set handler Collection Structure                            --> 
@@ -120,17 +84,16 @@
           <Call name="addAppProvider">
             <Arg>
               <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
-                <Set name="monitoredDir"><Property name="jetty.home" default="." />/webapps</Set>
+                <Set name="monitoredDir"><Property name="jetty.home" default="." />/solr/webapps</Set>
                 <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Set>
                 <Set name="scanInterval">5</Set>
-                <Set name="contextXmlDir"><Property name="jetty.home" default="." />/contexts</Set>
+                <Set name="contextXmlDir"><Property name="jetty.home" default="." />/solr/contexts</Set>
               </New>
             </Arg>
           </Call>
         </New>
       </Arg>
     </Call>
-
 
     <!-- =========================================================== -->
     <!-- Configure Request Log                                       -->
@@ -142,7 +105,7 @@
     <Ref id="RequestLog">
       <Set name="requestLog">
         <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
-          <Set name="filename"><SystemProperty name="jetty.home" default="."/>/logs/yyyy_mm_dd.request.log</Set>
+            <Set name="filename">data/log/solr/yyyy_mm_dd.request.log</Set>
           <Set name="filenameDateFormat">yyyy_MM_dd</Set>
           <Set name="retainDays">90</Set>
           <Set name="append">true</Set>
@@ -153,17 +116,6 @@
       </Set>
     </Ref>
 
-    <!-- =========================================================== -->
-    <!-- Define some SystemProperties                                -->
-    <!-- =========================================================== -->
-    <Call class="java.lang.System" name="setProperty">
-      <Arg>derby.system.home</Arg>
-      <Arg><SystemProperty name="java.io.tmpdir"/></Arg>
-    </Call>
-
-    <!-- =========================================================== -->
-    <!-- extra options                                               -->
-    <!-- =========================================================== -->
     <Set name="stopAtShutdown">true</Set>
     <Set name="sendServerVersion">true</Set>
     <Set name="sendDateHeader">true</Set>
