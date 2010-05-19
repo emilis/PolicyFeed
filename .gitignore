@@ -1,5 +1,5 @@
 # DATA_DIR
-policyfeed/data/*
+data/*
 
 # UPLOADS_DIR
-policyfeed/static/uploads/*
+static/uploads/*

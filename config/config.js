@@ -2,8 +2,10 @@ module.shared = true;
 
 import("fs");
 
+var ROOT_DIR = fs.absolute(module.directory + "../");
+
 exports.httpConfig = {
-    staticDir: fs.absolute(module.directory + '../policyfeed/static/')
+    staticDir: ROOT_DIR + '/static/'
 };
 
 exports.urls = [
@@ -54,9 +56,9 @@ exports.contentType = 'text/html';
 
 // --- Gluestick constants: ---
 
-var WEB_DIR = fs.absolute(module.directory + "../policyfeed");
+var WEB_DIR = ROOT_DIR;
 var WEB_URL = "http://localhost:8080";
-exports.WEB_DIR = WEB_DIR;
+exports.WEB_DIR = ROOT_DIR;
 exports.WEB_URL = WEB_URL;
 
 exports.FILES_DIR = WEB_DIR + "/static/files";
@@ -86,7 +88,7 @@ exports.gluestick = {
 
 exports.DB = {
     host: "localhost",
-    db_name: "policyfeed",
+    db_name: "govsrvr",
     user: "root",
     password: "",
     useUnicode: "yes",
