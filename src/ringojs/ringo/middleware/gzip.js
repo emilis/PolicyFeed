@@ -6,19 +6,17 @@ var {GZIPOutputStream} = java.util.zip;
 
 export('middleware');
 
-module.shared = true;
-
 /**
  * JSGI middleware for GZIP compression.
  * @param app the JSGI application
  * @returns the wrapped JSGI app
  */
 function middleware(app) {
-    return function(env) {
-        var res = app(env);
+    return function(request) {
+        var res = app(request);
         var headers = Headers(res.headers);
         if (canCompress(res.status,
-                env.HTTP_ACCEPT_ENCODING,
+                request.headers["accept-encoding"],
                 headers.get('Content-Type'),
                 headers.get('Content-Encoding'))) {
             var bytes = new ByteArrayOutputStream();

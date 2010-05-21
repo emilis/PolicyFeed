@@ -13,22 +13,19 @@ var fileutils = require('ringo/fileutils');
 var daemon = require('ringo/webapp/daemon');
 
 export('getConfig',
-       'getServer',
        'handleRequest',
        'main');
 
 var log = require('ringo/logging').getLogger(module.id);
 
-module.shared = true;
-
 /**
  * Handler function called by the JSGI servlet.
  *
- * @param env the JSGI environment argument
+ * @param req the JSGI 0.3 request object
  */
-function handleRequest(env) {
+function handleRequest(req) {
     // get config and apply it to req, res
-    var configId = env['ringo.config'] || 'config';
+    var configId = req.env.ringo_config || 'config';
     var config = getConfig(configId);
     if (log.isDebugEnabled()){
         log.debug('got config: ' + config.toSource());
@@ -36,7 +33,7 @@ function handleRequest(env) {
 
     // set req in webapp env module
     var webenv = require('ringo/webapp/env');
-    var req = new Request(env);
+    req = Request(req);
     var res = null;
     webenv.setRequest(req);
 
@@ -84,7 +81,7 @@ function resolveInConfig(req, webenv, config, configId) {
             var module = getModule(moduleId);
             log.debug("Resolved module: {} -> {}", moduleId, module);
             // move matching path fragment from PATH_INFO to SCRIPT_NAME
-            req.appendToScriptName(match[0]);
+            appendToScriptName(req, match[0]);
             // prepare action arguments, adding regexp capture groups if any
             var args = [req].concat(match.slice(1));
             // lookup action in module
@@ -151,7 +148,7 @@ function getAction(req, module, urlconf, args) {
                     // If the request path contains additional elements check whether the
                     // candidate function has formal arguments to take them
                     if (path.length <= 1 || args.length + path.length - 1 <= action.length) {
-                        req.appendToScriptName(name);
+                        appendToScriptName(req, name);
                         Array.prototype.push.apply(args, path.slice(1));
                         return action;
                     }
@@ -170,13 +167,34 @@ function getAction(req, module, urlconf, args) {
         }
         if (path.length == 0 || args.length + path.length <= action.length) {
             if (path.length == 0 && args.slice(1).join('').length == 0) {
-                req.checkTrailingSlash();
+                checkTrailingSlash(req);
             }
             Array.prototype.push.apply(args, path);
             return action;
         }
     }
     return null;
+}
+
+function checkTrailingSlash(req) {
+    // only redirect for GET requests
+    if (!req.path.endsWith("/") && req.isGet) {
+        var path = req.queryString ?
+                req.path + "/?" + req.queryString : req.path + "/";
+        throw {redirect: path};
+    }
+}
+
+function appendToScriptName(req, fragment) {
+    var path = req.pathInfo;
+    var pos = path.indexOf(fragment);
+    if (pos > -1) {
+        pos += fragment.length;
+        // add matching pattern to script-name
+        req.scriptName += path.substring(0, pos);
+        // ... and remove it from path-info
+        req.pathInfo = path.substring(pos);
+    }
 }
 
 function splitPath(path) {
@@ -244,6 +262,8 @@ function main(path) {
     daemon.start();
 }
 
-if (require.main == module) {
+var started; // protect against restarting on reload
+if (require.main == module && !started) {
     main();
+    started = true;
 }

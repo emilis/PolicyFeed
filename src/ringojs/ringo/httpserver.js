@@ -6,8 +6,6 @@ export('Server');
 
 require('core/object');
 
-// mark this module as shared between all requests
-module.shared = true;
 var log = require('ringo/logging').getLogger(module.id);
 
 
@@ -68,7 +66,7 @@ function Server(options) {
      * @param {RhinoEngine} engine optional RhinoEngine instance for multi-engine setups
      */
     this.addApplication = function(path, vhosts, app, engine) {
-        log.info("Adding JSGI handler: " + path + " -> " + app.toSource());
+        log.debug("Adding JSGI handler:", path, "->", app.toSource());
         var context = createContext(path, vhosts, true, true);
         engine = engine || require('ringo/engine').getRhinoEngine();
         var isFunction = typeof app === "function";
@@ -78,8 +76,8 @@ function Server(options) {
         var jpkg = org.eclipse.jetty.servlet;
         var servletHolder = new jpkg.ServletHolder(servlet);
         if (!isFunction) {
-            servletHolder.setInitParameter('moduleName', app.config || 'config');
-            servletHolder.setInitParameter('functionName', app.app || 'app');
+            servletHolder.setInitParameter('config', app.config || 'config');
+            servletHolder.setInitParameter('app', app.app || 'app');
         }
         context.addServlet(servletHolder, "/*");
         if (jetty.isRunning()) {
@@ -95,13 +93,42 @@ function Server(options) {
      * @param {string} dir the directory from which to serve static resources
      */
     this.addStaticResources = function(path, vhosts, dir) {
-        log.info("Adding static handler: " + path + " -> " + dir);
+        log.debug("Adding static handler:", path, "->", dir);
         var context = createContext(path, vhosts, false, true);
         var repo = getRepository(dir);
         context.setResourceBase(repo.exists() ? repo.getPath() : dir);
         var jpkg = org.eclipse.jetty.servlet;
         var servletHolder = new jpkg.ServletHolder(jpkg.DefaultServlet);
         // staticHolder.setInitParameter("aliases", "true");
+        context.addServlet(servletHolder, "/*");
+        if (jetty.isRunning()) {
+            context.start();
+        }
+    };
+
+    /**
+     * Map a request path to a servlet.
+     * @param {string} path a request path such as "/foo/bar" or "/"
+     * @param {string|array} vhosts optional single or multiple virtual host names.
+     *   A virtual host may start with a "*." wildcard.
+     * @param {Servlet} servlet a java object implementing the javax.servlet.Servlet interface.
+     * @param {object} options object. Supports the following boolean flags:
+     *         - sessions - enable session support
+     *         - security - enable security support
+     *         - redirect - enable redirects from /path to /path/ 
+     * @since: 0.5
+     */
+    this.addServlet = function(path, vhosts, servlet, options) {
+        log.debug("Adding Servlet:", path, "->", servlet);
+        options = options || {};
+        var sessions = Boolean(options.sessions);
+        var security = Boolean(options.security);
+        var context = createContext(path, vhosts, sessions, security);
+        // avoid redirecting from /path to /path/ - this is a common cause for problems
+        // with cometd, websocket and the like as clients tend not to follow redirects.
+        context.setAllowNullPathInfo(!Boolean(options.redirect));
+        var jpkg = org.eclipse.jetty.servlet;
+        var servletHolder = new jpkg.ServletHolder(servlet);
         context.addServlet(servletHolder, "/*");
         if (jetty.isRunning()) {
             context.start();
