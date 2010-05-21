@@ -31,9 +31,17 @@ exports.migrate = function() {
 /**
  *
  */
+exports.getIsoDate = function(str) {
+    return str.replace(" ", "T") + "Z";
+}
+
+
+/**
+ *
+ */
 exports.docs = function() {
 
-    var sql = "select * from docs order by published asc";
+    var sql = "select id,original_id,comment_count,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from docs order by published asc";
 
     var rs = db.query(sql);
     if (!rs.first())
@@ -50,14 +58,14 @@ exports.docs = function() {
             print(e);
         }
 
-        data.id = doc.id;
-        data.original_id = doc.original_id;
-        data.updated = doc.updated;
-        data.published = doc.published;
-        data.comment_count = doc.comment_count;
-        data.html = doc.html;
+        data.id             = doc.id;
+        data.original_id    = doc.original_id;
+        data.updated        = this.getIsoDate(doc.update);
+        data.published      = this.getIsoDate(doc.publish);
+        data.comment_count  = doc.comment_count;
+        data.html           = doc.html;
 
-        var id = "/docs/" + doc.published.substr(0, 10).replace(/-/g, "/") + "/" + doc.original_id + "/doc";
+        var id = "/docs/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + data.original_id + "/doc";
 
         new_db.write(id, data);
     }
@@ -70,7 +78,7 @@ exports.docs = function() {
  *
  */
 exports.originals = function() {
-    var sql = "select * from originals";
+    var sql = "select id,source,url,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from originals";
 
     var rs = db.query(sql);
     if (!rs.first())
@@ -88,13 +96,13 @@ exports.originals = function() {
         }
 
         data.id         = original.id;
-        data.updated    = original.updated;
-        data.published  = original.published;
+        data.updated    = this.getIsoDate(original.update);
+        data.published  = this.getIsoDate(original.publish);
         data.source     = original.source;
         data.url        = original.url
         data.html       = original.html;
 
-        var id = "/originals/" + original.published.substr(0, 10).replace(/-/g, "/") + "/" + original.id + "/doc";
+        var id = "/originals/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + data.id + "/doc";
 
         new_db.write(id, data);
     }
