@@ -92,6 +92,7 @@ exports.read = function(id) {
     else {
         var doc;
         if (doc = JSON.parse(fs.read(this.getFileName(id))) ) {
+            doc._id = id;
             return doc;
         }
         else {
@@ -237,8 +238,11 @@ exports.iterate = function(upath, options) {
         var gen = fwd_iter(upath);
 
     for each (var fpath in gen) {
-        if (pattern === undefined || fpath.match(pattern))
-            yield JSON.parse(fs.read(fpath));
+        if (pattern === undefined || fpath.match(pattern)) {
+            var doc = JSON.parse(fs.read(fpath));
+            doc._id = fpath.substr(0, fpath.length - 5).replace(path, "");
+            yield doc;
+        }
         if (limit !== undefined) {
             if (!limit) {
                 gen.close();
