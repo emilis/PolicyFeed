@@ -17,6 +17,8 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require("core/date");
+
 var db = loadObject("DB");
 var new_db = loadObject("ctl/JsonStorage");
 // original_id to new added_id:
@@ -46,20 +48,31 @@ exports.migrate = function() {
 }
 
 
+// Create special chars RegExp:
+var special_chars = ["["];
+for (var i=0;i<32;i++)
+    special_chars.push(String.fromCharCode(i));
+special_chars.push("]");
+special_chars = new RegExp(special_chars.join(""), "g");
+
 /**
  *
  */
-exports.getIsoDate = function(str) {
-    return str.replace(" ", "T") + "Z";
+var fixString = function(str) {
+    return str.replace(special_chars, " ").replace(/\s+/g, " ").trim();
 }
 
 
 /**
  *
  */
-exports.docs = function() {
+exports.docs = function(ids) {
 
-    var sql = "select id,original_id,comment_count,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from docs order by published asc";
+    //var sql = "select id,original_id,comment_count,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from docs order by published asc";
+    if (ids === undefined)
+        var sql = "select * from docs order by published asc";
+    else
+        var sql = "select * from docs where id in('" + ids.join("','") + "')";
 
     var rs = db.query(sql);
     if (!rs.first())
@@ -78,13 +91,15 @@ exports.docs = function() {
 
         data.id             = doc.id;
         data.original_id    = doc.original_id;
-        data.updated        = this.getIsoDate(doc.update);
-        data.published      = this.getIsoDate(doc.publish);
+        data.updated        = doc.updated;
+        data.published      = doc.published;
         data.comment_count  = doc.comment_count;
         data.html           = doc.html;
 
-        var id = "/docs/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + data.original_id + "/doc";
+        data.title = fixString(data.title);
+        data.html  = fixString(data.html);
 
+        var id = "/docs/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + data.original_id + "/doc";
         new_db.write(id, data);
     }
 
@@ -96,7 +111,8 @@ exports.docs = function() {
  *
  */
 exports.originals = function() {
-    var sql = "select id,source,url,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from originals";
+    //var sql = "select id,source,url,meta,html, convert_tz(updated,'SYSTEM','+00:00') as `update`, convert_tz(published,'SYSTEM','+00:00') as `publish` from originals";
+    var sql = "select * from originals";
 
     var rs = db.query(sql);
     if (!rs.first())
@@ -114,14 +130,13 @@ exports.originals = function() {
         }
 
         data.id         = original.id;
-        data.updated    = this.getIsoDate(original.update);
-        data.published  = this.getIsoDate(original.publish);
+        data.updated    = original.updated;
+        data.published  = original.published;
         data.source     = original.source;
         data.url        = original.url
         data.html       = original.html;
 
         var id = "/originals/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + data.id + "/doc";
-
         new_db.write(id, data);
     }
 
