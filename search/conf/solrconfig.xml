@@ -30,7 +30,7 @@
 
   <updateHandler class="solr.DirectUpdateHandler2">
     <autoCommit>
-        <maxDocs>20</maxDocs>
+        <maxDocs>50</maxDocs>
         <maxTime>60000</maxTime>
     </autoCommit>
   </updateHandler>
