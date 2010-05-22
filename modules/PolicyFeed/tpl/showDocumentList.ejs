@@ -63,6 +63,8 @@ for each(var doc in docs)
         doc.short_source = doc.meta.short_source;
         doc.title = doc.meta.title;
     }
+    if (!doc.short_source && doc.source)
+        doc.short_source = doc.source;
 
     count++;
     if (doc.published.substr)
