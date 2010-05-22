@@ -25,13 +25,40 @@ import("ctl/JsonStorage", "jstorage");
 /**
  *
  */
+var prepareDate = function(str) {
+    if (!str.match(/^\d\d\d\d-\d\d-\d\d.\d\d:\d\d:\d\d/))
+        throw Error("Unsupported date format: " + str);
+
+    d = new Date();
+    d.setFullYear(str.substr(0,4));
+    d.setMonth(parseInt(str.substr(5,2), 10) - 1);
+    d.setDate(str.substr(8,2));
+    d.setHours(str.substr(11,2));
+    d.setMinutes(str.substr(14,2));
+    d.setSeconds(str.substr(17,2));
+
+    return d.toISOString();
+}
+
+
+/**
+ *
+ */
+var stripTags = function(str) {
+    return str.replace(/<[^>]*>/g, "").replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+}
+
+
+/**
+ *
+ */
 exports.itemToXml = function(item) {
     return '<doc>' 
         + '<field name="id">' + item.id + '</field>'
-        + '<field name="published">' + item.published + '</field>'
+        + '<field name="published">' + prepareDate(item.published) + '</field>'
         + '<field name="source">' + item.short_source + '</field>'
-        + '<field name="title"><![CDATA[' + item.title + ']]></field>'
-        + '<field name="html"><![CDATA[' + item.html + ']]></field>'
+        + '<field name="title">' + stripTags(item.title) + '</field>'
+        + '<field name="html">' + stripTags(item.html) + '</field>'
         + '</doc>';
 }
 
@@ -40,12 +67,16 @@ exports.itemToXml = function(item) {
  *
  */
 exports.indexItem = function(item) {
-    var req = {
-        method: "POST",
-        url: url,
-        contentType: "text/xml;charset=utf-8",
-        data: '<add>' + this.itemToXml(item) + "</add>"
-        };
+    try {
+        var req = {
+            method: "POST",
+            url: url,
+            contentType: "text/xml; charset=utf-8",
+            data: '<add>' + this.itemToXml(item) + "</add>"
+            };
+    } catch (e) {
+        throw Error("Failed to create request for item " + item.id + ". Error: " + e.message);   
+    }
 
     return httpclient.request(req);
 }
@@ -61,6 +92,12 @@ exports.reindex = function(path) {
     var gen = jstorage.iterate(path);
 
     for each (var doc in gen) {
-        this.indexItem(doc);
+        try {
+            var e = this.indexItem(doc);
+            if (e.content != '<result status="0"></result>')
+                print(doc.id, doc.published, e.content);
+        } catch (e) {
+            print(e.message);
+        }
     }
 }
