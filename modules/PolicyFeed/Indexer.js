@@ -54,7 +54,7 @@ var stripTags = function(str) {
  */
 exports.itemToXml = function(item) {
     return '<doc>' 
-        + '<field name="id">' + item.id + '</field>'
+        + '<field name="id">' + item._id + '</field>'
         + '<field name="published">' + prepareDate(item.published) + '</field>'
         + '<field name="source">' + item.short_source + '</field>'
         + '<field name="title">' + stripTags(item.title) + '</field>'
@@ -75,7 +75,7 @@ exports.indexItem = function(item) {
             data: '<add>' + this.itemToXml(item) + "</add>"
             };
     } catch (e) {
-        throw Error("Failed to create request for item " + item.id + ". Error: " + e.message);   
+        throw Error("Failed to create request for item " + item._id + ". Error: " + e.message);   
     }
 
     return httpclient.request(req);
@@ -95,7 +95,7 @@ exports.reindex = function(path) {
         try {
             var e = this.indexItem(doc);
             if (e.content != '<result status="0"></result>')
-                print(doc.id, doc.published, e.content);
+                print(doc._id, e.content);
         } catch (e) {
             print(e.message);
         }
