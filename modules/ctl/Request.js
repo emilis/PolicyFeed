@@ -22,7 +22,6 @@ exports.getRemoteAddr = function(req)
     if (req == undefined)
         return req;
 
-    var jsr = req.env["jsgi.servlet_request"];
-    var ip = jsr.getHeader("X-Real-IP") || jsr.getRemoteAddr();
+    var ip = req.getHeader("X-Real-IP") || req.remoteAddress;
     return ip;
 }
