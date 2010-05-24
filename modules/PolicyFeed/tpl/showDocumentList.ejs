@@ -65,6 +65,8 @@ for each(var doc in docs)
     }
     if (!doc.short_source && doc.source)
         doc.short_source = doc.source;
+    if (doc.id.indexOf("/") > -1)
+        doc.id = doc.id.replace("/docs/", "").replace("/doc", "");
 
     count++;
     if (doc.published.substr)
