@@ -78,9 +78,10 @@ for each(var doc in docs)
         day = dday;
     }
 
-    url = config.WEB_URL + "/docs/" + doc.id + "/";
+    url = config.WEB_URL + "/docs/" + doc.id;
+    div_id = "doc-" + doc.id.replace(/\//g, "-");
 
-    print('<div id="doc-' + doc.id + '" class="document-link">');
+    print('<div id="' + div_id + '" class="document-link">');
     //print('<span class="source ' + doc.short_source + '">' + doc.short_source + '</span>');
     print('<span class="source"><img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.short_source.toLowerCase() + '.gif" align="top"></span>');
     print('<span class="props">');

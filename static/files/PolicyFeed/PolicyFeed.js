@@ -25,10 +25,10 @@ PolicyFeed.expandDocument = function(link)
     var div = link.parentNode.parentNode;
     if (!div.expanded)
     {
-        var url = link.href.substr(0, link.href.length - 1) + ".json/";
+        var url = link.href + ".json";
         jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument);
     }
-    else if (div.expanded == "expanded")
+    else if (div.expande == "expanded")
     {
         div.expanded = "hidden";
         jQuery(div).removeClass("expanded");
@@ -46,7 +46,7 @@ PolicyFeed.expandDocument = function(link)
 
 PolicyFeed.doExpandDocument = function(data, status)
 {
-    var div_id = "doc-" + data.id;
+    var div_id = data._id.replace("/docs/", "doc-").replace("/doc", "").replace(/\//g, "-");
     var div = document.getElementById(div_id);
 
     div.expanded = "expanded";
@@ -56,7 +56,7 @@ PolicyFeed.doExpandDocument = function(data, status)
         + '<div class="html">' + data.html + '</div>'
         + '<div class="links">'
             + '<a class="collapse" href="#' + div_id + '" onClick="PolicyFeed.collapseDocument(\'' + div_id + '\')">Suskleisti&uarr;</a>'
-            + '<span class="source">Šaltinis: <a href="' + data.meta.url + '">' + data.meta.url + '</a></span>'
+            + '<span class="source">Šaltinis: <a href="' + data.url + '">' + data.url + '</a></span>'
         + '</div>'
         + '</div>');
 }

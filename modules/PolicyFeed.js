@@ -21,6 +21,8 @@ var config = getObjectConfig("PolicyFeed") || {};
 
 var WebMapper = loadObject("WebMapper");
 
+var jstorage = require("ctl/JsonStorage");
+var search = require("PolicyFeed/SolrClient");
 
 /**
  *
@@ -29,14 +31,25 @@ exports.showDocumentList = function(req)
 {
     print("PolicyFeed.showDocumentList", loadObject("ctl/Request").getRemoteAddr(req));
 
+    var cache_path = "/cache/index";
+    if (false) //jstorage.exists(cache_path))
+        var result = jstorage.read(cache_path);
+    else
+    {
+        //var docs = jstorage.iterate("/docs/", { reverse: true, limit: 100});
+        //var docs = newObject("PolicyFeed/DocumentList").getLatest(100);
+        var docs = search.getLatestDocs();
 
+        var result = WebMapper.returnHtml(
+            this.showContent("showDocumentList", {
+                "mode": "list",
+                "docs": docs
+                }));
 
-    return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
-            "mode": "list",
-            //"docs": loadObject("ctl/JsonStorage").iterate("/docs/", { reverse: true, limit: 100})
-            "docs": newObject("PolicyFeed/DocumentList").getLatest(100)
-            }));
+        //jstorage.write(cache_path, result);
+    }
+
+    return result;
 }
 
 
@@ -47,11 +60,13 @@ exports.showListByDate = function(req, day)
 {
     print("PolicyFeed.showListByDate", day, loadObject("ctl/Request").getRemoteAddr(req));
 
+    var docs = jstorage.iterate("/docs/" + day, { reverse: true, limit: 100, pattern: "/docs/" + day + "/doc"});
+
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "byDate",
             "date": day,
-            "docs": newObject("PolicyFeed/DocumentList").getByDate(day)
+            "docs": docs
             }));
 }
 
@@ -63,11 +78,13 @@ exports.search = function(req)
 {
     print("PolicyFeed.search", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
 
+    var docs = search.search(req.params.q);
+    
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "search",
-            "query":req.params.q,
-            "docs": newObject("PolicyFeed/DocumentList").search(req.params.q)
+            "query": req.params.q,
+            "docs": docs
             }));
 }
 
@@ -79,19 +96,9 @@ exports.showDocument = function(req, id)
 {
     print("PolicyFeed.showDocument", id, loadObject("ctl/Request").getRemoteAddr(req));
 
-    if (id.indexOf("/") > -1)
-    {
-        var doc = loadObject("ctl/JsonStorage").read("/docs/" + id + "/doc");
-        if (!doc)
-            return "404 - Document not found.";
-    }
-    else
-    {
-        var doc = newObject("PolicyFeed/Document");
-        if (!doc.read(id))
-            return "404 - Document not found.";
-    }
-
+    var doc = jstorage.read("/docs/" + id + "/doc");
+    if (!doc)
+        return "404 - Document not found.";
 
     return WebMapper.returnHtml(
         this.showContent("showDocument", {
@@ -107,9 +114,9 @@ exports.showDocumentFormat = function(req, id, format)
 {
     print("PolicyFeed.showDocumentFormat", id, format, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = newObject("PolicyFeed/Document");
+    var doc = jstorage.read("/docs/" + id + "/doc");
     
-    if (!doc.read(id))
+    if (!doc)
         return this.showError(404);
     else if (format == "json")
     {
@@ -118,7 +125,7 @@ exports.showDocumentFormat = function(req, id, format)
             headers: {
                 "Content-Type": "application/x-javascript; charset=UTF-8"
             },
-            body: [ doc.toString() ]
+            body: [ JSON.stringify(doc) ]
         };
     }
     else

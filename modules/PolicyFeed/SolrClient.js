@@ -17,7 +17,9 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var url = "http://localhost:8081/solr/update";
+var update_url = "http://localhost:8081/solr/update";
+var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=published+desc&fl=id,published,source,title&wt=json&q=';
+
 
 import("ringo/httpclient", "httpclient");
 import("ctl/JsonStorage", "jstorage");
@@ -70,7 +72,7 @@ exports.indexItem = function(item) {
     try {
         var req = {
             method: "POST",
-            url: url,
+            url: update_url,
             contentType: "text/xml; charset=utf-8",
             data: '<add>' + this.itemToXml(item) + "</add>"
             };
@@ -100,4 +102,33 @@ exports.reindex = function(path) {
             print(e.message);
         }
     }
+}
+
+
+/**
+ *
+ */
+exports.onItemChange = function(action, _id, item) {
+    if (_id.indexOf("/docs/")) {
+        if (action == "after-write")
+            this.indexItem(item);
+    }
+}
+
+
+/**
+ *
+ */
+exports.search = function(query) {
+    var res = httpclient.get(search_url + query);
+    if (res.status === 200)
+        return JSON.parse(res.content).response.docs;
+}
+
+
+/**
+ *
+ */
+exports.getLatestDocs = function () {
+    return this.search("*:*");
 }
