@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="kvv-analyzer" default="default">
+
+  <description>
+    KVV Analyzer
+  </description>
+	
+  <property name="build.dir" location="build" />
+  <property name="dist.dir" location="../../lib" />
+
+  <path id="classpath">
+    <path refid="junit-path"/>
+    <pathelement location="${build.dir}"/>
+  </path>	
+
+  <target name="init" depends="init">
+  </target>
+
+  <target name="compile" depends="init">
+  </target>
+
+  <target name="dist" depends="init">
+  </target>
+</project>
