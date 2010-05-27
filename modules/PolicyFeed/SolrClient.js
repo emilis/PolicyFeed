@@ -87,6 +87,21 @@ exports.indexItem = function(item) {
 /**
  *
  */
+exports.removeItem = function(id) {
+    var req = {
+        method: "POST",
+        url: update_url,
+        contentType: "text/xml; charset=utf-8",
+        data: '<delete><id>' + id + '</id></delete>'
+    };
+
+    return httpclient.request(req);
+}
+
+
+/**
+ *
+ */
 exports.reindex = function(path) {
     if (path === undefined)
         path = "/docs";
@@ -122,7 +137,34 @@ exports.onItemChange = function(action, _id, item) {
 exports.search = function(query) {
     var res = httpclient.get(search_url + query);
     if (res.status === 200)
-        return JSON.parse(res.content).response.docs;
+        return JSON.parse(res.content);
+}
+
+
+/**
+ *
+ */
+exports.searchByDay = function(day) {
+    var query = "published:[" + day + "T00:00:00Z+TO+" + day + "T23:59:59.999Z]";
+    return this.search(query);
+}
+
+
+/**
+ *
+ */
+exports.searchByMonth = function(month) {
+    var query = "published:[" + month + "-01T00:00:00Z+TO+" + month + "-01T00:00:00Z%2B1MONTH]";
+    return this.search(query);
+}
+
+
+/**
+ *
+ */
+exports.searchByYear = function(year) {
+    var query = "published:[" + year + "-01-01T00:00:00Z+TO+" + year + "-12-31T23:59:59.999Z]";
+    return this.search(query);
 }
 
 
@@ -130,5 +172,5 @@ exports.search = function(query) {
  *
  */
 exports.getLatestDocs = function () {
-    return this.search("*:*");
+    return this.search("*:*").response.docs;
 }
