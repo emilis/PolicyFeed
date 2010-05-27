@@ -56,29 +56,17 @@ exports.showDocumentList = function(req)
 /**
  *
  */
-exports.showListByDate = function(req, day)
-{
-    print("PolicyFeed.showListByDate", day, loadObject("ctl/Request").getRemoteAddr(req));
-
-    var docs = jstorage.iterate("/docs/" + day, { reverse: true, limit: 100, pattern: "/docs/" + day + "/doc"});
-
-    return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
-            "mode": "byDate",
-            "date": day,
-            "docs": docs
-            }));
-}
-
-
-/**
- *
- */
 exports.search = function(req)
 {
+    //todo: filter request parameters for invalid input.
+
     print("PolicyFeed.search", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var docs = search.search(req.params.q);
+    var results = search.search(req.params.q.trim());
+    var docs = [];
+
+    if (results && results.response && results.response.docs)
+        docs = results.response.docs;
     
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
@@ -92,13 +80,68 @@ exports.search = function(req)
 /**
  *
  */
+exports.showDay = function(req, day)
+{
+    print("PolicyFeed.showDay", day, loadObject("ctl/Request").getRemoteAddr(req));
+    day = day.replace(/\//g, "-");
+
+    var docs = search.searchByDay(day).response.docs;
+
+    return WebMapper.returnHtml(
+        this.showContent("showDocumentList", {
+            "mode": "search",
+            "query": "Publikuoti:" + day,
+            "docs": docs
+            }));
+}
+
+
+/**
+ *
+ */
+exports.showMonth = function(req, month)
+{
+    print("PolicyFeed.showMonth", month, loadObject("ctl/Request").getRemoteAddr(req));
+    month = month.replace("/", "-");
+
+    var docs = search.searchByMonth(month).response.docs;
+
+    return WebMapper.returnHtml(
+        this.showContent("showDocumentList", {
+            "mode": "search",
+            "query": "Publikuoti:" + month,
+            "docs": docs
+            }));
+}
+
+
+/**
+ *
+ */
+exports.showYear = function(req, year)
+{
+    print("PolicyFeed.showYear", year, loadObject("ctl/Request").getRemoteAddr(req));
+
+    var docs = search.searchByYear(year).response.docs;
+
+    return WebMapper.returnHtml(
+        this.showContent("showDocumentList", {
+            "mode": "search",
+            "query": "Publikuoti:" + year,
+            "docs": docs
+            }));
+}
+
+/**
+ *
+ */
 exports.showDocument = function(req, id)
 {
     print("PolicyFeed.showDocument", id, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = jstorage.read("/docs/" + id + "/doc");
+    var doc = jstorage.read(id);
     if (!doc)
-        return "404 - Document not found.";
+        return this.showError(404);
 
     return WebMapper.returnHtml(
         this.showContent("showDocument", {
@@ -114,7 +157,7 @@ exports.showDocumentFormat = function(req, id, format)
 {
     print("PolicyFeed.showDocumentFormat", id, format, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = jstorage.read("/docs/" + id + "/doc");
+    var doc = jstorage.read(id);
     
     if (!doc)
         return this.showError(404);
@@ -149,14 +192,15 @@ exports.showContent = function(tpl, content)
  */
 exports.showError = function(msg)
 {
+    var status = 501;
     // if is numeric:
     if (parseInt(msg, 10).toString() == msg.toString())
-    {
-        WebMapper.header("Status: " + msg);
-        return "<h1>Error " + msg + "</h1>";
-    }
-    else
-        return "<h1>Error " + msg + "<h1>";
+        status = msg;
 
+    return {
+        status: status,
+        headers: {},
+        body: [ "<h1>Error - " + msg + "</h1>" ]
+    };
 }
 

@@ -10,15 +10,14 @@ exports.httpConfig = {
 
 exports.urls = [
     // docs:
-    [ /docs\/([0-9\/]+)\.(json)/,    "PolicyFeed", "showDocumentFormat" ],
-    [ /docs\/([0-9\/]+)/,            "PolicyFeed", "showDocument" ],
-    [ /docs\/bydate/,           "PolicyFeed", "showListByDate" ],
+    [ /(docs\/\d\d\d\d\/\d\d\/\d\d\/\d+)\.(json)/,  "PolicyFeed", "showDocumentFormat" ],
+    [ /(docs\/\d\d\d\d\/\d\d\/\d\d\/\d+)/,          "PolicyFeed", "showDocument" ],
+    [ /docs\/(\d\d\d\d\/\d\d\/\d\d)/,               "PolicyFeed", "showDay" ],
+    [ /docs\/(\d\d\d\d\/\d\d)/,                     "PolicyFeed", "showMonth" ],
+    [ /docs\/(\d\d\d\d)/,                           "PolicyFeed", "showYear" ],
+
     [ /docs\/search/,           "PolicyFeed", "search" ],
     [ /docs\/?$/,               "PolicyFeed", "showDocumentList" ],
-
-    // cron jobs:
-    [ /cron\/crawl/,            "PolicyFeed/Crawler",   "webCrawl" ],
-    [ /cron\/convert/,          "PolicyFeed/Converter", "webConvert" ],
 
     // static pages:
     [ /pages\/(.+)/,            "KaVeikiaValdzia/Site", "showPage" ],

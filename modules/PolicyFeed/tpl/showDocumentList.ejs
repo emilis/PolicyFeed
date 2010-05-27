@@ -54,6 +54,7 @@ var day = "";
 var dday = "";
 var wday = "";
 var url = "";
+var div_id = "";
 
 var count = 0;    
 for each(var doc in docs)
@@ -65,8 +66,10 @@ for each(var doc in docs)
     }
     if (!doc.short_source && doc.source)
         doc.short_source = doc.source;
+    /*
     if (doc.id.indexOf("/") > -1)
         doc.id = doc.id.replace("/docs/", "").replace("/doc", "");
+    */
 
     count++;
     if (doc.published.substr)
@@ -78,8 +81,8 @@ for each(var doc in docs)
         day = dday;
     }
 
-    url = config.WEB_URL + "/docs/" + doc.id;
-    div_id = "doc-" + doc.id.replace(/\//g, "-");
+    url = config.WEB_URL + doc.id;
+    div_id = doc.id.replace(/\//g, "-");
 
     print('<div id="' + div_id + '" class="document-link">');
     //print('<span class="source ' + doc.short_source + '">' + doc.short_source + '</span>');

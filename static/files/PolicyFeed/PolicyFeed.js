@@ -28,7 +28,7 @@ PolicyFeed.expandDocument = function(link)
         var url = link.href + ".json";
         jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument);
     }
-    else if (div.expande == "expanded")
+    else if (div.expanded == "expanded")
     {
         div.expanded = "hidden";
         jQuery(div).removeClass("expanded");
@@ -46,7 +46,7 @@ PolicyFeed.expandDocument = function(link)
 
 PolicyFeed.doExpandDocument = function(data, status)
 {
-    var div_id = data._id.replace("/docs/", "doc-").replace("/doc", "").replace(/\//g, "-");
+    var div_id = data._id.replace(/\//g, "-");
     var div = document.getElementById(div_id);
 
     div.expanded = "expanded";

@@ -17,7 +17,9 @@ returnVar("title", doc.title);
 var day = doc.published.substr(0, 10);
 
 var breadcrumbs = [
-    [ "/docs/bydate/" + day + "/", day ]
+    [ doc._id.substr(0, 10), doc._id.substr(6, 4) ],
+    [ doc._id.substr(0, 13), doc._id.substr(11, 2) ],
+    [ doc._id.substr(0, 16), doc._id.substr(14, 2) ]
     ];
 
 returnVar("breadcrumbs", breadcrumbs);
@@ -30,7 +32,7 @@ returnVar("breadcrumbs", breadcrumbs);
 
 <div id="comments">
 <h2>Komentarai</h2>
-<%= loadObject("PolicyFeed/Comments").showThread("docs/" + vars.doc.id) %>
+<%= loadObject("PolicyFeed/Comments").showThread(doc._id) %>
 </div>
 <%
 
@@ -77,7 +79,7 @@ if (doc.teises_aktas)
 //side += '<div><h3>Techninė informacija:</h3>'
 side += '<p class="outset">Publikuotas:<br>' + doc.published.substr(0, 19) + '<br>'
     + 'Atnaujintas DB:<br>' + doc.updated.substr(0, 19) + '<br><br>'
-    + '<a href="' + config.WEB_URL + '/docs/' + doc.id + '.json/">Duomenys JSON formatu</a> ' + icons.script + '</p>';
+    + '<a href="' + config.WEB_URL + doc._id + '.json">Duomenys JSON formatu</a> ' + icons.script + '</p>';
 
 side += '</div>';
 
