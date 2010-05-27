@@ -61,6 +61,15 @@ var triggers = {
 // --- File operations: ---
 
 
+exports.fixId = function(id) {
+    id.replace("../", "");
+    if (id[0] != "/")
+        id = "/" + id;
+    if (id[id.length - 1] == "/")
+        id = id.substr(0, id.length - 1);
+    return id;
+}
+
 /**
  * Converts JsonStorage path into a file system path.
  *
@@ -86,6 +95,8 @@ exports.exists = function(id) {
  * @param String id Path in JsonStorage.
  */
 exports.read = function(id) {
+    id = this.fixId(id);
+
     if (!this.exists(id)) {
         return false;
     }
@@ -106,8 +117,11 @@ exports.read = function(id) {
  * Removes an object from the JsonStorage.
  *
  * @param String id Object path in JsonStorage.
+ * todo: add parameter for recursive removal.
  */
 exports.remove = function(id) {
+    id = this.fixId(id);
+
     if (!this.exists(id)) {
         return false;
     }
@@ -127,6 +141,8 @@ exports.remove = function(id) {
  * @param mixed data Data to write (anything that can be searialized into JSON).
  */
 exports.write = function(id, data) {
+    id = this.fixId(id);
+
     this.runTriggers("before-write", id, data);
 
     var file_name = this.getFileName(id);
@@ -142,13 +158,15 @@ exports.write = function(id, data) {
  * Copies the given JsonStorage path and its descendants to a new destination.
  */
 exports.copy = function(from, to) {
-    from = path + from;
+    from = path + this.fixId(from);;
+    to = path + this.fixId(to);
+
     if (fs.isDirectory(from))
-        fs.copy(from, path + to);
+        fs.copy(from, to);
 
     from = from + ".json";
     if (fs.exists(from))
-        fs.copy(from, path + to + ".json");
+        fs.copy(from, to + ".json");
 }
 
 
@@ -156,13 +174,15 @@ exports.copy = function(from, to) {
  * Moves the given JsonStorage path and its descendants to a new destination.
  */
 exports.move = function(from, to) {
-    from = path + from;
+    from = path + this.fixId(from);
+    to = path + this.fixId(to);
+
     if (fs.isDirectory(from))
-        fs.move(from, path + to);
+        fs.move(from, to);
 
     from = from + ".json";
     if (fs.exists(from))
-        fs.move(from, path + to + ".json");
+        fs.move(from, to + ".json");
 }
 
 // --- Listing ---
@@ -171,8 +191,32 @@ exports.move = function(from, to) {
  * Lists all directories and files in the given JsonStorage path.
  */
 exports.list = function(upath) {
-    upath = path + upath;
+    upath = path + this.fixId(upath);
     return fs.list(upath).sort();
+}
+
+
+/**
+ *
+ */
+exports.listDocuments = function(upath) {
+    upath = this.fixId(upath);
+    return this.list(upath).filter(function (item) {
+        return fs.isFile(path + upath + "/" + item)
+        }).map (function (item) {
+            return item.replace(/\.json$/, "");
+            });
+}
+
+
+/**
+ *
+ */
+exports.listDirectories = function(upath) {
+    upath = this.fixId(upath);
+    return this.list(upath).filter(function (item) {
+            return fs.isDirectory(path + upath + "/" + item);
+            });
 }
 
 
@@ -230,7 +274,8 @@ exports.iterate = function(upath, options) {
     options = options || {};
     var { reverse, pattern, limit} = options;
 
-    upath = path + upath;
+    // prepend path, remove trailing slash:
+    upath = path + this.fixId(upath).replace(/\/$/, "");
 
     if (reverse)
         var gen = rev_iter(upath);
