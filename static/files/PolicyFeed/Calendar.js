@@ -99,7 +99,7 @@ PolicyFeedCalendar.show = function(d, active_days)
     // make active_days a dict:
     var ad = {};
     for (var i in active_days)
-        ad[active_days[i]] = true;
+        ad[parseInt(active_days[i], 10)] = true;
 
     // set calendar days:
     var html = "";

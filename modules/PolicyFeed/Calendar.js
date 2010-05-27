@@ -55,5 +55,16 @@ exports.showBlock = function()
  */
 exports.getActiveMonthDays = function(year, month)
 {
-    return newObject("PolicyFeed/DocumentList").getActiveMonthDays(year, month);
+    if (month < 10)
+        month = "0" + month;
+
+    var result = [];
+    try {
+        result = require("ctl/JsonStorage").listDirectories("/docs/" + year + "/" + month);
+    } catch (e) {
+        result = [];
+    }
+
+    return result;
+    //return newObject("PolicyFeed/DocumentList").getActiveMonthDays(year, month);
 }
