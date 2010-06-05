@@ -21,6 +21,7 @@
 
   <target name="init" description="create needed dirs">
     <mkdir dir="${build}"/>
+    <mkdir dir="${webapps}"/>
   </target>
 
   <target name="compile" depends="init" description="compile source">
@@ -33,7 +34,7 @@
 
   <target name="war" description="make solr war file">
     <war destfile="${webapps}/${solr.war.name}" webxml="${web}/web.xml">
-      <lib dir="${lib}/search"/>
+      <lib dir="${lib}"/>
     </war>
   </target>
 
@@ -43,6 +44,6 @@
   <target name="clean" description="clean up">
     <delete dir="${build}"/>
     <delete file="${dist}/${ant.project.name}.jar"/>
-    <delete file="${webapps}/${solr.war.name}"/>
+    <delete dir="${webapps}"/>
   </target>
 </project>
