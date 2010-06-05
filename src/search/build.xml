@@ -1,24 +1,49 @@
 <?xml version="1.0"?>
-<project name="kvv-analyzer" default="default">
+<project name="kvvanalyzer" default="default">
 
   <description>
-    KVV Analyzer
+    KVV Solr search
   </description>
 	
-  <property name="build.dir" location="build" />
-  <property name="dist.dir" location="../../lib" />
+  <property name="solr.war.name" value="solr.war" />
+  <property name="build" location="build" />
+  <property name="dist" location="../../lib/search" />
+  <property name="webapps" location="../../lib/webapps" />
+  <property name="lib" location="../../lib/search" />
+  <property name="src" location="java" />
+  <property name="web" location="webinf" />
 
   <path id="classpath">
-    <path refid="junit-path"/>
-    <pathelement location="${build.dir}"/>
+    <fileset dir="${lib}">
+      <include name="**/*.jar"/>
+    </fileset>
   </path>	
 
-  <target name="init" depends="init">
+  <target name="init" description="create needed dirs">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${webapps}"/>
   </target>
 
-  <target name="compile" depends="init">
+  <target name="compile" depends="init" description="compile source">
+    <javac srcdir="${src}" destdir="${build}" classpathref="classpath"/>
   </target>
 
-  <target name="dist" depends="init">
+  <target name="jar" depends="compile" description="make jar file and put it in distribution dir">
+    <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}"/>
+  </target>
+
+  <target name="war" description="make solr war file">
+    <war destfile="${webapps}/${solr.war.name}" webxml="${web}/web.xml">
+      <lib dir="${lib}"/>
+    </war>
+  </target>
+
+  <target name="dist" depends="jar, war" description="make discribution files">
+  </target>
+
+  <target name="clean" description="clean up">
+    <delete dir="${build}"/>
+    <delete file="${dist}/${ant.project.name}.jar"/>
+    <delete dir="${webapps}"/>
   </target>
 </project>
