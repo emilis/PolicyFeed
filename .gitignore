@@ -3,3 +3,6 @@ data/*
 
 # UPLOADS_DIR
 static/uploads/*
+lib/search/kvvanalyzer.jar
+lib/webapps/
+src/search/build
