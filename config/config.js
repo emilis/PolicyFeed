@@ -118,7 +118,7 @@ exports.WebMapper = {
 
 exports.PolicyFeed = {
     SourceList: {
-        source_dir: MODULES_DIR + "/KaVeikiaValdzia/Sources"
+        source_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources"
     }
 };
 
