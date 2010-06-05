@@ -9,7 +9,7 @@
   <property name="build" location="build" />
   <property name="dist" location="../../lib/search" />
   <property name="webapps" location="../../lib/webapps" />
-  <property name="lib" location="../../lib" />
+  <property name="lib" location="../../lib/search" />
   <property name="src" location="java" />
   <property name="web" location="webinf" />
 
