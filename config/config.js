@@ -115,3 +115,10 @@ exports.WebMapper = {
 
 // --- Module config: ---
 
+
+exports.PolicyFeed = {
+    SourceList: {
+        source_dir: MODULES_DIR + "/KaVeikiaValdzia/Sources"
+    }
+};
+

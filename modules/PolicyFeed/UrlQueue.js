@@ -90,10 +90,22 @@ exports.initDomains = function(domainList) {
     for (var i in domains) {
         if (!domains[i].delay)
             domains[i].delay = DEFAULT_DELAY;
+        domains[i].last = 0;
     }
 }
 
 //----------------------------------------------------------------------------
+
+/**
+ *
+ */
+exports.getDomainFromUrl(url) {
+    var start = url.indexOf("/") + 2;
+    var end = url.indexOf("/", start) - start;
+    if (end < 0)
+        end = url.length - start;
+    return url.substr(start, end);
+}
 
 
 /**
@@ -104,13 +116,8 @@ exports.makeUrl = function(url, time) {
     if (typeof(url) == "string" || url instanceof String)
         url = { url: url };
 
-    if (!url.domain) {
-        var start = url.url.indexOf("/") + 2;
-        var end = url.url.indexOf("/", start) - start;
-        if (end < 0)
-            end = url.length - start;
-        url.domain = url.url.substr(start, end);
-    }
+    if (!url.domain) 
+        url.domain = this.getDomainFromUrl(url.url);
 
     if (time)
         url.time = time;

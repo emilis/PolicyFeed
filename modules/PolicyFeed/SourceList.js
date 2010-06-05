@@ -17,29 +17,100 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var fs = require("fs");
+var UrlQueue = require("PolicyFeed/UrlQueue");
+var BrowserController = require("PolicyFeed/BrowserController");
 
 exports.list = {};
 
-exports._constructor = function(obj_config)
-{
-    import("fs");
-    import("config");
 
-    if (!obj_config)
-        obj_config = {};
-    if (!obj_config.sources_dir)
-        obj_config.sources_dir = config.MODULES_DIR + "/PolicyFeed/sources";
+/**
+ *
+ */
+exports.getSourceList = function(source_dir, source_prefix) {
+    var list = {};
 
-    var source_names = fs.list(obj_config.sources_dir);
-    for each (var name in source_names)
-    {
-        if (name[0] != ".")
-        {
+    var source_names = fs.list(source_dir);
+    for each (var name in source_names) {
+        if (name[0] != ".") {
             // remove ".js" extension:
             name = name.substr(0, name.length - 3);
-            this.list[name] = loadObject("PolicyFeed/sources/" + name);
+            list[name] = require(source_prefix + name);
+            if (list[name].disabled)
+                delete list[name];
+        }
+    }
+
+    return list;
+}
+
+
+/**
+ *
+ */
+exports.getDomains = function() {
+    var domains = {};
+
+    for each (var source in this.list) {
+        if (source.domains) {
+            for (var domain in source.domains) {
+                domains[domain] = { delay: source.domains[domain] };
+        } else {
+            if (source.index_url instanceof Array) {
+                for each (var url in source.index_url) {
+                    domains[UrlQueue.getDomainFromUrl(url)] = {};
+                }
+            } else {
+                domains[UrlQueue.getDomainFromUrl(source.index_url)] = {};
+            }
+        }
+    }
+
+    return domains;
+}
+
+/**
+ *
+ */
+exports.init = function(source_dir, source_prefix) {
+
+    this.list = this.getSourceList(source_dir, source_prefix);
+
+    UrlQueue.initDomains(this.getDomains());
+
+    for (var name in this.list) {
+        this.list[name].name = name;
+        this.list[name].parent = this;
+        this.list[name].UrlQueue = UrlQueue;
+    }
+
+    BrowserController.init(UrlQueue);
+    BrowserController.start();
+}
+
+/**
+ *
+ */
+exports.checkUpdates = function() {
+    for (var name in this.list) {
+        var urls = this.list[name].index_url;
+        if (!(urls instanceof Array))
+            urls = [urls];
+
+        for each (var url in urls) {
+            UrlQueue.scheduleUrl({
+                url: url,
+                source: name,
+                method: "checkIndex"
+                }, 0);
         }
     }
 }
 
 
+/**
+ *
+ */
+exports.processUrl = function(url, page) {
+    return this.list[url.source][url.method](page);
+}
