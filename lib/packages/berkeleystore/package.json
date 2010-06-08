@@ -1,0 +1,10 @@
+{
+    "name": "berkeleystore",
+    "version": "0.1.0",
+    "description": "A Berkeley DB Ringo storage backend",
+    "keywords": ["db", "database", "berkeley"],
+    "author": "Hannes Wallnöfer (http://henso.com/) <hannes@helma.at>",
+    "jars": [
+        "jars/je-4.0.92.jar"
+    ]
+}

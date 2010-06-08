@@ -1,0 +1,43 @@
+--- src/com/sleepycat/je/DatabaseEntry.java.orig	2010-01-04 16:50:36.000000000 +0100
++++ src/com/sleepycat/je/DatabaseEntry.java	2010-04-22 15:33:21.000000000 +0200
+@@ -111,6 +111,9 @@
+      */
+     public static int MAX_DUMP_BYTES = 100;
+ 
++    /* Allows to associate an entity object with this database entry */
++    private transient Object entity;
++
+     /**
+      * Returns all the attributes of the database entry in text form, including
+      * the underlying data.  The maximum number of bytes that will be formatted
+@@ -433,6 +436,30 @@
+     }
+ 
+     /**
++     * Associate an entity with this data entry.
++     *
++     * <p>This is useful so that secondary key creators don't have to
++     * unmarshall the data again on inserts and updates.</p>
++     *
++     * @param entity The entity object associated with this entry.
++     */
++    public void setEntity(Object entity) {
++        this.entity = entity;
++    }
++
++    /**
++     * Get the entity previously associated with this data entry.
++     *
++     * <p>This is useful so that secondary key creators don't have to
++     * unmarshall the data again on inserts and updates.</p>
++     *
++     * @return The entity object previously associated with this entry.
++     */
++    public Object getEntity() {
++        return entity;
++    }
++
++    /**
+      * Compares the data of two entries for byte-by-byte equality.
+      *
+      * <p>In either entry, if the offset is non-zero or the size is not equal
