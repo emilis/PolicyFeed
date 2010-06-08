@@ -68,6 +68,7 @@ exports.UPLOADS_URL = WEB_URL + "/static/uploads";
 exports.CONFIG_DIR = WEB_DIR + "/config";
 exports.DATA_DIR = WEB_DIR + "/data";
 exports.LIB_DIR = WEB_DIR + "/lib";
+exports.PACKAGES_DIR = exports.LIB_DIR + "/packages";
 exports.MODULES_DIR = WEB_DIR + "/modules";
 
 

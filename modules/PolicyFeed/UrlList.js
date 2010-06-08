@@ -21,8 +21,6 @@ module.shared = true;
 
 var config = require("config");
 
-require.paths.push(config.LIB_DIR + "/packages/berkeleystore/lib");
-
 var bs = require("ringo/storage/berkeleystore");
 var store = new bs.Store( config.DATA_DIR );
 
