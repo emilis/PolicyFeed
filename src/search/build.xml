@@ -9,14 +9,15 @@
   <property name="build" location="build" />
   <property name="dist" location="../../lib/search" />
   <property name="webapps" location="../../lib/webapps" />
-  <property name="lib" location="../../lib/search" />
+  <property name="search.lib" location="../../lib/search" />
+  <property name="log.lib" location="../../lib/slf4j" />
   <property name="src" location="java" />
   <property name="web" location="webinf" />
+  <property name="config" location="../../config/config" />
 
   <path id="classpath">
-    <fileset dir="${lib}">
-      <include name="**/*.jar"/>
-    </fileset>
+    <fileset dir="${search.lib}" includes="*.jar"/>
+    <fileset dir="${log.lib}" includes="*.jar"/>
   </path>	
 
   <target name="init" description="create needed dirs">
@@ -34,7 +35,9 @@
 
   <target name="war" description="make solr war file">
     <war destfile="${webapps}/${solr.war.name}" webxml="${web}/web.xml">
-      <lib dir="${lib}"/>
+      <classes dir="${config}" includes="log4j.properties"/>
+      <lib dir="${search.lib}"/>
+      <lib dir="${log.lib}"/>
     </war>
   </target>
 
