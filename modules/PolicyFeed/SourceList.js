@@ -85,7 +85,7 @@ exports.init = function(options) {
         this.list[name].UrlQueue = UrlQueue;
     }
 
-    UrlQueue.initDomains(this.getDomains());
+    UrlQueue.init({ domainsList: this.getDomains() });
 
     BrowserController.init(this, UrlQueue);
     BrowserController.start();
