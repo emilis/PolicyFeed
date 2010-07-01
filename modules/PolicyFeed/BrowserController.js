@@ -23,10 +23,11 @@ module.shared = true;
 /**
  * Period to check for new urls when idle.
  */
-var WAITASEC = 2000;
+var WAITNEWURL = 2000;
+var WAITDOMAIN = 500;
 
 
-var setTimeout = require("ringo/scheduler").setTimeout;
+var sleep = java.lang.Thread.sleep;
 var htmlunit = require("htmlunit");
 
 var UrlQueue;
@@ -53,37 +54,60 @@ exports.start = function(num_threads, prefix) {
         prefix = "t";
 
     for (var i=1; i <= num_threads; i++)
-        this.newThread(prefix + i);
+        this.startThread(prefix + i);
 }
 
 
 /**
  *
  */
-exports.newThread = function(id) {
-    return setTimeout(this.runThread(id), 0);
+exports.startThread = function(id) {
+    return spawn(runThread(id));
 }
 
 
 /**
  *
  */
-exports.runThread = function(id) 
+var runThread = function(id) {
     return function() {
-        var url = UrlQueue.getUrl(id);
-        if (!url)
-            return setTimeout(this.runThread(id), WAITASEC);
 
+        // wait for url:
+        var url = UrlQueue.getUrl(id);
+        while (!url) {
+            sleep(WAITNEWURL);
+            url = UrlQueue.getUrl(id);
+        }
+
+        // process url:
         try {
-            var page = htmlunit.getPage(url.url, id);
-            SourceList.processUrl(url, page);
+            SourceList.processUrl( url, htmlunit.getPage(url.url, id) );
+            UrlQueue.doneUrl(id);
         } catch (e) {
             url.pid = id;
             url.exception = e;
             UrlQueue.failedUrl(id, url);
             print(e);
         } finally {
-            setTimeout(this.runThread(id), 0);
+            // spawn a new thread with the same id [and exit]
+            spawn(runThread(id));
         }
     }
+}
+
+
+/**
+ *
+ */
+exports.getPage = function(url, id) {
+    var response = defer();
+
+    // get page
+    spawn(function () {
+        while (!UrlQueue.requestDomain(url.domain))
+            sleep(WAITDOMAIN);
+        response.resolve(htmlunit.getPage(url.url, id));
+        });
+
+    return response.promise;
 }
