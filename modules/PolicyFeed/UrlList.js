@@ -66,4 +66,21 @@ exports.addUrl = function(url, doc_id) {
 }
 
 
+/**
+ *
+ */
+exports.getUrl = function(url) {
+    var list = this.Item.query().equals("url", url.digest()).select();
+    if (list.length > 0)
+        return list[0];
+}
 
+
+
+/**
+ *
+ */
+exports.removeUrl = function(url) {
+    var item = this.getUrl(url);
+    return item.remove();
+}   
