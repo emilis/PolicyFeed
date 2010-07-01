@@ -31,7 +31,7 @@ var prepareDate = function(str) {
     if (!str.match(/^\d\d\d\d-\d\d-\d\d.\d\d:\d\d:\d\d/))
         throw Error("Unsupported date format: " + str);
 
-    d = new Date();
+    var d = new Date();
     d.setFullYear(str.substr(0,4));
     d.setMonth(parseInt(str.substr(5,2), 10) - 1);
     d.setDate(str.substr(8,2));
