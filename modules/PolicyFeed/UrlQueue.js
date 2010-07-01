@@ -56,8 +56,10 @@ var lockUrl = function(pid, url) {
     for each (var u in locks) {
         if (u === url) {
             count++;
-            if (count > 1)
+            if (count > 1) {
+                locks[pid] = undefined;
                 return false;
+            }
         }
     }
     return count == 1;
@@ -80,6 +82,7 @@ var requestDomain = function(domain) {
     else
         return false;
 }
+exports.requestDomain = requestDomain;
 
 
 /**
@@ -87,10 +90,10 @@ var requestDomain = function(domain) {
  */
 exports.initDomains = function(domainList) {
     domains = domainList;
-    for (var i in domains) {
-        if (!domains[i].delay)
-            domains[i].delay = DEFAULT_DELAY;
-        domains[i].last = 0;
+    for (var name in domains) {
+        if (!domains[name].delay)
+            domains[name].delay = DEFAULT_DELAY;
+        domains[name].last = 0;
     }
 }
 
@@ -99,7 +102,7 @@ exports.initDomains = function(domainList) {
 /**
  *
  */
-exports.getDomainFromUrl(url) {
+exports.getDomainFromUrl = function(url) {
     var start = url.indexOf("/") + 2;
     var end = url.indexOf("/", start) - start;
     if (end < 0)
@@ -136,7 +139,9 @@ exports.addUrl = function(url) {
 /**
  *
  */
-exports.sheduleUrl = function(url, time) {
+exports.scheduleUrl = function(url, time) {
+    if (!time)
+        time = new Date();
     schedule.push(this.makeUrl(url, time));
     schedule.sort(time_sort);
 }
@@ -186,4 +191,18 @@ exports.failedUrl = function(pid, url) {
  */
 exports.doneUrl = function(pid) {
     locks[pid] = undefined;
+}
+
+
+/**
+ *
+ */
+exports.getStatus = function() {
+    return {
+        fails: fails,
+        fifo: fifo,
+        schedule: schedule,
+        locks: locks,
+        domains: domains
+    };
 }
