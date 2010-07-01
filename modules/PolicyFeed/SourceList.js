@@ -55,6 +55,7 @@ exports.getDomains = function() {
         if (source.domains) {
             for (var domain in source.domains) {
                 domains[domain] = { delay: source.domains[domain] };
+            }
         } else {
             if (source.index_url instanceof Array) {
                 for each (var url in source.index_url) {
@@ -72,11 +73,11 @@ exports.getDomains = function() {
 /**
  *
  */
-exports.init = function(source_dir, source_prefix) {
+exports.init = function(options) {
+    options = options || {};
+    var {source_dir, source_prefix} = options;
 
     this.list = this.getSourceList(source_dir, source_prefix);
-
-    UrlQueue.initDomains(this.getDomains());
 
     for (var name in this.list) {
         this.list[name].name = name;
@@ -84,7 +85,9 @@ exports.init = function(source_dir, source_prefix) {
         this.list[name].UrlQueue = UrlQueue;
     }
 
-    BrowserController.init(UrlQueue);
+    UrlQueue.initDomains(this.getDomains());
+
+    BrowserController.init(this, UrlQueue);
     BrowserController.start();
 }
 
@@ -112,5 +115,5 @@ exports.checkUpdates = function() {
  *
  */
 exports.processUrl = function(url, page) {
-    return this.list[url.source][url.method](page);
+    return this.list[url.source][url.method](url, page);
 }
