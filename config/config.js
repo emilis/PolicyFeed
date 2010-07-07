@@ -76,8 +76,9 @@ exports.MODULES_DIR = WEB_DIR + "/modules";
 
 exports.gluestick = {
     interfaces: {
-        DB: "ctl/DB/MySQL",
-        DB_new: "ctl/DB/MySQL",
+        DB: "ctl/DB/Sqlite",
+        //DB_new: "ctl/DB/Sqlite",
+        DB_urls: "ctl/DB/Sqlite",
         Events: "ctl/Events",
         Site: "KaVeikiaValdzia/Site",
         WebMapper: "ctl/WebMapper"
@@ -87,12 +88,11 @@ exports.gluestick = {
 // --- Interface config: ---
 
 exports.DB = {
-    host: "localhost",
-    db_name: "policyfeed",
-    user: "root",
-    password: "",
-    useUnicode: "yes",
-    characterEncoding: "UTF-8"
+    filename: exports.DATA_DIR + "/default.sqlite3",
+};
+
+exports.DB_urls = {
+    filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
 };
 
 exports.Events = {
@@ -119,7 +119,10 @@ exports.WebMapper = {
 
 exports.PolicyFeed = {
     SourceList: {
-        source_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources"
+        source_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources",
+        source_prefix: "KaVeikiaValdzia/Sources"
+        //source_dir: exports.MODULES_DIR + "/test",
+        //source_prefix: "test/"
     }
 };
 
