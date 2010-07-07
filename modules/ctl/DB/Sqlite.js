@@ -72,13 +72,6 @@ exports.connect = function($filename)
 
     // get connection:
     var url = "jdbc:sqlite:" + $filename;
-    url += "&autoReconnect=true";
-
-    if (this.config.useUnicode)
-        url += "&useUnicode=" + this.config.useUnicode;
-    if (this.config.characterEncoding)
-        url += "&characterEncoding=" + this.config.characterEncoding;
-
 
     this.last_connection = driver_manager.getConnection(url);
     print(this.last_connection, url);
