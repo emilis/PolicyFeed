@@ -19,7 +19,7 @@
 
 module.shared = true;
 
-var ErrorManager = require("PolicyFeed/ErrorManager");
+var UrlErrors = require("PolicyFeed/UrlErrors");
 var JsonStorage = require("ctl/JsonStorage");
 
 
@@ -271,7 +271,7 @@ exports.getUrl = function(pid) {
  */
 exports.failedUrl = function(pid, url) {
     // todo: add error info to url:
-    ErrorManager.addError(url);
+    UrlErrors.addError(url);
     locks[pid] = undefined;
 }
 
