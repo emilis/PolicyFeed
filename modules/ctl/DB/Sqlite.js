@@ -148,8 +148,10 @@ exports.query = function(sql, conn)
                 var gc = stmt.getGeneratedKeys();
                 if (gc)
                     result = this.get_col(gc);
-            } catch (e) {
-                result = false;
+            } catch (e) { 
+                var rowid = this.get_one("select last_insert_rowid()");
+                if (rowid)
+                    result = rowid;
             }
         }
         else
@@ -193,8 +195,10 @@ exports.prepared_query = function(sql, params, conn)
                 var gc = pStmt.getGeneratedKeys();
                 if (gc)
                     result = this.get_col(gc);
-            } catch (e) {
-                result = false;
+            } catch (e) { 
+                var rowid = this.get_one("select last_insert_rowid()");
+                if (rowid)
+                    result = rowid;
             }
         }
         else
