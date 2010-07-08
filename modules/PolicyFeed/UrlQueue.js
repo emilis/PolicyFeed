@@ -270,8 +270,7 @@ exports.getUrl = function(pid) {
  *
  */
 exports.failedUrl = function(pid, url) {
-    // todo: add error info to url:
-    UrlErrors.addError(url);
+    UrlErrors.addUrl(url);
     locks[pid] = undefined;
 }
 

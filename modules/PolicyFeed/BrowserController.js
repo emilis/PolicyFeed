@@ -85,7 +85,7 @@ var runThread = function(id) {
             UrlQueue.doneUrl(id);
         } catch (e) {
             url.pid = id;
-            url.exception = e;
+            url.error = e;
             UrlQueue.failedUrl(id, url);
             print(e);
         } finally {

@@ -18,61 +18,166 @@
 */
 
 
+var scheduler = require("ringo/scheduler");
+var mail = require("ringo/mail");
+var db = loadObject("DB_urls");
 var JsonStorage = require("ctl/JsonStorage");
 
-var DB = "data/PolicyFeed/ErrorManager";
+var MSG_TO = "policyfeed-errors@mailinator.com";
 
 
 /**
- * Minutes to delay
+ * Minutes to delay subsequent error notifications.
  */
 var delays = [1,2,5,10,30,60];
 
 /**
  *
  */
-var errors = [];
+var current_delay = 0;
 
 
 /**
  *
  */
-exports.init = function() {
-    errors = JsonStorage.read(DB);
+var waiting = false;
+
+
+/**
+ *
+ */
+var last_error;
+
+
+/**
+ *
+ */
+var last_error_time;
+
+
+/**
+ *
+ */
+var last_notify_time;
+
+
+/**
+ *
+ */
+exports.addUrl = function(url) {
+    last_error = url;
+    last_error_time = new Date();
+
+    try {
+        if (!waiting) {
+            this.notify();
+            waiting = this.schedule(0);
+        }
+    } finally {
+        this.save(url);
+    }
 }
 
 
 /**
  *
  */
-exports.save = function() {
-    JsonStorage.write(DB, errors);
+exports.getUrlStats = function(time) {
+    if (time !== undefined)
+        var sql = "select count(*) as count, source, url from errors where time > ? group by url order by count";
+    else
+        var sql = "select count(*) as count, source, url from errors group by url order by count";
+
+    var rs = db.prepared_query(sql, [time]);
+    return db.get_all(rs);
 }
 
 
 /**
  *
  */
-exports.addError = function(e) {
-    errors.push(e);
-    this.save();
-    return e;
+exports.getCodeStats = function(time) {
+    if (time !== undefined)
+        var sql = "select count(*) as count, fline from errors where time > ? group by url order by count";
+    else
+        var sql = "select count(*) as count, fline from errors group by url order by count";
+
+    var rs = db.prepared_query(sql, [time]);
+    return db.get_all(rs);
 }
 
 
 /**
  *
  */
-exports.getErrorList = function() {
-    return errors;
+exports.showStats = function(time) {
+    var urls = this.getUrlStats(time);
+    var code = this.getCodeStats(time);
+    
+    var str = "NOT IMPLEMENTED YET"; // todo: implement :-)
+    return str;
 }
 
 
 /**
  *
  */
-exports.removeError = function(e) {
-    errors.remove(e);
-    this.save();
-    return e;
+exports.save = function(url) {
+    var sql = "insert into errors (time,src,fline,url,title) values(?,?,?,?,?)";
+    var rowid = db.prepared_query(sql, [
+        new Date(),
+        url.source,
+        url.error.fileName + ":" + url.error.lineNumber,
+        url.url,
+        url.title]);
+
+    if (rowid)
+        JsonStorage.write("/errors/urls/" + url.url.digest() + "/" + rowid, url);
 }
+
+
+/**
+ *
+ */
+exports.notify = function() {
+    this.sendMessage(this.showStats(last_notify_time));
+
+    last_notify_time = new Date();
+}
+
+
+/**
+ *
+ */
+exports.sendMessage = function(text) {
+    mail.send({to: MSG_TO, subject: "PolicyFeed/ErrorManager", text: text});
+}
+
+
+/**
+ *
+ */
+exports.schedule = function(delay) {
+    if (delay !== undefined) 
+        current_delay = delay;
+    else
+        current_delay++;
+
+    if (current_delay > delays.length)
+        current_delay = delays.length - 1;
+    else if (current_delay < 0)
+        return false;
+
+    return scheduler.setTimeout(function () {
+            var list = this.getUrlStats(last_notify_time);
+            if (list.length) {
+                notify();
+                waiting = schedule();
+            } else {
+                waiting = schedule(current_delay - 1);
+            }
+        }, delays[current_delay]*60*1000);
+}
+
+
+
