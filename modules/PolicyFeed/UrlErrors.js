@@ -109,31 +109,60 @@ exports.getCodeStats = function(time) {
 /**
  *
  */
-exports.showStats = function(time) {
-    var urls = this.getUrlStats(time);
-    var code = this.getCodeStats(time);
-
+function textTable(fields, list) {
     var sep = "\n+--------------------------------\n";
-   
-    var str = "PolicyFeed/UrlErrors report\n\n";
 
-    str += "URLs:";
-    str += sep + "| count | " + "source".pad(" ", 16, 0) + " | url" + sep;
-    str += urls.map(function (item) {
-            return "| " + item.count.toString().pad(" ", 5, -1)
-                + " | " + item.source.pad(" ", 16, -1)
-                + " | " + item.url;
-            }).join("\n");
-    str += sep + "\n";
+    var str = "";
+    var format;
+    
+    str += sep;
+    for (var field in fields) {
+        format = fields[field];
+        if (format)
+            str += "| " + field.toString().pad(format[0], format[1], format[2]) + " ";
+        else
+            str += "| " + field + " ";
+    }
+    str += sep;
 
-    str += "Code:";
-    str += sep + "| count | file:line" + sep;
-    str += code.map(function (item) {
-            return "| " + item.count.toString().pad(" ", 5, -1) + " | " + item.fline;
-            }).join("\n");
-    str += sep + "\n";
+    str += list.map(function (item) {
+            var item_str = "";
+            for (var field in fields) {
+                format = fields[field];
+                if (format)
+                    item_str += "| " + item[field].toString().pad(format[0], format[1], format[2]) + " ";
+                else
+                    item_str += "| " + item[field] + " ";
+            }
+            return item_str;
+        }).join("\n");
 
-    str += "Last url:\n\n";
+    str += sep;
+
+    return str;
+}
+
+/**
+ *
+ */
+exports.showStats = function(time) {
+    var str = "PolicyFeed/UrlErrors report\n";
+    
+    if (time) {
+        str += "\nURLs since " + time + ":";
+        str += textTable({count: [" ", 5, -1], source: [" ", 16, 0], url: false}, this.getUrlStats(time));
+    }
+    str += "\nURLs total:";
+    str += textTable({count: [" ", 5, -1], source: [" ", 16, 0], url: false}, this.getUrlStats());
+
+    if (time) {
+        str += "\nCode since " + time + ":";
+        str += textTable({count: [" ", 5, -1], fline: false}, this.getCodeStats(time));
+    }
+    str += "\nCode total:";
+    str += textTable({count: [" ", 5, -1], fline: false}, this.getCodeStats());
+
+    str += "\nLast url:\n\n";
     str += JSON.stringify(last_error);
 
     return str;
@@ -189,13 +218,19 @@ exports.schedule = function(delay) {
     else if (current_delay < 0)
         return false;
 
+    var that = this;
+
     return scheduler.setTimeout(function () {
-            var list = this.getUrlStats(last_notify_time);
-            if (list.length) {
-                notify();
-                waiting = schedule();
-            } else {
-                waiting = schedule(current_delay - 1);
+            try {
+                var list = that.getUrlStats(last_notify_time);
+                if (list.length) {
+                    that.notify();
+                    waiting = that.schedule();
+                } else {
+                    waiting = that.schedule(current_delay - 1);
+                }
+            } catch (e) {
+                print(new Date().toISOString(), "UrlErrors(scheduled):Error:", e);
             }
         }, delays[current_delay]*60*1000);
 }
