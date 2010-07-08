@@ -17,6 +17,7 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require("core/string");
 
 var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
@@ -84,11 +85,10 @@ exports.addUrl = function(url) {
  */
 exports.getUrlStats = function(time) {
     if (time !== undefined)
-        var sql = "select count(*) as count, source, url from errors where time > ? group by url order by count";
+        var rs = db.prepared_query("select count(*) as count, source, url from errors where time > ? group by url order by count", [time]);
     else
-        var sql = "select count(*) as count, source, url from errors group by url order by count";
+        var rs = db.query("select count(*) as count, source, url from errors group by url order by count");
 
-    var rs = db.prepared_query(sql, [time]);
     return db.get_all(rs);
 }
 
@@ -98,11 +98,10 @@ exports.getUrlStats = function(time) {
  */
 exports.getCodeStats = function(time) {
     if (time !== undefined)
-        var sql = "select count(*) as count, fline from errors where time > ? group by url order by count";
+        var rs = db.prepared_query("select count(*) as count, fline from errors where time > ? group by url order by count", [time]);
     else
-        var sql = "select count(*) as count, fline from errors group by url order by count";
+        var rs = db.query("select count(*) as count, fline from errors group by url order by count");
 
-    var rs = db.prepared_query(sql, [time]);
     return db.get_all(rs);
 }
 
@@ -113,8 +112,30 @@ exports.getCodeStats = function(time) {
 exports.showStats = function(time) {
     var urls = this.getUrlStats(time);
     var code = this.getCodeStats(time);
-    
-    var str = "NOT IMPLEMENTED YET"; // todo: implement :-)
+
+    var sep = "\n+--------------------------------\n";
+   
+    var str = "PolicyFeed/UrlErrors report\n\n";
+
+    str += "URLs:";
+    str += sep + "| count | " + "source".pad(" ", 16, 0) + " | url" + sep;
+    str += urls.map(function (item) {
+            return "| " + item.count.toString().pad(" ", 5, -1)
+                + " | " + item.source.pad(" ", 16, -1)
+                + " | " + item.url;
+            }).join("\n");
+    str += sep + "\n";
+
+    str += "Code:";
+    str += sep + "| count | file:line" + sep;
+    str += code.map(function (item) {
+            return "| " + item.count.toString().pad(" ", 5, -1) + " | " + item.fline;
+            }).join("\n");
+    str += sep + "\n";
+
+    str += "Last url:\n\n";
+    str += JSON.stringify(last_error);
+
     return str;
 }
 
@@ -123,7 +144,7 @@ exports.showStats = function(time) {
  *
  */
 exports.save = function(url) {
-    var sql = "insert into errors (time,src,fline,url,title) values(?,?,?,?,?)";
+    var sql = "insert into errors (time,source,fline,url,title) values(?,?,?,?,?)";
     var rowid = db.prepared_query(sql, [
         new Date(),
         url.source,
@@ -150,7 +171,7 @@ exports.notify = function() {
  *
  */
 exports.sendMessage = function(text) {
-    mail.send({to: MSG_TO, subject: "PolicyFeed/ErrorManager", text: text});
+    mail.send({to: MSG_TO, subject: "PolicyFeed/UrlErrors status", text: text});
 }
 
 
