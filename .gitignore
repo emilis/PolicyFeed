@@ -6,3 +6,6 @@ static/uploads/*
 lib/search/kvvanalyzer.jar
 lib/webapps/
 src/search/build
+
+# vim swap files
+*.swp
