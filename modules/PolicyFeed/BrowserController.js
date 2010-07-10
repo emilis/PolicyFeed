@@ -25,6 +25,7 @@ module.shared = true;
  */
 var WAITNEWURL = 2000;
 var WAITDOMAIN = 500;
+var WAITNETWORK = 60*1000;
 
 
 var sleep = java.lang.Thread.sleep;
@@ -71,12 +72,15 @@ exports.startThread = function(id) {
  */
 var runThread = function(id) {
     return function() {
-
-        // wait for url:
-        var url = UrlQueue.getUrl(id);
-        while (!url) {
-            sleep(WAITNEWURL);
-            url = UrlQueue.getUrl(id);
+        try {
+            // wait for url:
+            var url = UrlQueue.getUrl(id);
+            while (!url) {
+                sleep(WAITNEWURL);
+                url = UrlQueue.getUrl(id);
+            }
+        } catch (e) {
+            print("BrowserController.runThread:getUrl-Error", id, e, "\n", e.stack);
         }
 
         // process url:
@@ -84,10 +88,15 @@ var runThread = function(id) {
             SourceList.processUrl( url, htmlunit.getPage(url.url, id) );
             UrlQueue.doneUrl(id);
         } catch (e) {
-            url.pid = id;
-            url.error = e;
-            UrlQueue.failedUrl(id, url);
-            print(e);
+            if (e.message.indexOf("java.net.UnknownHostException:") == 0) {
+                // Add url back to queue and hope the network problems will resolve:
+                UrlQueue.rescheduleUrl(id, WAITNETWORK);
+            } else {
+                url.pid = id;
+                url.error = e;
+                UrlQueue.failedUrl(id, url);
+                print("BrowserController.runThread:processUrl-Error", id, e, "\n", e.stack);
+            }
         } finally {
             // spawn a new thread with the same id [and exit]
             spawn(runThread(id));
@@ -106,7 +115,13 @@ exports.getPage = function(url, id) {
     spawn(function () {
         while (!UrlQueue.requestDomain(url.domain))
             sleep(WAITDOMAIN);
-        response.resolve(htmlunit.getPage(url.url, id));
+
+        try {
+            var page = htmlunit.getPage(url.url, id);
+        } catch (e) {
+            //todo
+        }
+        response.resolve(page);
         });
 
     return response.promise;
