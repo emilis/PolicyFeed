@@ -87,6 +87,8 @@ exports.getWindow = function(name)
  */
 exports.getPage = function(url, window_name)
 {
+    loadObject("Events").create("htmlunit.getpage-debug", [window_name, url]);
+
     return web_client.getPage(
             this.getWindow(window_name),
             new WebRequestSettings(java.net.URL(url))
@@ -99,6 +101,8 @@ exports.getPage = function(url, window_name)
  */
 exports.getPageFromHtml = function(str, url, window_name, charset)
 {
+    loadObject("Events").create("htmlunit.getPageFromHtml-debug", [window_name, url, charset]);
+
     return web_client.loadWebResponseInto(
             this.getWebResponseFromString(str, charset, url),
             this.getWindow(window_name)
