@@ -43,21 +43,23 @@ var fifo = [];
 /**
  * Saves fifo queue to disk.
  */
-fifo.save = function() {
+Object.defineProperty(fifo, "save", {enumerable:false, value: function() {
     JsonStorage.write(STORAGE_PATH + "fifo", this);
-}
+}});
 
 /**
  * Loads fifo queue from disk.
  */
-fifo.load = function() {
+Object.defineProperty(fifo, "load", {enumerable:false, value: function() {
     this.length = 0;
     var stored = JsonStorage.read(STORAGE_PATH + "fifo");
     if (stored && stored.length) {
-        for each (var url in stored)
-            this.push(url);
+        for each (var url in stored) {
+            if (typeof(url) == "object")
+                this.push(url);
+        }
     }
-}
+}});
 
 //----------------------------------------------------------------------------
 
@@ -69,22 +71,24 @@ var schedule = [];
 /**
  * Saves schedule queue to disk.
  */
-schedule.save = function() {
+Object.defineProperty(schedule, "save", {enumerable:false, value: function() {
     JsonStorage.write(STORAGE_PATH + "schedule", this);
-}
+}});
 
 /**
  * Loads schedule queue from disk.
  */
-schedule.load = function() {
+Object.defineProperty(schedule, "load", {enumerable:false, value: function() {
     this.length = 0;
     var stored = JsonStorage.read(STORAGE_PATH + "schedule");
     if (stored && stored.length) {
-        for each (var url in stored)
-            this.push(url);
+        for each (var url in stored) {
+            if (typeof(url) == "object")
+                this.push(url);
+        }
     }
     this.sort(time_sort);
-}
+}});
 
 /**
  * Function for sorting the schedule queue.
@@ -112,11 +116,23 @@ var lockUrl = function(pid, url) {
             count++;
             if (count > 1) {
                 locks[pid] = undefined;
+                //saveLocks();
                 return false;
             }
         }
     }
+
+    //saveLocks();
     return count == 1;
+}
+
+
+/**
+ * Removes a locked url for a given pid.
+ */
+var unlockPid = function(pid) {
+    locks[pid] = undefined;
+    //saveLocks();
 }
 
 /**
@@ -157,6 +173,8 @@ var initDomains = function(domainList) {
  */
 exports.requestDomain = function requestDomain(domain) {
     var d = domains[domain];
+    if (!d)
+        throw Error("Invalid domain requested: " + uneval(domain));
     var t = new Date().getTime();
     if (t > (d.last + d.delay)) {
         d.last = t;
@@ -237,14 +255,27 @@ exports.scheduleUrl = function(url, time) {
 /**
  *
  */
-exports.getUrl = function(pid) {
+exports.isUrlScheduled = function(the_url, time) {
+    for each (var url in schedule) {
+        if (url.url == the_url) {
+            if (time !== undefined || time > url.time)
+                return true;
+        }
+    }
+    return false;
+}
 
+
+/**
+ *
+ */
+exports.getUrl = function(pid) {
     // check schedule:
     var t = new Date();
     for each (var url in schedule) {
         if (url.time > t)
             break; // exit loop when we reach urls in the future.
-        else if (requestDomain(url.domain) && lockUrl(pid, url)) {
+        else if (this.requestDomain(url.domain) && lockUrl(pid, url)) {
             schedule.remove(url);
             schedule.save();
             return url;
@@ -254,7 +285,7 @@ exports.getUrl = function(pid) {
     
     // check fifo:
     for each (var url in fifo) {
-        if (requestDomain(url.domain) && lockUrl(pid, url)) {
+        if (this.requestDomain(url.domain) && lockUrl(pid, url)) {
             fifo.remove(url);
             fifo.save();
             return url;
@@ -271,7 +302,16 @@ exports.getUrl = function(pid) {
  */
 exports.failedUrl = function(pid, url) {
     UrlErrors.addUrl(url);
-    locks[pid] = undefined;
+    unlockPid(pid);
+}
+
+
+/**
+ * Re-schedules a locked URL for later.
+ */
+exports.rescheduleUrl = function(pid, after) {
+    this.scheduleUrl(locks[pid], new Date().getTime() + after);
+    unlockPid(pid);
 }
 
 
@@ -279,7 +319,7 @@ exports.failedUrl = function(pid, url) {
  *
  */
 exports.doneUrl = function(pid) {
-    locks[pid] = undefined;
+    unlockPid(pid);
 }
 
 
