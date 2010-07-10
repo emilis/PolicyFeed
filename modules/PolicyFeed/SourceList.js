@@ -85,7 +85,7 @@ exports.init = function(options) {
         this.list[name].UrlQueue = UrlQueue;
     }
 
-    UrlQueue.init({ domainsList: this.getDomains() });
+    UrlQueue.init({ domainList: this.getDomains() });
 
     BrowserController.init(this, UrlQueue);
     BrowserController.start();
@@ -101,11 +101,13 @@ exports.checkUpdates = function() {
             urls = [urls];
 
         for each (var url in urls) {
-            UrlQueue.scheduleUrl({
-                url: url,
-                source: name,
-                method: "checkIndex"
-                }, 0);
+            if (!UrlQueue.isUrlScheduled(url)) {
+                UrlQueue.scheduleUrl({
+                    url: url,
+                    source: name,
+                    method: "checkIndex"
+                    }, 0);
+            }
         }
     }
 }
