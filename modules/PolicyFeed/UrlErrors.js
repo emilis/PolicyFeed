@@ -107,7 +107,7 @@ exports.getCodeStats = function(time) {
 
 
 /**
- *
+ * Returns a string with a 2d array formatted into a text table.
  */
 function textTable(fields, list) {
     var sep = "\n+--------------------------------\n";
@@ -163,7 +163,13 @@ exports.showStats = function(time) {
     str += textTable({count: [" ", 5, -1], fline: false}, this.getCodeStats());
 
     str += "\nLast url:\n\n";
-    str += JSON.stringify(last_error);
+    try {
+        str += JSON.stringify(last_error);
+    } catch (e) {
+        try {
+            str += uneval(last_error);
+        } catch (e) {} 
+    }
 
     return str;
 }
