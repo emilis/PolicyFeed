@@ -115,14 +115,13 @@ var lockUrl = function(pid, url) {
         if (u === url) {
             count++;
             if (count > 1) {
-                locks[pid] = undefined;
-                //saveLocks();
+                unlockPid(pid);
                 return false;
             }
         }
     }
 
-    //saveLocks();
+    saveLocks();
     return count == 1;
 }
 
@@ -132,7 +131,7 @@ var lockUrl = function(pid, url) {
  */
 var unlockPid = function(pid) {
     locks[pid] = undefined;
-    //saveLocks();
+    saveLocks();
 }
 
 /**
@@ -147,6 +146,8 @@ var saveLocks = function() {
  */
 var loadLocks = function() {
     locks = JsonStorage.read(STORAGE_PATH + "locks") || {};
+    for (var pid in locks)
+        exports.rescheduleUrl(pid, 0);
 }
 
 //----------------------------------------------------------------------------
