@@ -146,8 +146,10 @@ var saveLocks = function() {
  */
 var loadLocks = function() {
     locks = JsonStorage.read(STORAGE_PATH + "locks") || {};
-    for (var pid in locks)
-        exports.rescheduleUrl(pid, 0);
+    for (var pid in locks) {
+        if (pid != "_id")
+            exports.rescheduleUrl(pid, 0);
+    }
 }
 
 //----------------------------------------------------------------------------
