@@ -146,10 +146,9 @@ var saveLocks = function() {
  */
 var loadLocks = function() {
     locks = JsonStorage.read(STORAGE_PATH + "locks") || {};
-    for (var pid in locks) {
-        if (pid != "_id")
-            exports.rescheduleUrl(pid, 0);
-    }
+    delete locks._id; // this would cause errors if left intact.
+    for (var pid in locks)
+        exports.rescheduleUrl(pid, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -199,9 +198,9 @@ exports.init = function(options) {
 
     initDomains(domainList);
 
-    loadLocks();
     schedule.load();
     fifo.load(); 
+    loadLocks();
 }
 
 /**
@@ -261,7 +260,7 @@ exports.scheduleUrl = function(url, time) {
 exports.isUrlScheduled = function(the_url, time) {
     for each (var url in schedule) {
         if (url.url == the_url) {
-            if (time !== undefined || time > url.time)
+            if ((time === undefined) || (time > url.time))
                 return true;
         }
     }
