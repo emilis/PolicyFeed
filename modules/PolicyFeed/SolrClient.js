@@ -21,8 +21,8 @@ var update_url = "http://localhost:8081/solr/update";
 var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=published+desc&fl=id,published,source,title&wt=json&q=';
 
 
-import("ringo/httpclient", "httpclient");
-import("ctl/JsonStorage", "jstorage");
+var httpclient = require("ringo/httpclient");
+var jstorage = require("ctl/JsonStorage");
 
 /**
  *
@@ -69,12 +69,14 @@ exports.itemToXml = function(item) {
  *
  */
 exports.indexItem = function(item) {
+    print("SolrClient.indexItem", item._id);
     try {
         var req = {
             method: "POST",
             url: update_url,
             contentType: "text/xml; charset=utf-8",
-            data: '<add>' + this.itemToXml(item) + "</add>"
+            data: '<add>' + this.itemToXml(item) + "</add>",
+            error: function(e) { print(e, e.stack); throw e; }
             };
     } catch (e) {
         throw Error("Failed to create request for item " + item._id + ". Error: " + e.message);   
@@ -124,9 +126,20 @@ exports.reindex = function(path) {
  *
  */
 exports.onItemChange = function(action, _id, item) {
-    if (_id.indexOf("/docs/")) {
-        if (action == "after-write")
-            this.indexItem(item);
+    print("SolrClient.onItemChange", action, _id);
+    if (_id.indexOf("/docs/") > -1) {
+        try {
+            switch (action) {
+                case "after-write":
+                    return exports.indexItem(item);
+                break;
+                case "after-remove":
+                    return exports.removeItem(_id);
+                break;
+            }
+        } catch(e) {
+            print(e, e.stack);
+        }
     }
 }
 
