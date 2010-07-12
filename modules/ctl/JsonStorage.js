@@ -38,7 +38,6 @@ module.shared = true;
 
 import("config");
 import("fs");
-import("ringo/scheduler");
 
 /**
  * Path where document data is stored.
@@ -317,7 +316,7 @@ exports.runTriggers = function(action, id, doc) {
     for each (var trigger in triggers[action]) {
        if (id.match(trigger[0])) {
            // todo: check if this closure does not produce weird errors.
-           scheduler.setTimeout(function () { trigger[1](action, id, doc); }, 0);
+           spawn(function () { trigger[1](action, id, doc); });
        }
     }
 }
