@@ -98,7 +98,7 @@ exports.DB_urls = {
 exports.Events = {
     callbacks: [
         [ /./,                                  "ctl/Events/Logger:logEvent" ],
-        [ /(error|warning)/,                    "ctl/Events/ShellWriter:printEvent" ]
+        [ /(debug|error|warning)/,                    "ctl/Events/ShellWriter:printEvent" ]
     ]
 };
 
@@ -120,9 +120,7 @@ exports.WebMapper = {
 exports.PolicyFeed = {
     SourceList: {
         source_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources",
-        source_prefix: "KaVeikiaValdzia/Sources"
-        //source_dir: exports.MODULES_DIR + "/test",
-        //source_prefix: "test/"
+        source_prefix: "KaVeikiaValdzia/Sources/"
     }
 };
 
