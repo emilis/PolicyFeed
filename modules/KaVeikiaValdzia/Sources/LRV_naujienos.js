@@ -20,6 +20,13 @@
 require("core/date");
 
 exports.index_url = "http://www.lrv.lt/rss/rss.php?cats=1-9-3-2-7-6-8-10-11-12-13-14-15-16-17-18-19-20-21-22-23&lang=lt";
+
+var doc_template = {
+    type: "pranesimas",
+    org: "Vyriausybė",
+    organization: "Lietuvos Respublikos Vyriausybė"
+};
+
 /*
 exports.domains = {
     "lrv.lt": 5*60*1000
@@ -92,14 +99,13 @@ exports.parseIndexItem = function(item) {
         summary:    item.getFirstByXPath("description").asText()
         };
 
-    result.source = this.name;
-
     result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
     result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
 
-    result.type = "pranesimas";
-    result.organization = "Vyriausybė";
-    
+    result.source = this.name;
+    for (var k in doc_template)
+        result[k] = doc_template[k];
+
     return result;
 }
 
