@@ -20,6 +20,9 @@
 require("core/date");
 
 
+exports.disabled = true;
+
+
 exports.extendObject("PolicyFeed/Source");
 
 exports.name = "LRS_teises_aktai";

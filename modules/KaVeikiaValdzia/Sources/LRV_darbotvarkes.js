@@ -19,6 +19,8 @@
 
 require("core/date");
 
+exports.disabled = true;
+
 // Extends:
 exports.extendObject("PolicyFeed/Source");
 

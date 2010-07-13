@@ -17,6 +17,8 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+exports.disabled = true;
+
 // Extends:
 exports.extendObject("PolicyFeed/Source");
 
