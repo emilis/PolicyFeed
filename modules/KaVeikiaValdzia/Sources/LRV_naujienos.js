@@ -18,12 +18,13 @@
 */
 
 // --- Requirements: ---
-require("core/date");
-var UrlList = require("PolicyFeed/UrlList");
-var UrlQueue = require("PolicyFeed/UrlQueue");
 var JsonStorage = require("ctl/JsonStorage");
-var Sequence = require("ctl/SimpleSequence");
 var htmlunit = require("htmlunit");
+
+// --- Extend PolicyFeed/Source: ---
+var Source = require("PolicyFeed/Source");
+for (var key in Source)
+    exports[key] = Source[key];
 
 
 // --- Source config: ---
@@ -35,150 +36,13 @@ exports.doc_template = {
     organization: "Lietuvos Respublikos Vyriausybė"
 };
 
-// --- API: ---
+
+// --- Custom methods: ---
 
 /**
  *
  */
-exports.checkFeed = function(url, page) {
-    this.validateFeedPage(page);
-
-    this.extractFeedItems(page).map(this.parseFeedItem()).filter(this.removeExisting).map(this.addPageUrls);
-
-    // schedule next check:
-    UrlQueue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
-}
-
-/**
- *
- */
-exports.parsePage = function(url, page) {
-    return this.updateDoc(this.updateOriginal(url, page), url, page);
-}
-
-
-
-// --- Other methods: ---
-
-/**
- *
- */
-exports.error = function(method, msg) {
-    return Error(this.name + "." + method + " Error: " + msg);
-}
-
-
-/**
- *
- */
-exports.validateFeedPage = function(page) {
-    //todo: add checks to ensure that the feed is a valid RSS file.
-
-    if (!page.getByXPath)
-        throw this.error("validateFeedPage", page);
-}
-
-
-/**
- *
- */
-exports.extractFeedItems = function (page) {
-    var items = page.getByXPath("/rss/channel/item").toArray();
-    if (items.length < 1)
-        throw this.error("extractFeedItems", "No RSS items found in feed.");
-
-    return items;
-}
-
-
-/**
- *
- */
-exports.parseFeedItem = function() {
-    var name = this.name;
-    var doc_template = this.doc_template;
-    return function (item) {
-        var result = {
-            url:        item.getFirstByXPath("link").asText(),
-            title:      item.getFirstByXPath("title").asText(),
-            published:  item.getFirstByXPath("pubDate").asText(),
-            summary:    item.getFirstByXPath("description").asText()
-            };
-
-        result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
-        result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
-
-        result.source = name;
-        for (var k in doc_template)
-            result[k] = doc_template[k];
-
-        return result;
-    }
-}
-
-
-/**
- *
- */
-exports.removeExisting = function(item) {
-    if (UrlList.exists(item.url))
-        return false;
-    else
-        return true;
-}
-
-
-/**
- *
- */
-exports.addPageUrls = function(item) {
-    // create originals:
-    var id = "/originals/" + item.published.substr(0, 10).replace(/-/g, "/") + "/";
-    id += Sequence.next();
-
-    print("adding page:", id, item.published, item.url, item.title);
-
-    JsonStorage.write(id, item);
-    UrlList.addUrl(item.url, id);
-
-    UrlQueue.addUrl({
-        url: item.url,
-        source: this.name,
-        method: "parsePage",
-        original_id: id
-        });
-}
-
-
-/**
- *
- */
-exports.updateOriginal = function(url, page) {
-    var original = JsonStorage.read(url.original_id);
-
-    var response = page.getWebResponse();
-    original.content_type = response.getContentType();
-
-    // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
-    if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage)
-    {
-        htmlunit.setPageCharset(page, "UTF-8");
-        original.html = page.asXml();
-    }
-    else
-        throw this.error("updateOriginal", url.original_id + " | " + url.url);
-
-    // save original:
-    JsonStorage.write(original._id, original);
-
-    return original;
-}
-
-
-/**
- *
- */
-exports.updateDoc = function(original, url, page) {
+exports.updateDoc = function(original, page) {
     // create doc from original:
     var doc = original;
     doc._id = doc._id.replace("originals", "docs");

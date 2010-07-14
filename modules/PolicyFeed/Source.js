@@ -17,119 +17,123 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Libraries used:
-import("core/date");
-import("config");
+var UrlQueue = require("PolicyFeed/UrlQueue");
+var UrlList = require("PolicyFeed/UrlList");
 
-exports.htmlunit = loadObject("htmlunit");
+var JsonStorage = require("ctl/JsonStorage");
+var Sequence = require("ctl/SimpleSequence");
 
-
-/*
- * These properties should be defined in child objects:
- */
-exports.name = "noname";
-exports.index_url = "http://www3.lrs.lt/pls/inter/lrs_rss.pranesimai_spaudai";
-exports.doc_template = {};
-
-
-//--- GENERAL FUNCTIONS ------------------------------------------------------
+var htmlunit = require("htmlunit");
 
 /**
  *
  */
-exports.triggerEvent = function(name, data)
-{
-    return loadObject("Events").create(this.name + ":" + name, data);
+exports.checkFeed = function(url, page) {
+    this.validateFeedPage(page);
+
+    this.extractFeedItems(page).map(this.parseFeedItem()).filter(this.removeExisting).map(this.addPageUrls);
+
+    // schedule next check:
+    UrlQueue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
+}
+
+/**
+ *
+ */
+exports.parsePage = function(url, page) {
+    return this.updateDoc(this.updateOriginal(url, page), page);
+}
+
+
+
+// --- Other methods: ---
+
+/**
+ *
+ */
+exports.error = function(method, msg) {
+    return Error(this.name + "." + method + " Error: " + msg);
 }
 
 
 /**
  *
  */
-exports.error = function(name, data)
-{
-    this.triggerEvent(name + "-error", data);
-    return false;
+exports.validateFeedPage = function(page) {
+    //todo: add checks to ensure that the feed is a valid RSS file.
+
+    if (!page.getByXPath)
+        throw this.error("validateFeedPage", page);
 }
 
 
 /**
  *
  */
-exports.getNewOriginal = function()
-{
-    var doc = newObject("PolicyFeed/OriginalDocument");
-    doc.updateFields(this.doc_template);
-    return doc;
-}
-
-
-//--- CRAWLING FUNCTIONS -----------------------------------------------------
-
-/**
- * 
- */
-exports.downloadNewDocuments = function()
-{
-    var items = this.removeExistingItems(
-                    this.parseIndex(
-                        this.htmlunit.getPage(this.index_url, this.name)
-                        ));
-
-    var docs = [];
-    for (var i=0; i<items.length; i++)
-    {
-        docs.push(this.downloadPage(items[i]));
-    }
-    return docs;
-}
-
-
-/**
- * Extracts URLs from index page. By default parses index page as a RSS file.
- */
-exports.parseIndex = function(index)
-{
-    //todo: add checks to ensure that the index is a valid RSS file.
-
-    if (!index.getByXPath)
-        return this.error("parseIndex", index); 
-    
-    var items = index.getByXPath("/rss/channel/item").toArray();
+exports.extractFeedItems = function (page) {
+    var items = page.getByXPath("/rss/channel/item").toArray();
     if (items.length < 1)
-        return this.error("parseIndex", "No RSS items found in index.");
+        throw this.error("extractFeedItems", "No RSS items found in feed.");
 
-    return items.map(this.parseIndexItem);
+    return items;
 }
 
 
 /**
  *
  */
-exports.parseIndexItem = function(item)
-{
-    return {
-        url:        item.getFirstByXPath("link").asText(),
-        title:      item.getFirstByXPath("title").asText(),
-        published:  item.getFirstByXPath("pubDate").asText().replace(/ 00:00/, new Date().format(" HH:mm")),
-        summary:    item.getFirstByXPath("description").asText()
-        };
+exports.parseFeedItem = function() {
+    var name = this.name;
+    var doc_template = this.doc_template;
+    return function (item) {
+        var result = {
+            url:        item.getFirstByXPath("link").asText(),
+            title:      item.getFirstByXPath("title").asText(),
+            published:  item.getFirstByXPath("pubDate").asText(),
+            summary:    item.getFirstByXPath("description").asText()
+            };
+
+        result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
+        result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
+
+        result.source = name;
+        for (var k in doc_template)
+            result[k] = doc_template[k];
+
+        return result;
+    }
 }
 
 
 /**
  *
  */
-exports.removeExistingItems = function(items)
-{
-    var doc = this.getNewOriginal();
-    var source_name = this.name;
-    if (!items)
-        return items;
+exports.removeExisting = function(item) {
+    if (UrlList.exists(item.url))
+        return false;
     else
-        return items.filter(function (item)
-        {
-            return !doc.searchBySourceAndUrl(source_name, item.url);
+        return true;
+}
+
+
+/**
+ *
+ */
+exports.addPageUrls = function(item) {
+    // create originals:
+    var id = "/originals/" + item.published.substr(0, 10).replace(/-/g, "/") + "/";
+    id += Sequence.next();
+
+    print("adding page:", id, item.published, item.url, item.title);
+
+    JsonStorage.write(id, item);
+    UrlList.addUrl(item.url, id);
+
+    UrlQueue.addUrl({
+        url: item.url,
+        source: this.name,
+        method: "parsePage",
+        original_id: id
         });
 }
 
@@ -137,49 +141,59 @@ exports.removeExistingItems = function(items)
 /**
  *
  */
-exports.downloadPage = function(item)
-{
-    this.triggerEvent("downloadPage-debug", item.url);
+exports.updateOriginal = function(url, page) {
+    var original = JsonStorage.read(url.original_id);
 
-    var doc = this.getNewOriginal();
-    doc.updateFields(item);
-
-    var page = this.htmlunit.getPage(item.url, this.name);
     var response = page.getWebResponse();
-    var content_type = response.getContentType();
+    original.content_type = response.getContentType();
 
-    // DOC files, etc.:
-    if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage)
-    {
-        var stream = new (require("io").Stream)(response.getContentAsStream());
-        doc.setFieldsFromStream(stream, content_type);
-    }
     // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
-    else if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage)
+    if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage)
     {
-        this.htmlunit.setPageCharset(page, "UTF-8");
-        doc.html = page.asXml();
-        doc.meta.content_type = content_type;
+        htmlunit.setPageCharset(page, "UTF-8");
+        original.html = page.asXml();
     }
     else
-    {
-        return this.error("downloadPage", ["Unsupported page type for", item]);
-    }
+        throw this.error("updateOriginal", url.original_id + " | " + url.url);
 
-    doc.save();
+    // save original:
+    JsonStorage.write(original._id, original);
 
-    return doc;
+    return original;
 }
-
-
-//--- CONVERTER METHODS ------------------------------------------------------
 
 
 /**
  *
  */
-exports.extractDocumentData = function(doc)
-{
-    return {};
-}
+exports.updateDoc = function(original, page) {
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
 
+    // Warning: No updates to original after this point or you'll regret it.
+
+    htmlunit.fixPageUrls(page);
+
+    // title:
+    if (!doc.title)
+        doc.title = page.getFirstByXPath('//div[@class="title"]/dl/dt').asText();
+
+    // html:
+    var news_div = page.getFirstByXPath('//div[@class="news-view"]');
+
+    var extra_div = false;
+    if (extra_div = news_div.getFirstByXPath('./div[@class="title"]'))
+        extra_div.remove();
+    if (extra_div = page.getElementById("sharesb"))
+        extra_div.remove();
+    if ((extra_div = news_div.getLastChild()) && extra_div.getTagName && (extra_div.getTagName() == "div"))
+        extra_div.remove();
+
+    doc.html = news_div.asXml();
+
+    // save doc:
+    JsonStorage.write(doc._id, doc);
+
+    return doc;
+}
