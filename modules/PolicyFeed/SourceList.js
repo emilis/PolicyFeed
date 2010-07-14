@@ -57,12 +57,12 @@ exports.getDomains = function() {
                 domains[domain] = { delay: source.domains[domain] };
             }
         } else {
-            if (source.index_url instanceof Array) {
-                for each (var url in source.index_url) {
+            if (source.feed_url instanceof Array) {
+                for each (var url in source.feed_url) {
                     domains[UrlQueue.getDomainFromUrl(url)] = {};
                 }
             } else {
-                domains[UrlQueue.getDomainFromUrl(source.index_url)] = {};
+                domains[UrlQueue.getDomainFromUrl(source.feed_url)] = {};
             }
         }
     }
@@ -96,7 +96,7 @@ exports.init = function(options) {
  */
 exports.checkUpdates = function() {
     for (var name in this.list) {
-        var urls = this.list[name].index_url;
+        var urls = this.list[name].feed_url;
         if (!(urls instanceof Array))
             urls = [urls];
 
@@ -105,7 +105,7 @@ exports.checkUpdates = function() {
                 UrlQueue.scheduleUrl({
                     url: url,
                     source: name,
-                    method: "checkIndex"
+                    method: "checkFeed"
                     }, 0);
             }
         }
