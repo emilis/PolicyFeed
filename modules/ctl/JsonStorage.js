@@ -143,12 +143,19 @@ exports.write = function(id, data) {
     id = this.fixId(id);
 
     this.runTriggers("before-write", id, data);
+        
+    try {
+        var text = JSON.stringify(data);
+    } catch (e) {
+        throw Error("ctl/JsonStorage: Unable to convert data to JSON for document " + id);
+    }
 
     var file_name = this.getFileName(id);
     fs.makeTree(fs.directory(file_name));
-    fs.write(file_name, JSON.stringify(data));
+    fs.write(file_name, text);
 
     this.runTriggers("after-write", id, data);
+
     return true;
 }
 
