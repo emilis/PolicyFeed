@@ -31,7 +31,7 @@ var htmlunit = require("htmlunit");
 exports.checkFeed = function(url, page) {
     this.validateFeedPage(page);
 
-    this.extractFeedItems(page).map(this.parseFeedItem()).filter(this.removeExisting).map(this.addPageUrls);
+    this.extractFeedItems(page).map(this.parseFeedItem()).filter(this.removeExisting).map(this.addPageUrls());
 
     // schedule next check:
     UrlQueue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
@@ -74,8 +74,8 @@ exports.extractFeedItems = function (page) {
     var items = page.getByXPath("/rss/channel/item").toArray();
     if (items.length < 1)
         throw this.error("extractFeedItems", "No RSS items found in feed.");
-
-    return items;
+    else
+        return items;
 }
 
 
@@ -119,22 +119,26 @@ exports.removeExisting = function(item) {
 /**
  *
  */
-exports.addPageUrls = function(item) {
-    // create originals:
-    var id = "/originals/" + item.published.substr(0, 10).replace(/-/g, "/") + "/";
-    id += Sequence.next();
+exports.addPageUrls = function() {
+    var name = this.name;
 
-    print("adding page:", id, item.published, item.url, item.title);
+    return function (item) {
+        // create originals:
+        var id = "/originals/" + item.published.substr(0, 10).replace(/-/g, "/") + "/";
+        id += Sequence.next();
 
-    JsonStorage.write(id, item);
-    UrlList.addUrl(item.url, id);
+        print("adding page:", id, item.published, item.url, item.title);
 
-    UrlQueue.addUrl({
-        url: item.url,
-        source: this.name,
-        method: "parsePage",
-        original_id: id
-        });
+        JsonStorage.write(id, item);
+        UrlList.addUrl(item.url, id);
+
+        UrlQueue.addUrl({
+            url: item.url,
+            source: name,
+            method: "parsePage",
+            original_id: id
+            });
+    }
 }
 
 
@@ -147,9 +151,15 @@ exports.updateOriginal = function(url, page) {
     var response = page.getWebResponse();
     original.content_type = response.getContentType();
 
+    // DOC files, etc.:
+    if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage) {
+        var stream = new (require("io").Stream)(response.getContentAsStream());
+        var fields = this.getFieldsFromStream(stream, content_type);
+        for (var key in fields)
+            original[key] = fields[key];
+    }
     // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
-    if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage)
-    {
+    if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage) {
         htmlunit.setPageCharset(page, "UTF-8");
         original.html = page.asXml();
     }
@@ -160,6 +170,56 @@ exports.updateOriginal = function(url, page) {
     JsonStorage.write(original._id, original);
 
     return original;
+}
+
+
+/**
+ *
+ */
+exports.getFieldsFromStream = function(stream, content_type) {
+    var fields = {};
+    fields.content_type = content_type;
+
+    // requirements to save file:
+    import("fs");
+    import("core/date");
+    import("config");
+
+    var data_dir = require("config").DATA_DIR + "/temp";
+    var id = Math.random();
+
+    // save file:
+    var dir_name = data_dir + (new Date().format("/yyyy/MM/dd"));
+    if (!fs.exists(dir_name))
+        fs.makeTree(dir_name);
+    var file_name = dir_name + "/" + id + ".orig";
+    fs.write(file_name, stream.read());
+
+    fields.original_file = file_name;
+
+    // Convert file to HTML and read the result if possible:
+    switch (content_type) {
+        case "application/msword":
+            // Convert DOC to HTML:
+            var proc = java.lang.Runtime.getRuntime().exec(["abiword", "--to", "html", file_name]);
+            proc.waitFor();
+
+            // Set html field:
+            var html_file_name = dir_name + "/" + id + ".html";
+            fields.html = fs.read(html_file_name);
+            fields.converted_by = "abiword";
+
+            // Remove converted HTML to save disk space:
+            //fs.remove(html_file_name);
+            loadObject("Events").create("PolicyFeed/Source:setFieldsFromStream-debug", ["html_file_name", html_file_name]);
+            break;
+
+        default:
+            fields.html = "";
+    }
+
+    return fields;
+
 }
 
 
