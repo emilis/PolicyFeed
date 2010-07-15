@@ -17,16 +17,18 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require("core/date");
+// --- Requirements: ---
+var htmlunit = require("htmlunit");
+var JsonStorage = require("ctl/JsonStorage");
 
-exports.disabled = true;
+// --- Extend PolicyFeed/Source: ---
 
-// Extends:
-exports.extendObject("PolicyFeed/Source");
+var Source = require("PolicyFeed/Source");
+for (var key in Source)
+    exports[key] = Source[key];
 
-exports.name = "LRV_darbotvarkes";
-exports.short_name = "LRV-DB";
-exports.index_url = [
+// --- Source config: ---
+exports.feed_url = [
     // reverse order (not to miss if something changes while scrapping):
     "http://www.lrv.lt/lt/veikla/darbotvarkes/?p=5",
     "http://www.lrv.lt/lt/veikla/darbotvarkes/?p=4",
@@ -36,104 +38,89 @@ exports.index_url = [
     ];
 
 exports.doc_template = {
-    source: exports.name,
-    short_source: exports.short_name
-    };
+    type: "darbotvarke",
+    org: "Vyriausybė",
+    organization: "Lietuvos Respublikos Vyriausybė"
+};
 
-//------------------------------------------------------------------------
 
-/**
- * 
- */
-exports.downloadNewDocuments = function()
-{
-    var items = [];
-    for (var i=0; i<this.index_url.length; i++)
-    {
-        items = items.concat(
-                this.removeExistingItems(
-                    this.parseIndex(
-                        this.htmlunit.getPage( this.index_url[i], this.name ))));
-    }
-
-    var docs = [];
-    for (var i=0; i<items.length; i++)
-    {
-        docs.push(this.downloadPage(items[i]));
-    }
-    return docs;
-}
-
+// --- Custom methods: ---
 
 /**
  *
  */
-exports.parseIndex = function(index)
+exports.extractFeedItems = function(page)
 {
-    if (!index.getByXPath)
-        return this.error("parseIndex", index); 
-    
-    var items = index.getByXPath('//div[@class="agenda-list"]').toArray();
+    var items = page.getByXPath('//div[@class="agenda-list"]').toArray();
     if (items.length < 1)
-        return this.error("parseIndex", "No items found in index.");
-
-    return items.map(this.parseIndexItem);
+        return this.error("extractFeedItems", "No items found in feed.");
+    else
+        return items;
 }
 
 
-exports.parseIndexItem = function(item)
+exports.parseFeedItem = function()
 {
-    var i_link = './dl[2]/dt/a';
-    var i_date = './dl[1]';
-    var i_doc  = './dl[2]//dd[@class="doc"]/a';
+    var name = this.name;
+    var doc_template = this.doc_template;
 
-    i_link = item.getFirstByXPath(i_link);
-    i_date = item.getFirstByXPath(i_date);
-    i_doc  = item.getFirstByXPath(i_doc);
+    return function(item) {
+        var i_link = './dl[2]/dt/a';
+        var i_date = './dl[1]';
+        var i_doc  = './dl[2]//dd[@class="doc"]/a';
 
-    if (i_doc)
-        var url = i_doc.getHrefAttribute();
-    else
-        var url = i_link.getHrefAttribute();
+        i_link = item.getFirstByXPath(i_link);
+        i_date = item.getFirstByXPath(i_date);
+        i_doc  = item.getFirstByXPath(i_doc);
 
-    if (url[0] == '/')
-        url = "http://www.lrv.lt" + url;
-    //todo: check for non-root urls.
+        if (i_doc)
+            var url = i_doc.getHrefAttribute();
+        else
+            var url = i_link.getHrefAttribute();
 
-    var year = i_date.getFirstByXPath('./dd[1]').asText();
-    var month = i_date.getFirstByXPath('./dd[2]').asText();
-    var day = i_date.getFirstByXPath('./dd[3]').asText();
-    var wday = i_date.getFirstByXPath('./dd[4]').asText();
+        if (url[0] == '/')
+            url = "http://www.lrv.lt" + url;
+        //todo: check for non-root urls.
 
-    var lt_months = {
-        "sausio":   "01",
-        "vasario":  "02",
-        "kovo":     "03",
-        "balandžio":"04",
-        "gegužės":  "05",
-        "birželio": "06",
-        "liepos":   "07",
-        "rugpjūčio":"08",
-        "rugsėjo":  "09",
-        "spalio":   "10",
-        "lapkričio":"11",
-        "gruodžio": "12"
-    };
-    if (lt_months[month])
-        month = lt_months[month];
-    else
-        loadObject("Events").create("PolicyFeed/sources/LRV_darbotvarkes:parseIndex-warning", ["Unknown month", month]);
+        var year = i_date.getFirstByXPath('./dd[1]').asText();
+        var month = i_date.getFirstByXPath('./dd[2]').asText();
+        var day = i_date.getFirstByXPath('./dd[3]').asText();
+        var wday = i_date.getFirstByXPath('./dd[4]').asText();
 
-    day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
+        var lt_months = {
+            "sausio":   "01",
+            "vasario":  "02",
+            "kovo":     "03",
+            "balandžio":"04",
+            "gegužės":  "05",
+            "birželio": "06",
+            "liepos":   "07",
+            "rugpjūčio":"08",
+            "rugsėjo":  "09",
+            "spalio":   "10",
+            "lapkričio":"11",
+            "gruodžio": "12"
+        };
+        if (lt_months[month])
+            month = lt_months[month];
+        else
+            loadObject("Events").create("KaVeikiaValdzia/Sources/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
 
-    var result = {
-        url: url,
-        title: day + i_link.asText(),
-        published: new Date().format("yyyy-MM-dd HH:mm:ss"),
-        summary: ""
-    };
+        day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
 
-    return result;
+        var result = {
+            url: url,
+            title: day + i_link.asText(),
+            published: new Date().format("yyyy-MM-dd HH:mm:ss"),
+        };
+
+        result.source = name;
+        for (var k in doc_template)
+            result[k] = doc_template[k];
+
+
+        return result;
+    }
 }
 
 
@@ -141,18 +128,22 @@ exports.parseIndexItem = function(item)
 /**
  *
  */
-exports.extractDocumentData = function(doc)
+exports.updateDoc = function(original, page)
 {
-    if (doc.meta.converted_by)
+    if (original.converted_by)
         return false;
 
-    var page = this.htmlunit.getPageFromHtml(doc.html, doc.meta.url, this.name);
-    this.htmlunit.fixPageUrls(page);
-    var result = {};
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
+
+    // Warning: No updates to original after this point or you'll regret it.
+
+    htmlunit.fixPageUrls(page);
 
     // title:
-    if (!doc.meta.title)
-        result.title = page.getFirstByXPath('//div[@id="text"]/p[2]').asText();
+    if (!doc.title)
+        doc.title = page.getFirstByXPath('//div[@id="text"]/p[2]').asText();
 
     // html:
     var text = page.getElementById("text");
@@ -167,7 +158,10 @@ exports.extractDocumentData = function(doc)
     if ((extra_div = text.getLastChild()) && extra_div.getTagName && (extra_div.getTagName() == "div"))
         extra_div.remove();
    
-    result.html = text.asXml();
+    doc.html = text.asXml();
 
-    return result;
+    // save doc:
+    JsonStorage.write(doc._id, doc);
+
+    return doc;
 }
