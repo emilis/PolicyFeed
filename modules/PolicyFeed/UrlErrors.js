@@ -22,7 +22,6 @@ require("core/string");
 var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
 var db = loadObject("DB_urls");
-var JsonStorage = require("ctl/JsonStorage");
 
 var MSG_TO = "policyfeed-errors@mailinator.com";
 
@@ -179,16 +178,34 @@ exports.showStats = function(time) {
  *
  */
 exports.save = function(url) {
-    var sql = "insert into errors (time,source,fline,url,title) values(?,?,?,?,?)";
-    var rowid = db.prepared_query(sql, [
+    // Check and fix some issues with incomplete url data:
+    if (!url.url)
+        throw Error("PolicyFeed/UrlErrors.save(): unable to save an empty url.");
+    if (url.source === undefined)
+        url.source = "unknown";
+    if (!url.error)
+        url.error = { fileName: "unknown", lineNumber: "0" };
+    if (!url.title)
+        url.title = "";
+
+    // Write url error to DB:
+    var sql = "insert into errors (time,source,fline,url,title, data) values(?,?,?,?,?)";
+    return db.prepared_query(sql, [
         new Date(),
         url.source,
         url.error.fileName + ":" + url.error.lineNumber,
         url.url,
-        url.title]);
+        url.title,
+        uneval(url)]);
+}
 
-    if (rowid)
-        JsonStorage.write("/errors/urls/" + url.url.digest() + "/" + rowid, url);
+
+/**
+ *
+ */
+exports.removeUrl = function(url) {
+    var sql = "delete from errors where url=?";
+    return db.prepared_query(sql, [url]);
 }
 
 
