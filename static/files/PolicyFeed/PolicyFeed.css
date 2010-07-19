@@ -51,6 +51,11 @@ div.document-link.expanded {
         -moz-border-radius: 2px;
     }
 
+        div.document-link > span.pranesimas { background-color: #ef2929; }
+        div.document-link > span.darbotvarke { background-color: #204a87; }
+        div.document-link > span.projektas { background-color: #00202a; }
+        div.document-link > span.istatymas { background-color: #270000; }
+
 
     div.document-link > span.props {
         float: right;

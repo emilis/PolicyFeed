@@ -18,7 +18,7 @@
 */
 
 var update_url = "http://localhost:8081/solr/update";
-var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=published+desc&fl=id,published,source,title&wt=json&q=';
+var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=published+desc&fl=id,published,type,org,organization,title&wt=json&q=';
 
 
 var httpclient = require("ringo/httpclient");
@@ -47,7 +47,7 @@ var prepareDate = function(str) {
  *
  */
 var stripTags = function(str) {
-    return str.replace(/<[^>]*>/g, "").replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+    return str.replace(/<[^>]*>/g, " ").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&\w+;/g, " ").trim();
 }
 
 
@@ -58,7 +58,10 @@ exports.itemToXml = function(item) {
     return '<doc>' 
         + '<field name="id">' + item._id + '</field>'
         + '<field name="published">' + prepareDate(item.published) + '</field>'
-        + '<field name="source">' + item.short_source + '</field>'
+        //+ '<field name="source">' + item.short_source + '</field>'
+        + '<field name="type">' + item.type + '</field>'
+        + '<field name="org">' + item.org + '</field>'
+        + '<field name="organization">' + item.organization + '</field>'
         + '<field name="title">' + stripTags(item.title) + '</field>'
         + '<field name="html">' + stripTags(item.html) + '</field>'
         + '</doc>';

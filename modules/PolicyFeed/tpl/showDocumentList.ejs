@@ -59,17 +59,12 @@ var div_id = "";
 var count = 0;    
 for each(var doc in docs)
 {
-    if (doc.meta)
-    {
-        doc.short_source = doc.meta.short_source;
-        doc.title = doc.meta.title;
-    }
-    if (!doc.short_source && doc.source)
-        doc.short_source = doc.source;
-    /*
-    if (doc.id.indexOf("/") > -1)
-        doc.id = doc.id.replace("/docs/", "").replace("/doc", "");
-    */
+    if (!doc.type)
+        doc.type = "unknown";
+    if (!doc.org)
+        doc.org = "???";
+    if (!doc.organization)
+        doc.organization = "???";
 
     count++;
     if (doc.published.substr)
@@ -85,17 +80,19 @@ for each(var doc in docs)
     div_id = doc.id.replace(/\//g, "-");
 
     print('<div id="' + div_id + '" class="document-link">');
-    //print('<span class="source ' + doc.short_source + '">' + doc.short_source + '</span>');
-    print('<span class="source"><img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.short_source.toLowerCase() + '.gif" align="top"></span>');
+    print('<span class="source ' + doc.type + '">' + doc.type + '</span>');
+    
     print('<span class="props">');
     print('<a class="link" href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">Išskleisti</a>');
         // print HH:MM:
         print(' <span class="time">' + doc.published.substr(11, 5) + '</span>');
     print('</span>');
-    print('<h3><a href="' + url + '">' + doc.title);
+    
+    print('<h3><span title="' + doc.organization + '">' + doc.org + ':</span>&nbsp;<a href="' + url + '">' + doc.title);
     if (doc.comment_count)
         print('</a> <a href="' + url + '#comments" class="comments">(' + doc.comment_count + ')');
     print('</a></h3>');
+    
     print('</div>');
 }
 
