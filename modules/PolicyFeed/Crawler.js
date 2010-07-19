@@ -202,17 +202,16 @@ exports.saveOriginal = function(source_name, url, page) {
     // DOC files, etc.:
     if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage) {
         var stream = new (require("io").Stream)(response.getContentAsStream());
-        var fields = this.getFieldsFromStream(stream, content_type);
+        var fields = this.getFieldsFromStream(stream, original.content_type);
         for (var key in fields)
             original[key] = fields[key];
-    }
-    // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
-    if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage) {
+    } else if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage) {
+        // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
         htmlunit.setPageCharset(page, "UTF-8");
         original.html = page.asXml();
     }
     else
-        throw this.error("updateOriginal", url.original_id + " | " + url.url);
+        throw Error("PolicyFeed/Crawler.saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
 
     // save original:
     JsonStorage.write(original._id, original);
@@ -259,7 +258,7 @@ exports.getFieldsFromStream = function(stream, content_type) {
 
             // Remove converted HTML to save disk space:
             //fs.remove(html_file_name);
-            loadObject("Events").create("PolicyFeed/SourceList:setFieldsFromStream-debug", ["html_file_name", html_file_name]);
+            loadObject("Events").create("PolicyFeed/Crawler.setFieldsFromStream-debug", ["html_file_name", html_file_name]);
             break;
 
         default:
