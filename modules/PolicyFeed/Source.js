@@ -31,7 +31,7 @@ var htmlunit = require("htmlunit");
 exports.checkFeed = function(url, page) {
     this.validateFeedPage(page);
 
-    this.extractFeedItems(page).map(this.parseFeedItem()).filter(this.removeExisting).map(this.addPageUrls());
+    this.extractFeedItems(page).filter(this.removeExisting).map(this.addPageUrls());
 
     // schedule next check:
     UrlQueue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
@@ -71,36 +71,32 @@ exports.validateFeedPage = function(page) {
  *
  */
 exports.extractFeedItems = function (page) {
+    this.validateFeedPage(page);
+
     var items = page.getByXPath("/rss/channel/item").toArray();
     if (items.length < 1)
         throw this.error("extractFeedItems", "No RSS items found in feed.");
-    else
-        return items;
-}
+    else {
+        var name = this.name;
+        var doc_template = this.doc_template;
 
+        return items.map(function (item) {
+            var result = {
+                url:        item.getFirstByXPath("link").asText(),
+                title:      item.getFirstByXPath("title").asText(),
+                published:  item.getFirstByXPath("pubDate").asText(),
+                summary:    item.getFirstByXPath("description").asText()
+                };
 
-/**
- *
- */
-exports.parseFeedItem = function() {
-    var name = this.name;
-    var doc_template = this.doc_template;
-    return function (item) {
-        var result = {
-            url:        item.getFirstByXPath("link").asText(),
-            title:      item.getFirstByXPath("title").asText(),
-            published:  item.getFirstByXPath("pubDate").asText(),
-            summary:    item.getFirstByXPath("description").asText()
-            };
+            result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
+            result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
 
-        result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
-        result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
+            result.source = name;
+            for (var k in doc_template)
+                result[k] = doc_template[k];
 
-        result.source = name;
-        for (var k in doc_template)
-            result[k] = doc_template[k];
-
-        return result;
+            return result;
+        });
     }
 }
 

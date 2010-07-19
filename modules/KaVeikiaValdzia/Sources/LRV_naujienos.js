@@ -17,15 +17,19 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 // --- Requirements: ---
-var JsonStorage = require("ctl/JsonStorage");
+//var JsonStorage = require("ctl/JsonStorage");
 var htmlunit = require("htmlunit");
 
 // --- Extend PolicyFeed/Source: ---
 var Source = require("PolicyFeed/Source");
+exports.extractFeedItems = Source.extractFeedItems;
+exports.validateFeedPage = Source.validateFeedPage;
+/*
 for (var key in Source)
     exports[key] = Source[key];
-
+*/
 
 // --- Source config: ---
 exports.feed_url = "http://www.lrv.lt/rss/rss.php?cats=1-9-3-2-7-6-8-10-11-12-13-14-15-16-17-18-19-20-21-22-23&lang=lt";
@@ -42,7 +46,7 @@ exports.doc_template = {
 /**
  *
  */
-exports.updateDoc = function(original, page) {
+exports.extractPageData = function(original, page) {
     // create doc from original:
     var doc = original;
     doc._id = doc._id.replace("originals", "docs");
@@ -67,9 +71,6 @@ exports.updateDoc = function(original, page) {
         extra_div.remove();
 
     doc.html = news_div.asXml();
-
-    // save doc:
-    JsonStorage.write(doc._id, doc);
 
     return doc;
 }

@@ -27,6 +27,8 @@ var Source = require("PolicyFeed/Source");
 for (var key in Source)
     exports[key] = Source[key];
 
+exports.disabled = true;
+
 // --- Source config: ---
 exports.feed_url = [
     // reverse order (not to miss if something changes while scrapping):
