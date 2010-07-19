@@ -131,7 +131,7 @@ PolicyFeedCalendar.show = function(d, active_days)
             html += '<td>';
 
         if (i in ad)
-            html += '<a href="' + WEB_URL + '/docs/bydate/' + this.getIsoStr(d) + '/">' + i + '</a>';
+            html += '<a href="' + WEB_URL + '/docs/' + this.getIsoStr(d) + '/">' + i + '</a>';
         else
             html += i;
 
@@ -181,7 +181,7 @@ PolicyFeedCalendar.getDateStr = function(d)
 
 PolicyFeedCalendar.getIsoStr = function(d)
 {
-    return d.getFullYear() + '-' + this.getMonthStr(d) + '-' + this.getDateStr(d);
+    return d.getFullYear() + '/' + this.getMonthStr(d) + '/' + this.getDateStr(d);
 }
 
 
