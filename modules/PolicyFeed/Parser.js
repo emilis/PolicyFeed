@@ -60,7 +60,7 @@ exports.extractFeedItems = function (page) {
             result.published = new Date(result.published).format("yyyy-MM-dd HH:mm:ss");
             result.published = result.published.replace(/00:00:00/, new Date().format("HH:mm:ss"));
 
-            result.source = name;
+            result.parser = name;
             for (var k in doc_template)
                 result[k] = doc_template[k];
 

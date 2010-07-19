@@ -32,14 +32,14 @@ var sleep = java.lang.Thread.sleep;
 var htmlunit = require("htmlunit");
 
 var UrlQueue;
-var SourceList;
+var Crawler;
 
 
 /**
  *
  */
-exports.init = function(source_list, url_queue) {
-    SourceList = source_list;
+exports.init = function(crawler, url_queue) {
+    Crawler = crawler;
     UrlQueue = url_queue;
 }
 
@@ -85,7 +85,7 @@ var runThread = function(id) {
 
         // process url:
         try {
-            SourceList.processUrl( url, htmlunit.getPage(url.url, id) );
+            Crawler.processUrl( url, htmlunit.getPage(url.url, id) );
             UrlQueue.doneUrl(id);
         } catch (e) {
             if (e.message.indexOf("java.net.UnknownHostException:") == 0) {

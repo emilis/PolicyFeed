@@ -26,21 +26,21 @@ var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
 
 
-exports.list = {};
+exports.parsers = {};
 
 
 /**
  *
  */
-exports.getSourceList = function(source_dir, source_prefix) {
+exports.getParserList = function(parser_dir, parser_prefix) {
     var list = {};
 
-    var source_names = fs.list(source_dir);
-    for each (var name in source_names) {
+    var parser_names = fs.list(parser_dir);
+    for each (var name in parser_names) {
         if (name[0] != ".") {
             // remove ".js" extension:
             name = name.substr(0, name.length - 3);
-            list[name] = require(source_prefix + name);
+            list[name] = require(parser_prefix + name);
             if (list[name].disabled)
                 delete list[name];
         }
@@ -56,18 +56,18 @@ exports.getSourceList = function(source_dir, source_prefix) {
 exports.getDomains = function() {
     var domains = {};
 
-    for each (var source in this.list) {
-        if (source.domains) {
-            for (var domain in source.domains) {
-                domains[domain] = { delay: source.domains[domain] };
+    for each (var parser in this.parsers) {
+        if (parser.domains) {
+            for (var domain in parser.domains) {
+                domains[domain] = { delay: parser.domains[domain] };
             }
         } else {
-            if (source.feed_url instanceof Array) {
-                for each (var url in source.feed_url) {
+            if (parser.feed_url instanceof Array) {
+                for each (var url in parser.feed_url) {
                     domains[UrlQueue.getDomainFromUrl(url)] = {};
                 }
             } else {
-                domains[UrlQueue.getDomainFromUrl(source.feed_url)] = {};
+                domains[UrlQueue.getDomainFromUrl(parser.feed_url)] = {};
             }
         }
     }
@@ -80,14 +80,13 @@ exports.getDomains = function() {
  */
 exports.init = function(options) {
     options = options || {};
-    var {source_dir, source_prefix} = options;
+    var {parser_dir, parser_prefix} = options;
 
-    this.list = this.getSourceList(source_dir, source_prefix);
+    this.parsers = this.getParserList(parser_dir, parser_prefix);
 
-    for (var name in this.list) {
-        this.list[name].name = name;
-        this.list[name].Crawler = this;
-        //this.list[name].UrlQueue = UrlQueue;
+    for (var name in this.parsers) {
+        this.parsers[name].name = name;
+        this.parsers[name].Crawler = this;
     }
 
     UrlQueue.init({ domainList: this.getDomains() });
@@ -100,8 +99,8 @@ exports.init = function(options) {
  *
  */
 exports.checkUpdates = function() {
-    for (var name in this.list) {
-        var urls = this.list[name].feed_url;
+    for (var name in this.parsers) {
+        var urls = this.parsers[name].feed_url;
         if (!(urls instanceof Array))
             urls = [urls];
 
@@ -109,7 +108,7 @@ exports.checkUpdates = function() {
             if (!UrlQueue.isUrlScheduled(url)) {
                 UrlQueue.scheduleUrl({
                     url: url,
-                    source: name,
+                    parser: name,
                     method: "checkFeed"
                     }, 0);
             }
@@ -124,13 +123,13 @@ exports.checkUpdates = function() {
 exports.processUrl = function(url, page) {
     switch (url.method) {
         case "checkFeed":
-            return this.checkFeed(url.source, url, page);
+            return this.checkFeed(url.parser, url, page);
         break;
         case "parsePage":
-            return this.parsePage(url.source, url, page);
+            return this.parsePage(url.parser, url, page);
         break;
         default:
-            return this.list[url.source][url.method](url, page);
+            return this.parsers[url.parser][url.method](url, page);
     }
 }
 
@@ -138,9 +137,9 @@ exports.processUrl = function(url, page) {
 /**
  *
  */
-exports.checkFeed = function(source_name, url, page) {
+exports.checkFeed = function(parser_name, url, page) {
 
-    var urls = this.list[source_name].extractFeedItems(page);
+    var urls = this.parsers[parser_name].extractFeedItems(page);
 
     // Remove existing urls:
     urls = urls.filter(function (item) {
@@ -163,7 +162,7 @@ exports.checkFeed = function(source_name, url, page) {
 
         UrlQueue.addUrl({
             url: item.url,
-            source: source_name,
+            parser: parser_name,
             method: "parsePage",
             original_id: id
             });
@@ -177,14 +176,14 @@ exports.checkFeed = function(source_name, url, page) {
 /**
  *
  */
-exports.parsePage = function(source_name, url, page) {
-    var source = this.list[source_name];
+exports.parsePage = function(parser_name, url, page) {
+    var parser = this.parsers[parser_name];
 
-    if (source.parsePage) {
-        return source.parsePage(url, page);
+    if (parser.parsePage) {
+        return parser.parsePage(url, page);
     } else {
-        var original = this.saveOriginal(source_name, url, page);
-        var doc = source.extractPageData(original, page);
+        var original = this.saveOriginal(parser_name, url, page);
+        var doc = parser.extractPageData(original, page);
         JsonStorage.write(doc._id, doc);
     }
 }
@@ -193,7 +192,7 @@ exports.parsePage = function(source_name, url, page) {
 /**
  *
  */
-exports.saveOriginal = function(source_name, url, page) {
+exports.saveOriginal = function(parser_name, url, page) {
     var original = JsonStorage.read(url.original_id);
 
     var response = page.getWebResponse();

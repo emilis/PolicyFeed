@@ -84,9 +84,9 @@ exports.addUrl = function(url) {
  */
 exports.getUrlStats = function(time) {
     if (time !== undefined)
-        var rs = db.prepared_query("select count(*) as count, source, url from errors where time > ? group by url order by count", [time]);
+        var rs = db.prepared_query("select count(*) as count, parser, url from errors where time > ? group by url order by count", [time]);
     else
-        var rs = db.query("select count(*) as count, source, url from errors group by url order by count");
+        var rs = db.query("select count(*) as count, parser, url from errors group by url order by count");
 
     return db.get_all(rs);
 }
@@ -149,10 +149,10 @@ exports.showStats = function(time) {
     
     if (time) {
         str += "\nURLs since " + time + ":";
-        str += textTable({count: [" ", 5, -1], source: [" ", 16, 0], url: false}, this.getUrlStats(time));
+        str += textTable({count: [" ", 5, -1], parser : [" ", 16, 0], url: false}, this.getUrlStats(time));
     }
     str += "\nURLs total:";
-    str += textTable({count: [" ", 5, -1], source: [" ", 16, 0], url: false}, this.getUrlStats());
+    str += textTable({count: [" ", 5, -1], parser : [" ", 16, 0], url: false}, this.getUrlStats());
 
     if (time) {
         str += "\nCode since " + time + ":";
@@ -181,18 +181,18 @@ exports.save = function(url) {
     // Check and fix some issues with incomplete url data:
     if (!url.url)
         throw Error("PolicyFeed/UrlErrors.save(): unable to save an empty url.");
-    if (url.source === undefined)
-        url.source = "unknown";
+    if (url.parser === undefined)
+        url.parser = "unknown";
     if (!url.error)
         url.error = { fileName: "unknown", lineNumber: "0" };
     if (!url.title)
         url.title = "";
 
     // Write url error to DB:
-    var sql = "insert into errors (time,source,fline,url,title, data) values(?,?,?,?,?)";
+    var sql = "insert into errors (time,parser,fline,url,title, data) values(?,?,?,?,?)";
     return db.prepared_query(sql, [
         new Date(),
-        url.source,
+        url.parser,
         url.error.fileName + ":" + url.error.lineNumber,
         url.url,
         url.title,

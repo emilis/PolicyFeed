@@ -6,11 +6,13 @@ if (doc.meta)
 {
     doc.title = doc.meta.title;
     doc.url = doc.meta.url;
-    doc.short_source = doc.meta.short_source;
     doc.teises_aktas = doc.meta.teises_aktas;
 }
 
-returnVar("title", doc.title);
+if (!doc.org)
+    doc.org = "";
+
+returnVar("title", doc.org + ": " + doc.title);
 
 // breadcrumbs:
 //*
@@ -49,7 +51,6 @@ icons = {
 
 // Komentarai + šaltinis:
 side += '<p class="outset" style="margin-top: 0;"><a href="' + doc.url + '">'
-    + '<img src="' + config.FILES_URL + '/KaVeikiaValdzia/' + doc.short_source.toLowerCase() + '.gif" border="0" align="top">'
     + ' Originalus dokumentas</a> ' + icons.ext + '</p>';
 
 
@@ -78,9 +79,8 @@ if (doc.teises_aktas)
 // Techninė info:
 //side += '<div><h3>Techninė informacija:</h3>'
 side += '<p class="outset">Publikuotas:<br>' + doc.published.substr(0, 19) + '<br>'
-    + 'Atnaujintas DB:<br>' + doc.updated.substr(0, 19) + '<br><br>'
+//    + 'Atnaujintas DB:<br>' + doc.updated.substr(0, 19) + '<br><br>'
     + '<a href="' + config.WEB_URL + doc._id + '.json">Duomenys JSON formatu</a> ' + icons.script + '</p>';
 
 side += '</div>';
 
-returnVar("side", side);

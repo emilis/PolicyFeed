@@ -21,13 +21,13 @@
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
 
-// --- Extend PolicyFeed/Source: ---
-var Source = require("PolicyFeed/Source");
-for (var key in Source)
-    exports[key] = Source[key];
+// --- Extend PolicyFeed/Parser : ---
+var Parser = require("PolicyFeed/Parser");
+for (var key in Parser)
+    exports[key] = Parser[key];
 
 
-// --- Source config: ---
+// --- Parser config: ---
 exports.feed_url = "http://www.lrv.lt/rss/rss.php?cats=1-9-3-2-7-6-8-10-11-12-13-14-15-16-17-18-19-20-21-22-23&lang=lt";
 
 exports.doc_template = {

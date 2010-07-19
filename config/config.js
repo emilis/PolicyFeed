@@ -119,8 +119,8 @@ exports.WebMapper = {
 
 exports.PolicyFeed = {
     Crawler: {
-        source_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources",
-        source_prefix: "KaVeikiaValdzia/Sources/"
+        parser_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Sources",
+        parser_prefix: "KaVeikiaValdzia/Sources/"
     }
 };
 

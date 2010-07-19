@@ -20,13 +20,13 @@
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
 
-// --- Extend PolicyFeed/Source: ---
+// --- Extend PolicyFeed/Parser: ---
 
-var Source = require("PolicyFeed/Source");
-for (var key in Source)
-    exports[key] = Source[key];
+var Parser = require("PolicyFeed/Parser");
+for (var key in Parser)
+    exports[key] = Parser[key];
 
-// --- Source config: ---
+// --- Parser config: ---
 exports.feed_url = [
     // reverse order (not to miss if something changes while scrapping):
     "http://www.lrv.lt/lt/veikla/darbotvarkes/?p=5",
@@ -103,7 +103,7 @@ exports.parseFeedItem = function()
         if (lt_months[month])
             month = lt_months[month];
         else
-            loadObject("Events").create("KaVeikiaValdzia/Sources/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
+            loadObject("Events").create("KaVeikiaValdzia/Parsers/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
 
         day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
 
@@ -113,7 +113,7 @@ exports.parseFeedItem = function()
             published: new Date().format("yyyy-MM-dd HH:mm:ss"),
         };
 
-        result.source = name;
+        result.parser = name;
         for (var k in doc_template)
             result[k] = doc_template[k];
 

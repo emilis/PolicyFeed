@@ -58,7 +58,6 @@ exports.itemToXml = function(item) {
     return '<doc>' 
         + '<field name="id">' + item._id + '</field>'
         + '<field name="published">' + prepareDate(item.published) + '</field>'
-        //+ '<field name="source">' + item.short_source + '</field>'
         + '<field name="type">' + item.type + '</field>'
         + '<field name="org">' + item.org + '</field>'
         + '<field name="organization">' + item.organization + '</field>'
