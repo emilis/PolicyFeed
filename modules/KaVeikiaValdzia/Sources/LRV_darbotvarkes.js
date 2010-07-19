@@ -19,15 +19,12 @@
 
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
-var JsonStorage = require("ctl/JsonStorage");
 
 // --- Extend PolicyFeed/Source: ---
 
 var Source = require("PolicyFeed/Source");
 for (var key in Source)
     exports[key] = Source[key];
-
-exports.disabled = true;
 
 // --- Source config: ---
 exports.feed_url = [
@@ -57,7 +54,7 @@ exports.extractFeedItems = function(page)
     if (items.length < 1)
         return this.error("extractFeedItems", "No items found in feed.");
     else
-        return items;
+        return items.map(this.parseFeedItem());
 }
 
 
@@ -130,14 +127,14 @@ exports.parseFeedItem = function()
 /**
  *
  */
-exports.updateDoc = function(original, page)
+exports.extractPageData = function(original, page)
 {
-    if (original.converted_by)
-        return false;
-
     // create doc from original:
     var doc = original;
     doc._id = doc._id.replace("originals", "docs");
+
+    if (original.converted_by)
+        return doc;
 
     // Warning: No updates to original after this point or you'll regret it.
 
@@ -161,9 +158,6 @@ exports.updateDoc = function(original, page)
         extra_div.remove();
    
     doc.html = text.asXml();
-
-    // save doc:
-    JsonStorage.write(doc._id, doc);
 
     return doc;
 }
