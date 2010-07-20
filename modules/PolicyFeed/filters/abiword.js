@@ -24,27 +24,32 @@ exports.filter = function(page) {
         page = htmlunit.getPageFromHtml(page, "http://example.org/", "default", "UTF-8")
     }
 
-    page.executeJavaScript(uneval(this.fixAbiwordHtmlFunction) + "()");
+    var header = page.getElementById("header");
+    if (header)
+        header.remove();
+
+    var nodes = page.getByXPath("//colgroup").toArray();
+    if (nodes.length)
+        nodes.map(function (item) { item.remove() });
+
+    var nodes = page.getByXPath("//table").toArray();
+    if (nodes.length) {
+        nodes.map(function (item) {
+                // move this to a separate function?:
+                if (item.hasAttribute("cellpadding"))
+                    item.removeAttribute("cellpadding");
+                item.setAttribute("border", "1");
+            });
+    }
+
+    var nodes = page.getByXPath("//p").toArray();
+    if (nodes.length) {
+        nodes.map(function (item) {
+                if (item.hasAttribute("awml:style"))
+                    item.removeAttribute("awml:style");
+            });
+    }
     
     return page.getBody().asXml().replace(/%26/g, "&");
 }
-
-
-/**
- * WARNING: this function is executed "client-side".
- */
-exports.fixAbiwordHtmlFunction = function()
-{
-    // remove tags with contents:
-    jQuery("colgroup").remove();
-    jQuery("div#header").remove();
-    jQuery("div#footer").remove();
-
-    jQuery("table").removeAttr("cellpadding"); // move this to a separate function
-    jQuery("p").removeAttr("awml:style");
-
-    // set attributes:
-    jQuery("table").attr("border", "1");
-}
-
 
