@@ -184,6 +184,12 @@ exports.parsePage = function(parser_name, url, page) {
     } else {
         var original = this.saveOriginal(parser_name, url, page);
         var doc = parser.extractPageData(original, page);
+
+        // run default filters on doc html:
+        doc.html = require("PolicyFeed/filters/default").filter(doc.html);
+        if (doc.converted_by == "abiword")
+            doc.html = require("PolicyFeed/filters/abiword").filter(doc.html)
+
         JsonStorage.write(doc._id, doc);
     }
 }
