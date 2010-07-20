@@ -17,19 +17,16 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-exports.name = "AbiWord";
+require("htmlunit");
 
-exports.processDocument = function(doc, page)
-{
-    if (!doc.meta.converted_by || doc.meta.converted_by != "abiword")
-        return false;
-
-    var fields = {};
+exports.filter = function(page) {
+    if (typeof(page) == "string" || !page.asXml) {
+        html = htmlunit.getPageFromHtml(page, "http://example.org/", "default", "UTF-8")
+    }
 
     page.executeJavaScript(uneval(this.fixAbiwordHtmlFunction) + "()");
-    fields.html = page.getBody().asXml().replace(/%26/g, "&");
-
-    return [fields, page];
+    
+    return page.getBody().asXml().replace(/%26/g, "&");
 }
 
 
@@ -40,22 +37,10 @@ exports.fixAbiwordHtmlFunction = function()
 {
     // remove tags with contents:
     jQuery("colgroup").remove();
+    jQuery("div#header").remove();
     jQuery("div#footer").remove();
 
-    // remove the tags, keep contents:
-    var tags = [];
-    tags = jQuery("span");
-    for (var i=0; i<tags.length; i++) { jQuery(tags[i]).replaceWith(tags[i].innerHTML) };
-    tags = jQuery("font");
-    for (var i=0; i<tags.length; i++) { jQuery(tags[i]).replaceWith(tags[i].innerHTML) };
-    
-    // remove attributes:
-    jQuery("[lang]").removeAttr("lang");
-    jQuery("[style]").removeAttr("style");
-    jQuery("[dir]").removeAttr("dir");
-    jQuery("[class]").removeAttr("class");
-
-    jQuery("table").removeAttr("cellpadding");
+    jQuery("table").removeAttr("cellpadding"); // move this to a separate function
     jQuery("p").removeAttr("awml:style");
 
     // set attributes:
