@@ -200,10 +200,14 @@ exports.saveOriginal = function(parser_name, url, page) {
 
     // DOC files, etc.:
     if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage) {
-        var stream = new (require("io").Stream)(response.getContentAsStream());
-        var fields = this.getFieldsFromStream(stream, original.content_type);
-        for (var key in fields)
-            original[key] = fields[key];
+        original.original_file = this.saveFile(original._id, url.url, response);
+        if (original.content_type == "application/msword") {
+            var fields = this.getFieldsFromDoc(original.original_file);
+            for (var key in fields)
+                original[key] = fields[key];
+        } else {
+            throw Error("PolicyFeed/Crawler.saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
+        }
     } else if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage) {
         // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
         htmlunit.setPageCharset(page, "UTF-8");
@@ -222,49 +226,42 @@ exports.saveOriginal = function(parser_name, url, page) {
 /**
  *
  */
-exports.getFieldsFromStream = function(stream, content_type) {
-    var fields = {};
-    fields.content_type = content_type;
+exports.saveOriginalFile = function(original_id, url, response) {
+    var dir_name = require("config").UPLOADS_DIR + original_id.replace("/originals/", "");
+    var file_name = dir_name + "/"
+        + url.split("/").pop().replace(/[^-._a-z0-9]/gi, "-");
 
-    // requirements to save file:
-    import("fs");
-    import("core/date");
-    import("config");
-
-    var data_dir = require("config").DATA_DIR + "/temp";
-    var id = Math.random();
-
-    // save file:
-    var dir_name = data_dir + (new Date().format("/yyyy/MM/dd"));
     if (!fs.exists(dir_name))
         fs.makeTree(dir_name);
-    var file_name = dir_name + "/" + id + ".orig";
+
+    var stream = new (require("io").Stream)(response.getContentAsStream());
     fs.write(file_name, stream.read());
 
-    fields.original_file = file_name;
+    return file_name;
+}
+
+
+
+/**
+ *
+ */
+exports.getFieldsFromDoc = function(file_name) {
+    var fields = {};
+
+    var html_file_name = fs.directory(file_name) + "/converted.html";
 
     // Convert file to HTML and read the result if possible:
-    switch (content_type) {
-        case "application/msword":
-            // Convert DOC to HTML:
-            var proc = java.lang.Runtime.getRuntime().exec(["abiword", "--to", "html", file_name]);
-            proc.waitFor();
+    var proc = java.lang.Runtime.getRuntime().exec(["abiword", "--to", html_file_name, file_name]);
+    proc.waitFor();
 
-            // Set html field:
-            var html_file_name = dir_name + "/" + id + ".html";
-            fields.html = fs.read(html_file_name);
-            fields.converted_by = "abiword";
+    // Set html field:
+    fields.html = fs.read(html_file_name);
+    fields.converted_by = "abiword";
 
-            // Remove converted HTML to save disk space:
-            //fs.remove(html_file_name);
-            loadObject("Events").create("PolicyFeed/Crawler.setFieldsFromStream-debug", ["html_file_name", html_file_name]);
-            break;
-
-        default:
-            fields.html = "";
-    }
+    // Remove converted HTML to save disk space:
+    //fs.remove(html_file_name);
+    loadObject("Events").create("PolicyFeed/Crawler.setFieldsFromDoc-debug", ["html_file_name", html_file_name]);
 
     return fields;
-
 }
 
