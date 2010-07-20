@@ -29,7 +29,8 @@ var replace = [
     [ /<([^>]+)\sstyle="[^"]*"/gi, "<$1"],
     [ /<([^>]+)\sdir="[^"]*"/gi, "<$1"],
     [ /<([^>]+)\sclass="[^"]*"/gi, "<$1"],
-    [ /<([^>]+)\sid="[^"]*"/gi, "<$1"] ];
+    [ /<([^>]+)\sid="[^"]*"/gi, "<$1"],
+    [ /<([^>]+)\salign="justify"/gi, "<$1"] ];
 
 exports.filter = function(html) {
 
