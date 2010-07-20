@@ -1,0 +1,64 @@
+/*
+    Copyright 2010 Emilis Dambauskas
+
+    This file is part of KaVeikiaValdzia module.
+
+    PolicyFeed is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    PolicyFeed is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+// --- Requirements: ---
+var htmlunit = require("htmlunit");
+
+// --- Extend PolicyFeed/Parser : ---
+var Parser = require("PolicyFeed/Parser");
+for (var key in Parser)
+    exports[key] = Parser[key];
+
+
+// --- Parser config: ---
+exports.feed_url = "http://www.president.lt/lt/rss/rss.rss";
+
+exports.doc_template = {
+    type: "pranesimas",
+    org: "Prezidentas",
+    organization: "Lietuvos Respublikos Prezidentas"
+};
+
+
+// --- Custom methods: ---
+
+/**
+ *
+ */
+exports.extractPageData = function(original, page) {
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
+
+    // Warning: No updates to original after this point or you'll regret it.
+
+    htmlunit.fixPageUrls(page);
+
+    var content = page.getElementById("inner-container");
+
+    var title = content.getFirstByXPath('./h4');
+    if (!doc.title)
+        doc.title = title.asText();
+    title.remove();
+
+    doc.html = content.asXml();
+
+    return doc;
+}
