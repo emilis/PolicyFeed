@@ -43,9 +43,9 @@ exports.extractFeedItems = function (page) {
     this.validateFeedPage(page);
 
     var items = page.getByXPath("/rss/channel/item").toArray();
-    if (items.length < 1)
-        throw this.error("extractFeedItems", "No RSS items found in feed.");
-    else {
+    if (items.length < 1) {
+        return [];
+    } else {
         var name = this.name;
         var doc_template = this.doc_template;
 
