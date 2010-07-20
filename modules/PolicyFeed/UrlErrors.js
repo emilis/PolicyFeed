@@ -189,7 +189,7 @@ exports.save = function(url) {
         url.title = "";
 
     // Write url error to DB:
-    var sql = "insert into errors (time,parser,fline,url,title, data) values(?,?,?,?,?)";
+    var sql = "insert into errors (time,parser,fline,url,title, data) values(?,?,?,?,?,?)";
     return db.prepared_query(sql, [
         new Date(),
         url.parser,
