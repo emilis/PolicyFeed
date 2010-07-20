@@ -200,7 +200,7 @@ exports.saveOriginal = function(parser_name, url, page) {
 
     // DOC files, etc.:
     if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage) {
-        original.original_file = this.saveFile(original._id, url.url, response);
+        original.original_file = this.saveOriginalFile(original._id, url.url, response);
         if (original.content_type == "application/msword") {
             var fields = this.getFieldsFromDoc(original.original_file);
             for (var key in fields)
@@ -227,7 +227,7 @@ exports.saveOriginal = function(parser_name, url, page) {
  *
  */
 exports.saveOriginalFile = function(original_id, url, response) {
-    var dir_name = require("config").UPLOADS_DIR + original_id.replace("/originals/", "");
+    var dir_name = require("config").UPLOADS_DIR + original_id.replace("/originals/", "/");
     var file_name = dir_name + "/"
         + url.split("/").pop().replace(/[^-._a-z0-9]/gi, "-");
 
