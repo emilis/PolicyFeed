@@ -1,7 +1,7 @@
 /*
     Copyright 2009,2010 Emilis Dambauskas
 
-    This file is part of PolicyFeed module.
+    This file is part of KaVeikiaValdzia.lt website.
 
     PolicyFeed is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -17,41 +17,78 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-exports.disabled = true;
+// Requirements:
+var htmlunit = require("htmlunit");
 
 // Extends:
 exports.extendObject("PolicyFeed/Parser");
 
-exports.name = "LRS_pranesimai_spaudai";
-exports.short_name = "LRS-PS";
-exports.index_url = 'http://www3.lrs.lt/pls/inter/lrs_rss.pranesimai_spaudai';
+// Config:
+
+exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.pranesimai_spaudai";
 
 exports.doc_template = {
-    source: exports.name,
-    short_source: exports.short_name
-    };
+    type: "pranesimas",
+    org: "Seimas",
+    organization: "Lietuvos Respublikos Seimas"
+};
 
 
 /**
  *
  */
-exports.extractDocumentData = function(doc)
-{
-    // Leave converted documents for converters to extract:
-    if (doc.meta.converted_by)
-        return false;
+exports.extractFeedItems = function (page) {
+    this.validateFeedPage(page);
 
-    var page = this.htmlunit.getPageFromHtml(doc.html, doc.meta.url, this.name);
-    this.htmlunit.fixPageUrls(page);
+    var items = page.getByXPath("/rss/channel/item").toArray();
+    if (items.length < 1) {
+        return [];
+    } else {
+        var name = this.name;
+        var doc_template = this.doc_template;
 
-    var result = {};
+        return items.map(function (item) {
+            var result = {
+                url:        item.getFirstByXPath("link").asText(),
+                title:      item.getFirstByXPath("title").asText(),
+                published:  item.getFirstByXPath("pubDate").asText(),
+                summary:    item.getFirstByXPath("description").asText()
+                };
+
+            result.published = result.published.replace(/\./g, "-") + ":00";
+
+            result.parser = name;
+            for (var k in doc_template)
+                result[k] = doc_template[k];
+
+            return result;
+        });
+    }
+}
+
+
+/**
+ *
+ */
+exports.extractPageData = function(original, page) {
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
+
+    // Warning: No updates to original after this point or you'll regret it.
+    if (doc.converted_by)
+        return doc;
+
+    htmlunit.fixPageUrls(page);
 
     // title:
-    result.title = page.getFirstByXPath("/html/head/title");
-    if (result.title)
-        result.title = result.title.asText();
-    else
-        delete result.title;
+    if (!doc.title) {
+        doc.title = page.getFirstByXPath("/html/head/title");
+        if (doc.title)
+            doc.title = doc.title.asText();
+        else
+            delete doc.title;
+    }
 
     // html:
     var content = page.getElementById("divDesContent");
@@ -62,9 +99,9 @@ exports.extractDocumentData = function(doc)
     else
         html = content.getFirstByXPath('./div/table/tbody/tr/td');
 
-    result.html = html.asXml();
+    doc.html = html.asXml();
 
-    return result;
+    return doc;
 }
 
 
