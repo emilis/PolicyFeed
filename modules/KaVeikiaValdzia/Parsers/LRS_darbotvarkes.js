@@ -22,7 +22,7 @@ require("core/date");
 exports.disabled = true;
 
 // Extends:
-exports.extendObject("PolicyFeed/Source");
+exports.extendObject("PolicyFeed/Parser");
 // Mixins:
 //exports.extractDocumentData = loadObject("PolicyFeed/sources/LRS_teises_aktai").extractDocumentData.clone(false, true);
 

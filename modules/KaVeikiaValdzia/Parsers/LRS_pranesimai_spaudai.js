@@ -20,7 +20,7 @@
 exports.disabled = true;
 
 // Extends:
-exports.extendObject("PolicyFeed/Source");
+exports.extendObject("PolicyFeed/Parser");
 
 exports.name = "LRS_pranesimai_spaudai";
 exports.short_name = "LRS-PS";

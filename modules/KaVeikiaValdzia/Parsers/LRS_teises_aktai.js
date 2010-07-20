@@ -23,7 +23,7 @@ require("core/date");
 exports.disabled = true;
 
 
-exports.extendObject("PolicyFeed/Source");
+exports.extendObject("PolicyFeed/Parser");
 
 exports.name = "LRS_teises_aktai";
 exports.short_name = "LRS-TA";
