@@ -17,11 +17,11 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require("htmlunit");
+var htmlunit = require("htmlunit");
 
 exports.filter = function(page) {
     if (typeof(page) == "string" || !page.asXml) {
-        html = htmlunit.getPageFromHtml(page, "http://example.org/", "default", "UTF-8")
+        page = htmlunit.getPageFromHtml(page, "http://example.org/", "default", "UTF-8")
     }
 
     page.executeJavaScript(uneval(this.fixAbiwordHtmlFunction) + "()");
