@@ -1,7 +1,7 @@
 /*
     Copyright 2010 Emilis Dambauskas
 
-    This file is part of KaVeikiaValdzia module.
+    This file is part of KaVeikiaValdzia.lt website.
 
     PolicyFeed is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
