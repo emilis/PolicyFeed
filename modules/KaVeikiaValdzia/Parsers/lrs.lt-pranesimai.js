@@ -27,6 +27,11 @@ exports.extendObject("PolicyFeed/Parser");
 
 exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.pranesimai_spaudai";
 
+exports.domains = {
+    "www.lrs.lt": 3000,
+    "www3.lrs.lt": 3000
+};
+
 exports.doc_template = {
     type: "pranesimas",
     org: "Seimas",

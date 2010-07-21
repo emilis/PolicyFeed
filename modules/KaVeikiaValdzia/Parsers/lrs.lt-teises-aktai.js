@@ -1,7 +1,7 @@
 /*
     Copyright 2009,2010 Emilis Dambauskas
 
-    This file is part of PolicyFeed module.
+    This file is part of KaVeikiaValdzia.lt website.
 
     PolicyFeed is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -17,83 +17,115 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+// Requirements:
 require("core/date");
-
-
-exports.disabled = true;
+var htmlunit = require("htmlunit");
 
 
 exports.extendObject("PolicyFeed/Parser");
 
-exports.name = "LRS_teises_aktai";
-exports.short_name = "LRS-TA";
-exports.index_url = 'http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai';
+// Config:
+exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai";
+
+exports.domains = {
+    "www.lrs.lt": 3000,
+    "www3.lrs.lt": 3000
+};
 
 exports.doc_template = {
-    source: exports.name,
-    short_source: exports.short_name
-    };
+    type: "projektas",
+    org: "Seimas",
+    organization: "Lietuvos Respublikos Seimas"
+};
 
 
 /**
  *
  */
-exports.parseIndexItem = function(item)
-{
-    // Tries to get a correct url:
-    var link_url = item.getFirstByXPath("link").asText();
-    var guid_url = item.getFirstByXPath('guid[@isPermaLink="true"]').asText();
-    var desc_url = item.getFirstByXPath("description").asText();
+exports.extractFeedItems = function(page) {
+    this.validateFeedPage(page);
 
-    var test = "lrs.lt/pls/inter/dokpaieska.showdoc_l";
-    if (link_url.indexOf(test) > 0)
-        var url = link_url;
-    else if (guid_url.indexOf(test) > 0)
-        var url = guid_url;
-    else if (desc_url.indexOf(test) > 0)
-    {
-        // Get start of url position:
-        var url = desc_url.indexOf(test);
-        // Cut out the url until a double-quote:
-        url = "http://www." + desc_url.substr(url, desc_url.indexOf('"', url) - url);
+    var items = page.getByXPath("/rss/channel/item").toArray();
+    if (items.length < 1) {
+        return [];
+    } else {
+        return items.map(this.parseFeedItem());
     }
-    else
-    {
-        // Fail at this point:
-        return this.error("parseIndexItem", ["Failed to get any url from:", link_url, guid_url, desc_url]);
-    }
-
-    // Fix 00:00 time for "published" field:
-    var published = item.getFirstByXPath("pubDate").asText();
-    published = published.replace(/ 00:00/, new Date().format(" HH:mm"));
-
-    // Result object:
-    return {
-        url:        url,
-        title:      item.getFirstByXPath("title").asText(),
-        published:  published,
-        summary:    item.getFirstByXPath("description").asText()
-        };
 }
 
 
 /**
  *
  */
-exports.extractDocumentData = function(doc)
-{
-    if (doc.meta.converted_by)
-        return false;
+exports.parseFeedItem = function(item) {
+    var name = this.name;
+    var doc_template = this.doc_template;
+    var error = this.error;
 
-    var page = this.htmlunit.getPageFromHtml(doc.html, doc.meta.url, this.name);
-    this.htmlunit.fixPageUrls(page);
+    return function(item) {
+        // Tries to get a correct url:
+        var link_url = item.getFirstByXPath("link").asText();
+        var guid_url = item.getFirstByXPath('guid[@isPermaLink="true"]').asText();
+        var desc_url = item.getFirstByXPath("description").asText();
 
-    var result = {};
+        var test = "lrs.lt/pls/inter/dokpaieska.showdoc_l";
+        if (link_url.indexOf(test) > 0)
+            var url = link_url;
+        else if (guid_url.indexOf(test) > 0)
+            var url = guid_url;
+        else if (desc_url.indexOf(test) > 0)
+        {
+            // Get start of url position:
+            var url = desc_url.indexOf(test);
+            // Cut out the url until a double-quote:
+            url = "http://www." + desc_url.substr(url, desc_url.indexOf('"', url) - url);
+        }
+        else
+        {
+            // Fail at this point:
+            throw error("parseFeedItem", "Failed to get any url from:" + link_url + " " +  guid_url + " " + desc_url);
+        }
+
+        // Fix 00:00 time for "published" field:
+        var published = item.getFirstByXPath("pubDate").asText();
+        published = published.replace(/\./g, "-").replace(/ 00:00/, new Date().format(" HH:mm:ss"));
+
+        // Result object:
+        var result =  {
+            url:        url,
+            title:      item.getFirstByXPath("title").asText(),
+            published:  published,
+            summary:    item.getFirstByXPath("description").asText(),
+            parser:     name
+            };
+
+        for (var key in doc_template)
+            result[key] = doc_template[key];
+
+        return result;
+    }
+}
+
+
+/**
+ *
+ */
+exports.extractPageData = function(original, page) {
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
+
+    // Warning: No updates to original after this point or you'll regret it.
+    if (doc.converted_by)
+        return doc;
+
+    htmlunit.fixPageUrls(page);
 
     // --- get title: ---
-    result.title = page.getFirstByXPath('//caption[@class="pav"]').asText();
-    if (!result.title)
-        delete result.title;
+    doc.title = page.getFirstByXPath('//caption[@class="pav"]').asText();
+    if (!doc.title)
+        delete doc.title;
 
     // --- get meta: ---
     var info_table = page.getFirstByXPath('/html/body/table[@class="basic"]/tbody');
@@ -124,7 +156,7 @@ exports.extractDocumentData = function(doc)
 
 
 
-    result.teises_aktas = info;
+    doc.teises_aktas = info;
 
 
     // --- get html: ---
@@ -134,13 +166,23 @@ exports.extractDocumentData = function(doc)
     var last_hr = doc.html.lastIndexOf(hr_html);
 
     if (first_hr < 0 || last_hr < 0 || last_hr <= first_hr)
-        return this.error("extractDocumentData", ["HRs not found.", first_hr, last_hr, "IN", doc.original_id, doc.meta.url]);
+        throw this.error("extractPageData", "HRs not found");
 
-    result.html = doc.html.slice(
+    doc.html = doc.html.slice(
             first_hr + hr_html.length,
             last_hr);
 
-    return result;
+    // Schedule "nėra teksto" docs for re-check after 5 minutes:
+    if (doc.html.match("nėra teksto HTML formatu")) {
+        require("PolicyFeed/UrlQueue").scheduleUrl({
+            url: doc.url,
+            domain: "www.lrs.lt",
+            parser: this.name,
+            method: "parsePage"
+            }, new Date().getTime() + 5*60*1000);
+    }
+
+    return doc;
 }
 
 

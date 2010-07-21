@@ -1,7 +1,7 @@
 /*
     Copyright 2009,2010 Emilis Dambauskas
 
-    This file is part of PolicyFeed module.
+    This file is part of KaVeikiaValdzia.lt website.
 
     PolicyFeed is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -18,74 +18,70 @@
 */
 
 require("core/date");
-
-exports.disabled = true;
+var htmlunit = require("htmlunit");
 
 // Extends:
 exports.extendObject("PolicyFeed/Parser");
-// Mixins:
-//exports.extractDocumentData = loadObject("PolicyFeed/sources/LRS_teises_aktai").extractDocumentData.clone(false, true);
 
+// Config:
+exports.feed_url = "http://www3.lrs.lt/pls/inter/w5_sale.ses_pos";
 
-exports.name = "LRS_darbotvarkes";
-exports.short_name = "LRS-DB";
-exports.index_url = 'http://www3.lrs.lt/pls/inter/w5_sale.ses_pos';
+exports.domains = {
+    "www.lrs.lt": 3000,
+    "www3.lrs.lt": 3000
+};
 
 exports.doc_template = {
-    source: exports.name,
-    short_source: exports.short_name
-    };
+    type: "darbotvarke",
+    org: "Seimas",
+    organization: "Lietuvos Respublikos Seimas"
+};
 
 //------------------------------------------------------------------------
 
 /**
  *
  */
-exports.parseIndex = function(index)
-{
+exports.extractFeedItems = function(page) {
+    this.validateFeedPage(page);
+
     var path = '/html/body/div/table/tbody/tr[3]/td/table/tbody/tr/td/align/a';
 
-    if (!index.getByXPath)
-        return this.error("parseIndex", index); 
-    
-    var items = index.getByXPath(path).toArray();
+    var items = page.getByXPath(path).toArray();
     if (items.length < 1)
-        return this.error("parseIndex", "No items found in index.");
-
-    return items.map(this.parseIndexItem);
-}
-
-
-exports.parseIndexItem = function(item)
-{
-    return {
-        url: item.getAttribute("href"),
-        title: item.asText(),
-        published: new Date().format("yyyy-MM-dd HH:mm:ss"),
-        summary: ""
-    };
+        return [];
+    else {
+        return items.map(function(item) {
+                return {
+                    url: item.getAttribute("href"),
+                    title: item.asText(),
+                    published: new Date().format("yyyy-MM-dd HH:mm:ss"),
+                    summary: ""
+                };
+            });
+    }
 }
 
 
 /**
  *
  */
-exports.extractDocumentData = function(doc)
-{
-    this.triggerEvent("extractDocumentData-debug", doc);
+exports.extractPageData = function(original, page) {
+    // create doc from original:
+    var doc = original;
+    doc._id = doc._id.replace("originals", "docs");
 
-    if (doc.meta.converted_by)
-        return false;
+    // Warning: No updates to original after this point or you'll regret it.
+    if (doc.converted_by)
+        return doc;
 
-    var page = this.htmlunit.getPageFromHtml(doc.html, doc.meta.url, this.name);
-    this.htmlunit.fixPageUrls(page);
+    htmlunit.fixPageUrls(page);
 
-    var result = {};
 
     // --- get title: ---
-    result.title = page.getFirstByXPath('//caption[@class="pav"]').asText();
-    if (!result.title)
-        delete result.title;
+    doc.title = page.getFirstByXPath('//caption[@class="pav"]').asText();
+    if (!doc.title)
+        delete doc.title;
 
     // --- get html: ---
     doc.html = page.asXml();
@@ -94,13 +90,13 @@ exports.extractDocumentData = function(doc)
     var last_hr = doc.html.lastIndexOf(hr_html);
 
     if (first_hr < 0 || last_hr < 0 || last_hr <= first_hr)
-        return this.error("extractDocumentData", ["HRs not found.", first_hr, last_hr, "IN", doc.original_id, doc.meta.url]);
+        throw this.error("extractPageData", "HRs not found.");
 
-    result.html = doc.html.slice(
+    doc.html = doc.html.slice(
             first_hr + hr_html.length,
             last_hr);
 
-    return result;
+    return doc;
 }
 
 
