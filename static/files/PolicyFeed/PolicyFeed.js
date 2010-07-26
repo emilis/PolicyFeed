@@ -22,23 +22,23 @@ var PolicyFeed = {};
 
 PolicyFeed.expandDocument = function(link)
 {
-    var div = link.parentNode.parentNode;
-    if (!div.expanded)
+    var tr = link.parentNode.parentNode;
+    if (!tr.expanded)
     {
         var url = link.href + ".json";
         jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument);
     }
-    else if (div.expanded == "expanded")
+    else if (tr.expanded == "expanded")
     {
-        div.expanded = "hidden";
-        jQuery(div).removeClass("expanded");
-        jQuery("#" + div.id + "-content").css("display", "none");
+        tr.expanded = "hidden";
+        jQuery(tr).removeClass("expanded");
+        jQuery(tr.nextSibling).css("display", "none");
     }
-    else if (div.expanded == "hidden")
+    else if (tr.expanded == "hidden")
     {
-        div.expanded = "expanded";
-        jQuery(div).addClass("expanded");
-        jQuery("#" + div.id + "-content").css("display", "block");
+        tr.expanded = "expanded";
+        jQuery(tr).addClass("expanded");
+        jQuery(tr.nextSibling).css("display", "");
     }
 
 
@@ -46,27 +46,24 @@ PolicyFeed.expandDocument = function(link)
 
 PolicyFeed.doExpandDocument = function(data, status)
 {
-    var div_id = data._id.replace(/\//g, "-");
-    var div = document.getElementById(div_id);
+    var tr_id = data._id.replace(/\//g, "-");
+    var tr = document.getElementById(tr_id);
 
-    div.expanded = "expanded";
-    jQuery(div).addClass("expanded");
-    jQuery(div).append(
-        '<div id="' + div_id + '-content" class="content">'
-        + '<div class="html">' + data.html + '</div>'
-        + '<div class="links">'
-            + '<a class="collapse" href="#' + div_id + '" onClick="PolicyFeed.collapseDocument(\'' + div_id + '\')">Suskleisti&uarr;</a>'
-            + '<span class="source">Šaltinis: <a href="' + data.url + '">' + data.url + '</a></span>'
-        + '</div>'
-        + '</div>');
+    tr.expanded = "expanded";
+
+    jQuery(tr).addClass("expanded");
+    jQuery(tr).after(
+        '<tr id="' + tr_id + '-content" class="content">'
+        + '<td colspan="3">' + data.html + '</td>'
+        + '</tr>');
 }
 
 
 PolicyFeed.collapseDocument = function(id)
 {
-    var div = document.getElementById(id);
-    div.expanded = "hidden";
-    jQuery(div).removeClass("expanded");
-    jQuery("#" + div.id + "-content").css("display", "none");
+    var tr = document.getElementById(id);
+    tr.expanded = "hidden";
+    jQuery(tr).removeClass("expanded");
+    jQuery("#" + tr.id + "-content").css("display", "none");
 }
 
