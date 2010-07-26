@@ -4,6 +4,8 @@ import("config");
 
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
+var query;
+
 returnVar("side", 
     loadObject("PolicyFeed/Calendar").showBlock()
     );
@@ -50,14 +52,21 @@ function isoToJsDate(str)
 }
 
 %>
-<form id="search">
-    <input id="q" name="q"><input id="search-submit" type="submit" value="Ieškoti">
+<form id="search" action="<%= config.WEB_URL %>/docs/search/">
+    <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
     <p id="search-hint">PVZ.: Kubilius, Grybauskaitė, LSDP, Žmogaus teisės</p>
 </form>
-<div id="results-info">
-    <span id="result-count">Rasta 50 rezultatų</span>
-    <a id="rss-search" href="#"><img src="<%= site_files %>/rss.png" align="absmiddle"> Užsakykite pranešimus su "degutienė"</a>
-</div>
+<div id="results-info"><%
+
+    if (query) {
+        print('<span id="result-count">Rasta ' + numFound + ' rezultatų</span>');
+        print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
+        print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite pranešimus su "' + query  + '"</a>');
+    } else {
+        print('<span id="result-count">Viso: ' + numFound + ' dokumentų</span>');
+    }
+
+%></div>
 <div id="doc-list">
 <%
 
@@ -97,9 +106,9 @@ for each(var doc in docs)
     div_id = doc.id.replace(/\//g, "-");
 
     print('<tr id="' + div_id + '">');
-    print('<td class="type ' + doc.type + '" nowrap="nowrap">');
-        print('<a href="#" class="org">' + doc.org + '</a> &raquo; ');
-        print('<a href="#" class="type ' + doc.type + '">' + doc.type.substr(0, 3) + '</a></td>');
+    print('<td class="type ' + doc.type + '" nowrap="nowrap" align="right">');
+        print('<a href="#" class="org" title="' + doc.organization + '">' + doc.org + '</a>&nbsp;&raquo;&nbsp;');
+        print('<a href="#" class="type ' + doc.type + '" title="' + doc.type + '">' + doc.type.substr(0, 3) + '</a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
     print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>&nbsp;');
