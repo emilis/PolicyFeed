@@ -2,25 +2,34 @@
 
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
-%><div style="margin-top: 22px;">
-    <h3>Prisijunkite prie mūsų</h3>
-    
-    <p><a href="http://www.facebook.com/pages/KaVeikiaValdzialt/248440466844"><img src="<%= site_files %>/fb.gif" border="0" hspace="5" vspace="2" align="right"></a>
-        <img src="<%= site_files %>/tri.gif"> <a href="http://www.facebook.com/pages/KaVeikiaValdzialt/248440466844">Facebook puslapis</a><br>
-        Tapkite mūsų fanu: gaukite pranešimus apie svetainės naujienas, teikite pasiūlymus, rekomenduokite svetainę savo draugams. Jūsų palaikymas mums svarbus!</p>
-    
-    <p><a href="http://groups.google.com/group/manovalstybe"><img src="<%= site_files %>/gg.png" align="right" border="0" hspace="5" vspace="2"></a>
-        <img src="<%= site_files %>/tri.gif"> <a href="http://groups.google.com/group/manovalstybe">&quot;Mano Valstybė&quot;</a><br>
-        Jei norite pagelbėti kuriant šį ir kitus projektus &mdash; junkitės prie mūsų.</p>
-
-    <p><a href="<%= config.WEB_URL %>/pages/programuotojams"><img src="<%= site_files %>/bzr.gif" align="right" border="0" hspace="5" vspace="2"></a>
-        <img src="<%= site_files %>/tri.gif"> <a href="<%= config.WEB_URL %>/pages/programuotojams">Programuotojams</a><br>
-        Dėmesio: atviras kodas ir laisva programinė įranga. Yra ir šioks toks API. Daugiau informacijos apie naudojamą Server-side JavaScript.</p>
+%>
+<div>
+    <h3>Dalyvaukite</h3>
+    <div>
+        <p><img src="<%= site_files %>/facebook.png" align="left" style="margin: 0 5px 5px 0;"><a href="http://www.facebook.com/pages/KaVeikiaValdzialt/248440466844"><strong>Facebook puslapis</strong></a></p>
+        <p>Tapkite mūsų fanu: gaukite pranešimus apie svetainės naujienas, teikite pasiūlymus, rekomenduokite svetainę savo draugams. Jūsų palaikymas mums svarbus!</p>
+    </div>
+    <img src="<%= site_files %>/left-hr.png">
+    <div>
+        <p><a href="http://manovalstybe.lt/"><img src="<%= site_files %>/manovalstybe.png"></a></p>
+        <p>Jei norite pagelbėti kuriant šį ir kitus projektus - junkitės prie mūsų.</p>
+    </div>
+    <!--
+    <img src="<%= site_files %>/left-hr.png">
+    <div>
+        <p><img src="<%= site_files %>/opensource.png" align="left" style="margin: 0 5px 5px 0;">Dėmesio: atviras kodas ir laisva programinė įranga. Yra ir šioks toks API. Daugiau informacijos apie naudojama Server-side JavaScript.</p>
+    </div>
+    -->
 </div>
 <div>
-    <h3>Rekomenduojame</h3>
-    
-    <p><img src="<%= site_files %>/tri.gif"> <a href="http://seimas.idemokratija.info/">Atviras Seimas</a><br>
-        Seimo darbo statistika: lankomumas, balsavimai, kelionės. Statistikos analizė.</p>
+    <h3>Rėmėjai ir partneriai</h3>
+    <div align="center">
+        <a href="http://transparency.lt/"><img src="<%= site_files %>/tils.png"></a>
+        <a href="http://mysociety.org/"><img src="<%= site_files %>/mysociety.png" vspace="11"></a>
+        <a href="http://soros.org/"><img src="<%= site_files %>/soros.png"></a></div>
+</div>
+<div>
+    <h3>Hostingu remia</h3>
+    <div align="center"><a href="http://interdata.lt/"><img src="<%= site_files %>/interdata.png"></a></div>
 </div>
 

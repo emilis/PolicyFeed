@@ -2,11 +2,13 @@
 
 import("config");
 
+var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+
 returnVar("side", 
     loadObject("PolicyFeed/Calendar").showBlock()
-    + loadObject("Site").showBlock("source_filters")
     );
 
+/*
 switch(mode)
 {
     case "byDate":
@@ -20,6 +22,7 @@ switch(mode)
     default:
         returnVar("title", "Naujausi dokumentai");
 }
+*/
 
 var wdays = [
     "sekmadienis",
@@ -47,7 +50,15 @@ function isoToJsDate(str)
 }
 
 %>
-<div id="document-list">
+<form id="search">
+    <input id="q" name="q"><input id="search-submit" type="submit" value="Ieškoti">
+    <p id="search-hint">PVZ.: Kubilius, Grybauskaitė, LSDP, Žmogaus teisės</p>
+</form>
+<div id="results-info">
+    <span id="result-count">Rasta 50 rezultatų</span>
+    <a id="rss-search" href="#"><img src="<%= site_files %>/rss.png" align="absmiddle"> Užsakykite pranešimus su "degutienė"</a>
+</div>
+<div id="doc-list">
 <%
 
 var day = "";
@@ -71,14 +82,31 @@ for each(var doc in docs)
         dday = doc.published.substr(0, 10);
     if (dday != day)
     {
+        if (day)
+            print('</tbody></table></div></div>');
+        
         wday = wdays[isoToJsDate(dday).getDay()];
-        print('<h2 class="day">' + dday + ', ' + wday + '</h2>');
+        print('<div class="day"><div><table class="day">');
+        print('<thead><tr><th colspan="3">' + dday + ' / ' + wday + '</th></tr></thead>');
+        print('<tbody>');
+
         day = dday;
     }
 
     url = config.WEB_URL + doc.id;
     div_id = doc.id.replace(/\//g, "-");
 
+    print('<tr id="' + div_id + '">');
+    print('<td class="type ' + doc.type + '" nowrap="nowrap">');
+        print('<a href="#" class="org">' + doc.org + '</a> &raquo; ');
+        print('<a href="#" class="type ' + doc.type + '">' + doc.type.substr(0, 3) + '</a></td>');
+    print('<td class="title">');
+    print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
+    print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>&nbsp;');
+    print(doc.published.substr(11, 5) + '</td>');
+    print('</tr>');
+
+    /*
     print('<div id="' + div_id + '" class="document-link">');
     print('<span class="source ' + doc.type + '">' + doc.type + '</span>');
     
@@ -94,10 +122,13 @@ for each(var doc in docs)
     print('</a></h3>');
     
     print('</div>');
+    */
 }
 
 if (count < 1)
     print('<p class="warning">Pagal jūsų kriterijus sistema dokumentų nerado.</p>');
+else
+    print('</tbody></table></div></div>');
 
 %>
 </div>
