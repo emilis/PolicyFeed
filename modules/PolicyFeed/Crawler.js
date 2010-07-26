@@ -198,6 +198,28 @@ exports.parsePage = function(parser_name, url, page) {
 /**
  *
  */
+exports.reindexDoc = function(doc_id) {
+    var doc = JsonStorage.read(doc_id);
+
+    var url = { url: doc.url, parser: doc.parser };
+    url.method = "parsePage";
+    url.original_id = doc._id.replace("docs", "originals");
+
+    return UrlQueue.addUrl(url);
+}
+
+
+/**
+ *
+ */
+exports.reindexUrl = function(url) {
+    return this.reindexDoc( UrlList.getDocId(url) );
+}
+
+
+/**
+ *
+ */
 exports.saveOriginal = function(parser_name, url, page) {
     var original = JsonStorage.read(url.original_id);
 
