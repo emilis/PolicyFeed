@@ -78,6 +78,22 @@ function showCalendar(year, month, active_days)
         d = isoToJsDate(year + "-" + month + "-" + i);
     }
 
+    // Add empty cells to end of table:
+    var empty = d.getDay();
+    if (empty != 1)
+    {
+        if (empty == 0)
+            empty = 1;
+        else
+            empty = 8 - empty;
+
+        for (i=0; i < empty; i++)
+            html += '<td>&nbsp;</td>';
+
+        html += '</tr>';
+    }
+
+
     html += '</tbody></table></div>';
 
     return html;
