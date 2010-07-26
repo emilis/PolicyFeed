@@ -149,8 +149,20 @@ exports.onItemChange = function(action, _id, item) {
 /**
  *
  */
-exports.search = function(query) {
-    var res = httpclient.get(search_url + query);
+exports.search = function(query, options) {
+    print(query);
+    query = query.replace(/\s+/g, "+");
+
+    options = options || {};
+    var {highlight, fields, limit} = options;
+
+    var url = search_url;
+    if (fields && fields.length)
+        var url = url.replace(/fl=[^&]+/, "fl=" + fields.join(","));
+    if (limit)
+        var url = url.replace(/rows=[^&]+/, "rows=" + limit);
+
+    var res = httpclient.get(url + query);
     if (res.status === 200)
         return JSON.parse(res.content);
 }
@@ -186,6 +198,6 @@ exports.searchByYear = function(year) {
 /**
  *
  */
-exports.getLatestDocs = function () {
-    return this.search("*:*").response.docs;
+exports.getLatestDocs = function (options) {
+    return this.search("*:*", options).response;
 }
