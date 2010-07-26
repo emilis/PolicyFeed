@@ -144,6 +144,7 @@ PolicyFeedCalendar.show = function(d, active_days)
         d.setDate(i);
     }
 
+    // Add empty cells to end of table:
     var empty = d.getDay();
     if (empty != 1)
     {
