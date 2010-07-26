@@ -163,12 +163,10 @@ exports.showStats = function(time) {
 
     str += "\nLast url:\n\n";
     try {
-        str += JSON.stringify(last_error);
+        str += uneval(last_error);
     } catch (e) {
-        try {
-            str += uneval(last_error);
-        } catch (e) {} 
-    }
+        str += "Unable to serialize.";
+    } 
 
     return str;
 }
