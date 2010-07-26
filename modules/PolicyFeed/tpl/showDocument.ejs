@@ -12,7 +12,7 @@ if (doc.meta)
 if (!doc.org)
     doc.org = "";
 
-returnVar("title", doc.org + ": " + doc.title);
+returnVar("title", doc.title);
 
 // breadcrumbs:
 //*
@@ -27,20 +27,8 @@ var breadcrumbs = [
 returnVar("breadcrumbs", breadcrumbs);
 //*/
 
-%><div id="document">
-<%=doc.html%>
-</strong></em></b></i></u></s></tt></h1></h2></h3></h4></h5></h6></a>
-</div>
-
-<div id="comments">
-<h2>Komentarai</h2>
-<%= loadObject("PolicyFeed/Comments").showThread(doc._id) %>
-</div>
-<%
-
 // --- Side --- --- ----------------------------------------------------------
 
-var side = '<div style="font-size: 13px;">';
 var icons = '<img align="top" src="' + config.FILES_URL + '/KaVeikiaValdzia/';
 
 icons = {
@@ -49,38 +37,67 @@ icons = {
     script: icons + 'script.png">'
     };
 
-// Komentarai + šaltinis:
-side += '<p class="outset" style="margin-top: 0;"><a href="' + doc.url + '">'
-    + ' Originalus dokumentas</a> ' + icons.ext + '</p>';
+function tr_key_value(label, value, print_empty) {
+    if (value || print_empty)
+        print('<tr><td class="label">', label, ':</td><td>', value, '</td></tr>');
+}
 
+function obj_key_value(obj) {
+    for (var k in obj)
+        tr_key_value(k, obj[k]);
+}
+
+
+// Apie dokumentą:
+%>
+<table id="document-info">
+<thead><tr><th colspan="2">Apie dokumentą:</th></tr></thead>
+<tbody><%
+
+    obj_key_value({
+        "Įstaiga": doc.organization,
+        "Tipas": doc.type,
+        "Originalas": '<a href="' + doc.url + '">' + doc.title + '</a>',
+        "Publikuotas": doc.published
+        });
+
+    var formatai = {
+        JSON: config.WEB_URL + doc._id + ".json"
+    };
+
+    if (doc.teises_aktas && doc.teises_aktas.word)
+        formatai.Word = doc.teises_aktas.word;
+
+    print('<tr><td class="label">Failo formatai:</td><td>');
+    for (var fmt in formatai)
+        print('<a href="', formatai[fmt], '">', fmt, '</a><br>');
+
+
+%></tbody><%
 
 // Teisės akto meniu:
 if (doc.teises_aktas)
 {
     var ta = doc.teises_aktas;
-    //side += '<div>'; //<h3>Teisės akto informacija:</h3>';
+    print('<thead><tr><th colspan="2">Teisės akto informacija:</th></tr></thead>');
+    print('<tbody>');
 
-    // rusis, numeris, statusas, susije, word
-    side += '<p class="outset">Rūšis: ' + ta.rusis + '<br>\n';
-    side += 'Numeris: <a href="' + config.WEB_URL + '/docs/search/?q=' + ta.numeris + '">' + ta.numeris + '</a> ' + icons.search + '<br>\n';
-    if (ta.statusas)
-        side += "Statusas: " + ta.statusas + "<br>\n";
+    obj_key_value({
+        "Rūšis": ta.rusis,
+        "Numeris": '<a href="' + config.WEB_URL + '/docs/search/?q=' + ta.numeris + '">' + ta.numeris + icons.search + '</a>',
+        "Statusas": ta.statusas
+        });
+
     if (ta.susije)
-        side += '<br><a href="' + ta.susije + '">Susiję teisės aktai</a> ' + icons.ext;
-    if (ta.word)
-        side += '<br><a href="' + ta.word + '">Word dokumentas</a> ' + icons.ext;
-
-    //side += '</div>';
+        print('<tr><td colspan="2" class="label"><a href="', ta.susije, '">Susiję teisės aktai</a></td></tr>');
 }
 
-//side += '</div>';
 
+%>
+</table>
 
-// Techninė info:
-//side += '<div><h3>Techninė informacija:</h3>'
-side += '<p class="outset">Publikuotas:<br>' + doc.published.substr(0, 19) + '<br>'
-//    + 'Atnaujintas DB:<br>' + doc.updated.substr(0, 19) + '<br><br>'
-    + '<a href="' + config.WEB_URL + doc._id + '.json">Duomenys JSON formatu</a> ' + icons.script + '</p>';
-
-side += '</div>';
+<div id="document">
+<%=doc.html%>
+</strong></em></b></i></u></s></tt></h1></h2></h3></h4></h5></h6></a>
+</div>
 
