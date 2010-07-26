@@ -21,8 +21,8 @@ var config = getObjectConfig("PolicyFeed") || {};
 
 var WebMapper = loadObject("WebMapper");
 
-var jstorage = require("ctl/JsonStorage");
-var search = require("PolicyFeed/SolrClient");
+var JsonStorage = require("ctl/JsonStorage");
+var SolrClient = require("PolicyFeed/SolrClient");
 
 /**
  *
@@ -32,21 +32,22 @@ exports.showDocumentList = function(req)
     print("PolicyFeed.showDocumentList", loadObject("ctl/Request").getRemoteAddr(req));
 
     var cache_path = "/cache/index";
-    if (false) //jstorage.exists(cache_path))
-        var result = jstorage.read(cache_path);
+    if (false) //JsonStorage.exists(cache_path))
+        var result = JsonStorage.read(cache_path);
     else
     {
-        //var docs = jstorage.iterate("/docs/", { reverse: true, limit: 100});
+        //var docs = JsonStorage.iterate("/docs/", { reverse: true, limit: 100});
         //var docs = newObject("PolicyFeed/DocumentList").getLatest(100);
-        var docs = search.getLatestDocs();
+        var {numFound, docs} = SolrClient.getLatestDocs();
 
         var result = WebMapper.returnHtml(
             this.showContent("showDocumentList", {
                 "mode": "list",
-                "docs": docs
+                "docs": docs,
+                "numFound": numFound
                 }));
 
-        //jstorage.write(cache_path, result);
+        //JsonStorage.write(cache_path, result);
     }
 
     return result;
@@ -62,18 +63,57 @@ exports.search = function(req)
 
     print("PolicyFeed.search", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var results = search.search(req.params.q.trim());
+    var results = SolrClient.search(req.params.q.trim());
     var docs = [];
+    var numFound = 0;
 
-    if (results && results.response && results.response.docs)
-        docs = results.response.docs;
+    if (results && results.response) {
+        docs = results.response.docs || docs;
+        numFound = results.response.numFound || numFound;
+    }
     
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "search",
             "query": req.params.q,
-            "docs": docs
+            "docs": docs,
+            "numFound": numFound
             }));
+}
+
+
+/**
+ *
+ */
+exports.showRss = function(req) {
+    
+    print("PolicyFeed.showRss", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
+
+    var search_options =  {limit: 20, fields: ["id","published","type","org","title","html"]};
+    var query = "*:*";
+    if (req.params.q)
+        query = req.params.q.trim()
+
+    var results = SolrClient.search(query, search_options);
+
+    var docs = [];
+    var numFound = 0;
+    if (results && results.response) {
+        var {docs, numFound} = results.response;
+    }
+
+    for (var i in docs) {
+        var doc = JsonStorage.read(docs[i].id);
+        docs[i].html = doc.html;
+    }
+
+    return {
+        status: 200,
+        headers: {
+            "Content-Type": "application/xml"
+        },
+        body: [ this.showHtml("showRss", {"docs":docs}).html ]
+    };
 }
 
 
@@ -85,13 +125,14 @@ exports.showDay = function(req, day)
     print("PolicyFeed.showDay", day, loadObject("ctl/Request").getRemoteAddr(req));
     day = day.replace(/\//g, "-");
 
-    var docs = search.searchByDay(day).response.docs;
+    var {docs, numFound} = SolrClient.searchByDay(day).response;
 
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "search",
-            "query": "Publikuoti:" + day,
-            "docs": docs
+            //"query": "published:" + day,
+            "docs": docs,
+            "numFound": numFound
             }));
 }
 
@@ -104,13 +145,14 @@ exports.showMonth = function(req, month)
     print("PolicyFeed.showMonth", month, loadObject("ctl/Request").getRemoteAddr(req));
     month = month.replace("/", "-");
 
-    var docs = search.searchByMonth(month).response.docs;
+    var {docs, numFound} = SolrClient.searchByMonth(month).response;
 
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "search",
-            "query": "Publikuoti:" + month,
-            "docs": docs
+            //"query": "Publikuoti:" + month,
+            "docs": docs,
+            "numFound": numFound
             }));
 }
 
@@ -122,13 +164,14 @@ exports.showYear = function(req, year)
 {
     print("PolicyFeed.showYear", year, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var docs = search.searchByYear(year).response.docs;
+    var {docs, numFound} = SolrClient.searchByYear(year).response;
 
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
             "mode": "search",
-            "query": "Publikuoti:" + year,
-            "docs": docs
+            //"query": "Publikuoti:" + year,
+            "docs": docs,
+            "numFound": numFound
             }));
 }
 
@@ -139,7 +182,7 @@ exports.showDocument = function(req, id)
 {
     print("PolicyFeed.showDocument", id, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = jstorage.read(id);
+    var doc = JsonStorage.read(id);
     if (!doc)
         return this.showError(404);
 
@@ -157,7 +200,7 @@ exports.showDocumentFormat = function(req, id, format)
 {
     print("PolicyFeed.showDocumentFormat", id, format, loadObject("ctl/Request").getRemoteAddr(req));
 
-    var doc = jstorage.read(id);
+    var doc = JsonStorage.read(id);
     
     if (!doc)
         return this.showError(404);
@@ -178,13 +221,18 @@ exports.showDocumentFormat = function(req, id, format)
 /**
  *
  */
-exports.showContent = function(tpl, content)
-{
+exports.showContent = function(tpl, content) {
+    return loadObject("Site").showContent( this.showHtml(tpl, content) );
+}
+
+
+/**
+ *
+ */
+exports.showHtml = function(tpl, content) {
     var template = loadObject("ctl/Template");
     var tpl_file = require("fs").directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-
-    return loadObject("Site").showContent(
-        template.fetchObject(tpl_file, content) );
+    return template.fetchObject(tpl_file, content)
 }
 
 /**

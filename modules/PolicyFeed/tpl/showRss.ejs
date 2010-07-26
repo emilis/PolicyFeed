@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>KąVeikiaValdžia.lt</title>
+        <description>Visas valdžios naujienų srautas vienoje vietoje.</description>
+        <link>http://kaveikiavaldzia.lt/</link>
+        <%
+
+function println(line) {
+    print(line, "\n");
+}
+    
+
+for each (var doc in docs) {
+    println('<item>');
+    println('<title><![CDATA[' + doc.org + '» ' + doc.type + '» ' + doc.title + ']]></title>');
+    println('<description><![CDATA[' + doc.html + ']]></description>');
+    println('<link>http://kaveikiavaldzia.lt' + doc.id + '</link>');
+    println('<guid>http://kaveikiavaldzia.lt' + doc.id + '</guid>');
+    println('<pubDate>' + new Date(doc.published).toString() + '</pubDate>');
+    println('</item>');
+}
+
+%>
+    </channel>
+</rss>

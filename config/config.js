@@ -17,6 +17,7 @@ exports.urls = [
     [ /docs\/(\d\d\d\d)/,                           "PolicyFeed", "showYear" ],
 
     [ /docs\/search/,           "PolicyFeed", "search" ],
+    [ /docs\/rss/,              "PolicyFeed", "showRss" ],
     [ /docs\/?$/,               "PolicyFeed", "showDocumentList" ],
 
     // static pages:
@@ -56,7 +57,7 @@ exports.contentType = 'text/html';
 // --- Gluestick constants: ---
 
 var WEB_DIR = ROOT_DIR;
-var WEB_URL = "http://localhost:8080";
+var WEB_URL = "";
 exports.WEB_DIR = ROOT_DIR;
 exports.WEB_URL = WEB_URL;
 

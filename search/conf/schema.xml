@@ -47,7 +47,7 @@
    <field name="org" type="string" indexed="true" stored="true"/>
    <field name="organization" type="string" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
-   <field name="html" type="text" indexed="true" stored="false"/>
+   <field name="html" type="text" indexed="true" stored="true"/>
  </fields>
 
  <uniqueKey>id</uniqueKey>
