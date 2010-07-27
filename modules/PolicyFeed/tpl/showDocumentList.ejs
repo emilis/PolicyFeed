@@ -10,22 +10,6 @@ returnVar("side",
     loadObject("PolicyFeed/Calendar").showBlock()
     );
 
-/*
-switch(mode)
-{
-    case "byDate":
-        //returnVar("title", date);
-        returnVar("breadcrumbs", []);
-        break;
-    case "search":
-        returnVar("title", 'Paieškos "' + query.replace(/</g, "&lt;") + '" rezultatai:');
-        //returnVar("breadcrumbs", []);
-        break;
-    default:
-        returnVar("title", "Naujausi dokumentai");
-}
-*/
-
 var wdays = [
     "sekmadienis",
     "pirmadienis",
@@ -51,22 +35,10 @@ function isoToJsDate(str)
     return d;
 }
 
+
+print(require("PolicyFeed").showSearchBlock(query));
+
 %>
-<form id="search" action="<%= config.WEB_URL %>/docs/search/">
-    <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
-    <p id="search-hint">PVZ.: Kubilius, Grybauskaitė, LSDP, Žmogaus teisės</p>
-</form>
-<div id="results-info"><%
-
-    if (query) {
-        print('<span id="result-count">Rasta ' + numFound + ' rezultatų</span>');
-        print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
-        print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite pranešimus su "' + query  + '"</a>');
-    } else {
-        print('<span id="result-count">Viso: ' + numFound + ' dokumentų</span>');
-    }
-
-%></div>
 <div id="doc-list">
 <%
 
@@ -96,7 +68,7 @@ for each(var doc in docs)
         
         wday = wdays[isoToJsDate(dday).getDay()];
         print('<div class="day"><div><table class="day">');
-        print('<thead><tr><th colspan="3">' + dday + ' / ' + wday + '</th></tr></thead>');
+        print('<thead><tr><th colspan="4">' + dday + ' / ' + wday + '</th></tr></thead>');
         print('<tbody>');
 
         day = dday;
@@ -106,38 +78,21 @@ for each(var doc in docs)
     div_id = doc.id.replace(/\//g, "-");
 
     print('<tr id="' + div_id + '">');
-    print('<td class="type ' + doc.type + '" nowrap="nowrap" align="right">');
-        print('<a href="#" class="org" title="' + doc.organization + '">' + doc.org + '</a>&nbsp;&raquo;&nbsp;');
-        print('<a href="#" class="type ' + doc.type + '" title="' + doc.type + '">' + doc.type.substr(0, 3) + '</a></td>');
+    print('<td class="org" nowrap="nowrap" align="right">');
+        print('<a href="#" title="' + doc.organization + '">' + doc.org + '&nbsp;&raquo;</a></td>');
+    print('<td class="type">');
+        print('<a href="#" title="' + doc.type + '"><img src="' + site_files + "/" + doc.type + '.png"></a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
-    print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>&nbsp;');
-    print(doc.published.substr(11, 5) + '</td>');
+    print('<td class="expand">');
+        print(doc.published.substr(11, 5), "&nbsp;");
+        print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
+    print('</td>');
     print('</tr>');
 
-    /*
-    print('<div id="' + div_id + '" class="document-link">');
-    print('<span class="source ' + doc.type + '">' + doc.type + '</span>');
-    
-    print('<span class="props">');
-    print('<a class="link" href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">Išskleisti</a>');
-        // print HH:MM:
-        print(' <span class="time">' + doc.published.substr(11, 5) + '</span>');
-    print('</span>');
-    
-    print('<h3><span title="' + doc.organization + '">' + doc.org + ':</span>&nbsp;<a href="' + url + '">' + doc.title);
-    if (doc.comment_count)
-        print('</a> <a href="' + url + '#comments" class="comments">(' + doc.comment_count + ')');
-    print('</a></h3>');
-    
-    print('</div>');
-    */
 }
 
-if (count < 1)
-    print('<p class="warning">Pagal jūsų kriterijus sistema dokumentų nerado.</p>');
-else
-    print('</tbody></table></div></div>');
+print('</tbody></table></div></div>');
 
 %>
 </div>

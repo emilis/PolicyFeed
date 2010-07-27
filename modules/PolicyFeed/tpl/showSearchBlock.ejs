@@ -1,0 +1,17 @@
+<%
+
+import("config");
+
+%><form id="search" action="<%= config.WEB_URL %>/docs/search/">
+    <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
+    <p id="search-hint">PVZ.: <%
+
+    var suggestions = ["Kubilius", "Grybauskaitė", "mokesčiai", "korupcija", "internetas"];
+    suggestions = suggestions.map(function (item) {
+            return '<a href="' + config.WEB_URL + '/docs/search/?q=' + item + '">' + item + '</a>';
+            });
+    print(suggestions.join(", "));
+    
+    %></p>
+</form>
+

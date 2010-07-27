@@ -1,0 +1,64 @@
+<%
+
+import("config");
+
+var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+
+var query;
+
+returnVar("side", 
+    loadObject("PolicyFeed/Calendar").showBlock()
+    );
+
+print(require("PolicyFeed").showSearchBlock(query));
+
+%>
+<div id="results"><div>
+<table id="results-table">
+<thead><tr><th colspan="4"><%
+
+    print('<span id="result-count">Rasta ' + numFound + ' rezultatų</span>');
+    print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
+    print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite pranešimus su "' + query  + '"</a>');
+
+%></th></tr></thead>
+<tbody>
+<%
+
+var url = "";
+var tr_id = "";
+
+for each(var doc in docs)
+{
+    if (!doc.type)
+        doc.type = "unknown";
+    if (!doc.org)
+        doc.org = "???";
+    if (!doc.organization)
+        doc.organization = "???";
+
+    url = config.WEB_URL + doc.id;
+    tr_id = doc.id.replace(/\//g, "-");
+
+    print('<tr id="' + tr_id + '">');
+    print('<td class="org" nowrap="nowrap" align="right">');
+        print('<a href="#" title="' + doc.organization + '">' + doc.org + '&nbsp;&raquo;</a></td>');
+    print('<td class="type">');
+        print('<a href="#" title="' + doc.type + '"><img src="' + site_files + "/" + doc.type + '.png"></a></td>');
+    print('<td class="title">');
+
+    print('<a href="' + url + '" class="title">' + doc.title + '</a>');
+    if (highlighting[doc.id] && highlighting[doc.id].html)
+        print('<p>', highlighting[doc.id].html.join("</p><p>") , '</p>');
+    print('</td>');
+    
+    print('<td class="expand">');
+    print(doc.published.substr(0, 16).replace("T", "&nbsp;"), "&nbsp;");
+    print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
+    print('</td>');
+    print('</tr>');
+}
+
+%>
+</tbody></table>
+</div></div>

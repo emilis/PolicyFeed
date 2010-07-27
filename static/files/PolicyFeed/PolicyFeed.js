@@ -54,7 +54,7 @@ PolicyFeed.doExpandDocument = function(data, status)
     jQuery(tr).addClass("expanded");
     jQuery(tr).after(
         '<tr id="' + tr_id + '-content" class="content">'
-        + '<td colspan="3">' + data.html + '</td>'
+        + '<td colspan="4">' + data.html + '</td>'
         + '</tr>');
 }
 

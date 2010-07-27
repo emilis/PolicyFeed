@@ -19,25 +19,29 @@
 
 var config = getObjectConfig("PolicyFeed") || {};
 
-var WebMapper = loadObject("WebMapper");
 
+var fs = require("fs");
 var JsonStorage = require("ctl/JsonStorage");
 var SolrClient = require("PolicyFeed/SolrClient");
+var ctlTemplate = require("ctl/Template");
+var ctlRequest = require("ctl/Request");
+
+var WebMapper = loadObject("WebMapper");
+var Site = loadObject("Site");
+
 
 /**
  *
  */
 exports.showDocumentList = function(req)
 {
-    print("PolicyFeed.showDocumentList", loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showDocumentList", ctlRequest.getRemoteAddr(req));
 
     var cache_path = "/cache/index";
     if (false) //JsonStorage.exists(cache_path))
         var result = JsonStorage.read(cache_path);
     else
     {
-        //var docs = JsonStorage.iterate("/docs/", { reverse: true, limit: 100});
-        //var docs = newObject("PolicyFeed/DocumentList").getLatest(100);
         var {numFound, docs} = SolrClient.getLatestDocs();
 
         var result = WebMapper.returnHtml(
@@ -61,22 +65,25 @@ exports.search = function(req)
 {
     //todo: filter request parameters for invalid input.
 
-    print("PolicyFeed.search", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
 
-    var results = SolrClient.search(req.params.q.trim());
+    var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true});
     var docs = [];
     var numFound = 0;
+    var highlighting = {};
 
     if (results && results.response) {
         docs = results.response.docs || docs;
         numFound = results.response.numFound || numFound;
     }
+    if (results && results.highlighting)
+        highlighting = results.highlighting;
     
     return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
-            "mode": "search",
+        this.showContent("search", {
             "query": req.params.q,
             "docs": docs,
+            "highlighting": highlighting,
             "numFound": numFound
             }));
 }
@@ -87,7 +94,7 @@ exports.search = function(req)
  */
 exports.showRss = function(req) {
     
-    print("PolicyFeed.showRss", req.params.q, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showRss", req.params.q, ctlRequest.getRemoteAddr(req));
 
     var search_options =  {limit: 20, fields: ["id","published","type","org","title","html"]};
     var query = "*:*";
@@ -112,7 +119,7 @@ exports.showRss = function(req) {
         headers: {
             "Content-Type": "application/xml"
         },
-        body: [ this.showHtml("showRss", {"docs":docs}).html ]
+        body: [ this.showHtml("showRss", {"docs":docs}) ]
     };
 }
 
@@ -122,7 +129,7 @@ exports.showRss = function(req) {
  */
 exports.showDay = function(req, day)
 {
-    print("PolicyFeed.showDay", day, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showDay", day, ctlRequest.getRemoteAddr(req));
     day = day.replace(/\//g, "-");
 
     var {docs, numFound} = SolrClient.searchByDay(day).response;
@@ -142,7 +149,7 @@ exports.showDay = function(req, day)
  */
 exports.showMonth = function(req, month)
 {
-    print("PolicyFeed.showMonth", month, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showMonth", month, ctlRequest.getRemoteAddr(req));
     month = month.replace("/", "-");
 
     var {docs, numFound} = SolrClient.searchByMonth(month).response;
@@ -162,7 +169,7 @@ exports.showMonth = function(req, month)
  */
 exports.showYear = function(req, year)
 {
-    print("PolicyFeed.showYear", year, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showYear", year, ctlRequest.getRemoteAddr(req));
 
     var {docs, numFound} = SolrClient.searchByYear(year).response;
 
@@ -180,7 +187,7 @@ exports.showYear = function(req, year)
  */
 exports.showDocument = function(req, id)
 {
-    print("PolicyFeed.showDocument", id, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showDocument", id, ctlRequest.getRemoteAddr(req));
 
     var doc = JsonStorage.read(id);
     if (!doc)
@@ -198,7 +205,7 @@ exports.showDocument = function(req, id)
  */
 exports.showDocumentFormat = function(req, id, format)
 {
-    print("PolicyFeed.showDocumentFormat", id, format, loadObject("ctl/Request").getRemoteAddr(req));
+    print("PolicyFeed.showDocumentFormat", id, format, ctlRequest.getRemoteAddr(req));
 
     var doc = JsonStorage.read(id);
     
@@ -218,11 +225,22 @@ exports.showDocumentFormat = function(req, id, format)
         return this.showError(404);
 }
 
+//----------------------------------------------------------------------------
+
+
+/**
+ *
+ */
+exports.showSearchBlock = function(query) {
+    return this.showHtml("showSearchBlock", { query: query });
+}
+
 /**
  *
  */
 exports.showContent = function(tpl, content) {
-    return loadObject("Site").showContent( this.showHtml(tpl, content) );
+    var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
+    return Site.showContent( ctlTemplate.fetchObject(tpl_file, content) );
 }
 
 
@@ -230,9 +248,8 @@ exports.showContent = function(tpl, content) {
  *
  */
 exports.showHtml = function(tpl, content) {
-    var template = loadObject("ctl/Template");
-    var tpl_file = require("fs").directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-    return template.fetchObject(tpl_file, content)
+    var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
+    return ctlTemplate.fetch(tpl_file, content)
 }
 
 /**
