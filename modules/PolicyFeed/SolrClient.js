@@ -161,6 +161,8 @@ exports.search = function(query, options) {
         var url = url.replace(/fl=[^&]+/, "fl=" + fields.join(","));
     if (limit)
         var url = url.replace(/rows=[^&]+/, "rows=" + limit);
+    if (highlight)
+        url = url.replace("&q=", "&hl=true&hl.fl=html&q=");;
 
     var res = httpclient.get(url + query);
     if (res.status === 200)
