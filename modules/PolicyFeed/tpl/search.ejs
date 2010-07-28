@@ -6,6 +6,18 @@ var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
 var query;
 
+/**
+ * Converts an ISO string back to Date object.
+ */
+function isoToJsDate(str)
+{
+    var arr = str.replace(/[-T:.Z]/g, "-").split("-");
+    arr[1] = parseInt(arr[1], 10) - 1;
+    return new Date( Date.UTC.apply(undefined, arr) );
+}
+
+
+
 returnVar("side", 
     loadObject("PolicyFeed/Calendar").showBlock()
     );
@@ -40,11 +52,13 @@ for each(var doc in docs)
     url = config.WEB_URL + doc.id;
     tr_id = doc.id.replace(/\//g, "-");
 
+    doc.published = isoToJsDate(doc.published);
+
     print('<tr id="' + tr_id + '">');
     print('<td class="org" nowrap="nowrap" align="right">');
-        print('<a href="#" title="' + doc.organization + '">' + doc.org + '&nbsp;&raquo;</a></td>');
+        print('<a href="', config.WEB_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
     print('<td class="type">');
-        print('<a href="#" title="' + doc.type + '"><img src="' + site_files + "/" + doc.type + '.png"></a></td>');
+        print('<a href="', config.WEB_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
 
     print('<a href="' + url + '" class="title">' + doc.title + '</a>');
@@ -53,7 +67,7 @@ for each(var doc in docs)
     print('</td>');
     
     print('<td class="expand">');
-    print(doc.published.substr(0, 10), "&nbsp;");
+    print(doc.published.format("yyyy-MM-dd"), "&nbsp;");
     print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
     print('</td>');
     print('</tr>');

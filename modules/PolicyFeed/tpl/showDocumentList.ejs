@@ -1,6 +1,7 @@
 <%
 
 import("config");
+import("core/date");
 
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
@@ -20,19 +21,14 @@ var wdays = [
     "šeštadienis"
     ];
 
+/**
+ * Converts an ISO string back to Date object.
+ */
 function isoToJsDate(str)
 {
-    var d = new Date();
-    d.setFullYear(str.substr(0, 4));
-    d.setMonth(parseInt(str.substr(5,2), 10) - 1);
-    d.setDate(str.substr(8, 2));
-    if (str.length > 10)
-    {
-        d.setHours(str.substr(11, 2));
-        d.setMinutes(str.substr(14, 2));
-        d.setSeconds(str.substr(17, 2));
-    }
-    return d;
+    var arr = str.replace(/[-T:.Z]/g, "-").split("-");
+    arr[1] = parseInt(arr[1], 10) - 1;
+    return new Date( Date.UTC.apply(undefined, arr) );
 }
 
 
@@ -58,15 +54,16 @@ for each(var doc in docs)
     if (!doc.organization)
         doc.organization = "???";
 
+    doc.published = isoToJsDate(doc.published);
+
     count++;
-    if (doc.published.substr)
-        dday = doc.published.substr(0, 10);
+    dday = doc.published.format("yyyy-MM-dd");
     if (dday != day)
     {
         if (day)
             print('</tbody></table></div></div>');
         
-        wday = wdays[isoToJsDate(dday).getDay()];
+        wday = wdays[doc.published.getDay()];
         print('<div class="day"><div><table class="day">');
         print('<thead><tr><th colspan="4">' + dday + ' / ' + wday + '</th></tr></thead>');
         print('<tbody>');
@@ -79,13 +76,13 @@ for each(var doc in docs)
 
     print('<tr id="' + div_id + '">');
     print('<td class="org" nowrap="nowrap" align="right">');
-        print('<a href="#" title="' + doc.organization + '">' + doc.org + '&nbsp;&raquo;</a></td>');
+        print('<a href="', config.WEB_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
     print('<td class="type">');
-        print('<a href="#" title="' + doc.type + '"><img src="' + site_files + "/" + doc.type + '.png"></a></td>');
+        print('<a href="', config.WEB_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
     print('<td class="expand">');
-        print(doc.published.substr(11, 5), "&nbsp;");
+        print(doc.published.format("HH:mm"), "&nbsp;");
         print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
     print('</td>');
     print('</tr>');
