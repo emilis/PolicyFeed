@@ -55,6 +55,9 @@ var stripTags = function(str) {
  *
  */
 exports.itemToXml = function(item) {
+
+    var text = item.text ? item.text : item.html;
+
     return '<doc>' 
         + '<field name="id">' + item._id + '</field>'
         + '<field name="published">' + prepareDate(item.published) + '</field>'
@@ -62,7 +65,7 @@ exports.itemToXml = function(item) {
         + '<field name="org">' + item.org + '</field>'
         + '<field name="organization">' + item.organization + '</field>'
         + '<field name="title">' + stripTags(item.title) + '</field>'
-        + '<field name="html">' + stripTags(item.html) + '</field>'
+        + '<field name="html">' + stripTags(text) + '</field>'
         + '</doc>';
 }
 
