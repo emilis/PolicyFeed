@@ -174,18 +174,18 @@ exports.setPageCharset = function(page, charset)
 /**
  *
  */
-exports.fixPageUrls = function(page)
-{
+exports.fixPageUrls = function(page) {
     var anchors = page.getAnchors().toArray();
 
     anchors.map(function (a) {
-        a.setAttribute("href", page.getFullyQualifiedUrl(a.getAttribute("href")).toString());
+            if (a.hasAttribute("href"))
+                a.setAttribute("href", page.getFullyQualifiedUrl(a.getAttribute("href")).toString());
         });
 
     var images = page.getByXPath("//img").toArray();
 
     images.map(function (i) {
-        i.setAttribute("src", page.getFullyQualifiedUrl(i.getAttribute("src")).toString());
+            i.setAttribute("src", page.getFullyQualifiedUrl(i.getAttribute("src")).toString());
         });
 }
 
