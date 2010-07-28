@@ -53,7 +53,7 @@ for each(var doc in docs)
     print('</td>');
     
     print('<td class="expand">');
-    print(doc.published.substr(0, 16).replace("T", "&nbsp;"), "&nbsp;");
+    print(doc.published.substr(0, 10), "&nbsp;");
     print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
     print('</td>');
     print('</tr>');
