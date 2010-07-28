@@ -58,7 +58,7 @@ exports.extractPageData = function(original, page) {
         doc.title = title.asText();
     title.remove();
 
-    doc.html = content.asXml();
+    doc.html = content;
 
     return doc;
 }

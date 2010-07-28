@@ -180,6 +180,13 @@ exports.extractPageData = function(original, page) {
             parser: this.name,
             method: "parsePage"
             }, new Date().getTime() + 5*60*1000);
+    } else {
+        doc.html = '<hml><body>' + doc.html + '</body></html>';
+        var url = page.webResponse.requestUrl;
+        var window_name = page.getEnclosingWindow().name;
+
+        var page = htmlunit.getPageFromHtml(doc.html, url, window_name, "UTF-8");
+        doc.html = page.getFirstByXPath("/html/body");
     }
 
     return doc;

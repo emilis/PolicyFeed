@@ -17,6 +17,8 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var DomElement = com.gargoylesoftware.htmlunit.html.DomElement;
+
 var fs = require("fs");
 var htmlunit = require("htmlunit");
 var UrlQueue = require("PolicyFeed/UrlQueue");
@@ -24,6 +26,12 @@ var UrlList = require("PolicyFeed/UrlList");
 var BrowserController = require("PolicyFeed/BrowserController");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
+
+var filters = {
+    "default": require("PolicyFeed/filters/default"),
+    abiword: require("PolicyFeed/filters/abiword"),
+};
+
 
 
 exports.parsers = {};
@@ -186,9 +194,13 @@ exports.parsePage = function(parser_name, url, page) {
         var doc = parser.extractPageData(original, page);
 
         // run default filters on doc html:
-        doc.html = require("PolicyFeed/filters/default").filter(doc.html);
+        if (doc.html instanceof DomElement) {
+            doc.text = doc.html.asText();
+            doc.html = filters["default"].filterXml(doc.html).asXml();
+        }
+        doc.html = filters["default"].filter(doc.html);
         if (doc.converted_by == "abiword")
-            doc.html = require("PolicyFeed/filters/abiword").filter(doc.html)
+            doc.html = filters["abiword"].filter(doc.html)
 
         JsonStorage.write(doc._id, doc);
     }

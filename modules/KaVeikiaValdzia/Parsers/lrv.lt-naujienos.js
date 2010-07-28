@@ -66,7 +66,16 @@ exports.extractPageData = function(original, page) {
     if ((extra_div = news_div.getLastChild()) && extra_div.getTagName && (extra_div.getTagName() == "div"))
         extra_div.remove();
 
-    doc.html = news_div.asXml();
+
+    // remove "back" links:
+    var anchors = news_div.getElementsByTagName("a").toArray();
+    for each (var a in anchors) {
+        if (a.getAttribute("href").indexOf("history.back()") && a.asText() == "Atgal") {
+            a.remove();
+        }
+    }
+
+    doc.html = news_div;
 
     return doc;
 }

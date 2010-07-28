@@ -104,7 +104,7 @@ exports.extractPageData = function(original, page) {
     else
         html = content.getFirstByXPath('./div/table/tbody/tr/td');
 
-    doc.html = html.asXml();
+    doc.html = html;
 
     return doc;
 }

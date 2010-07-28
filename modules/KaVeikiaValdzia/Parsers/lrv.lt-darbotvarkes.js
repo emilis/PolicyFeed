@@ -156,8 +156,16 @@ exports.extractPageData = function(original, page)
         extra_div.remove();
     if ((extra_div = text.getLastChild()) && extra_div.getTagName && (extra_div.getTagName() == "div"))
         extra_div.remove();
+
+    // remove "back" links:
+    var anchors = text.getElementsByTagName("a").toArray();
+    for each (var a in anchors) {
+        if (a.getAttribute("href").indexOf("/lt/veikla/darbotvarkes") > 1 && a.asText().indexOf("Atgal") > -1) {
+            a.remove();
+        }
+    }
    
-    doc.html = text.asXml();
+    doc.html = text;
 
     return doc;
 }
