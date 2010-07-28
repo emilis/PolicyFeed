@@ -6,7 +6,7 @@ import("config");
     <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
     <p id="search-hint">PVZ.: <%
 
-    var suggestions = ["Kubilius", "Grybauskaitė", "mokesčiai", "korupcija", "internetas"];
+    var suggestions = ["Kubilius", "Grybauskaitė", "mokesčiai", "internetas"];
     suggestions = suggestions.map(function (item) {
             return '<a href="' + config.WEB_URL + '/docs/search/?q=' + item + '">' + item + '</a>';
             });
