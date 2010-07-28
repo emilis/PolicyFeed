@@ -48,18 +48,32 @@ function obj_key_value(obj) {
 }
 
 
-// Apie dokumentą:
 %>
-<table id="document-info">
-<thead><tr><th colspan="2">Apie dokumentą:</th></tr></thead>
-<tbody><%
+<div id="breadcrumbs">
+    <a href="<%= config.WEB_URL %>/">Pradžia</a> » 
+<%
+
+    print('<a href="', config.WEB_URL, doc._id.substr(0, 10), '">', doc._id.substr(6, 4), '</a> » ');
+    print('<a href="', config.WEB_URL, doc._id.substr(0, 13), '">', doc._id.substr(11, 2), '</a> » ');
+    print('<a href="', config.WEB_URL, doc._id.substr(0, 16), '">', doc._id.substr(14, 2), '</a>');
+
+%></div>
+
+<div id="document"><div>
+
+<div id="document-info">
+<h3>Apie dokumentą</h3>
+<table><tbody><%
 
     obj_key_value({
         "Įstaiga": doc.organization,
         "Tipas": doc.type,
-        "Originalas": '<a href="' + doc.url + '">' + doc.title + '</a>',
         "Publikuotas": doc.published
         });
+
+%></tbody></table>
+<div><table><tbody><%
+
 
     var formatai = {
         JSON: config.WEB_URL + doc._id + ".json"
@@ -70,17 +84,19 @@ function obj_key_value(obj) {
 
     print('<tr><td class="label">Failo formatai:</td><td>');
     for (var fmt in formatai)
-        print('<a href="', formatai[fmt], '">', fmt, '</a><br>');
+        print('<a href="', formatai[fmt], '">', fmt, '</a>, ');
+    print('</td></tr>');
 
-
-%></tbody><%
+%></tbody></table></div>
+<div><a href="<%= doc.url %>" title="<%= doc.title.replace(/"/g, "&quot;") %>">Dokumento originalas</a></div>
+<%
 
 // Teisės akto meniu:
 if (doc.teises_aktas)
 {
     var ta = doc.teises_aktas;
-    print('<thead><tr><th colspan="2">Teisės akto informacija:</th></tr></thead>');
-    print('<tbody>');
+    print('<h4>Teisės akto informacija:</h4>');
+    print('<table><tbody>');
 
     obj_key_value({
         "Rūšis": ta.rusis,
@@ -88,16 +104,20 @@ if (doc.teises_aktas)
         "Statusas": ta.statusas
         });
 
+    print('</tbody></table>');
+
     if (ta.susije)
-        print('<tr><td colspan="2" class="label"><a href="', ta.susije, '">Susiję teisės aktai</a></td></tr>');
+        print('<div><a href="', ta.susije, '">Susiję teisės aktai</a></div>');
 }
 
 
 %>
-</table>
+</div>
 
-<div id="document">
+<h1 id="document-title"><%=doc.title%></h1>
+
 <%=doc.html%>
 </strong></em></b></i></u></s></tt></h1></h2></h3></h4></h5></h6></a>
-</div>
+
+</div></div>
 

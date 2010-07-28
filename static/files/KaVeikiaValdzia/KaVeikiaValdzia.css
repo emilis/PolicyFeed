@@ -8,12 +8,38 @@ body {
     background: white url('left-bg.png') repeat-y scroll 0 0;
 }
 
-a { color: #047bbf; }
+a:link { color: #047bbf; }
+
 a:visited { color: #551A8B; }
 
 a > img {
     border: 0;
 }
+
+
+/* --- Rounded double borders: --- */
+#page,
+#document,
+#results,
+div.day {
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    background-color: #efefef;
+    padding: 2px;
+    margin-bottom: 2em;
+}
+
+#page > div,
+#document > div,
+#results > div,
+div.day > div {
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    background-color: white;
+}
+
 
 /* --- Top: --- */
 #top {
@@ -75,6 +101,11 @@ a > img {
     margin: 14px 10px 40px 215px;
 }
 
+    #breadcrumbs {
+        padding: 6px 0px 24px 8px;
+        font-size: 17px;
+    }
+
     #search {
         color: #999;
         margin-bottom: 1.5em;
@@ -135,24 +166,8 @@ a > img {
     #results {
         margin-top: 1.5em;
     }
-    
-    div.day,
-    #results {
-        border: 1px solid #e5e5e5;
-        border-radius: 3px;
-        -moz-border-radius: 3px;
-        background-color: #efefef;
-        padding: 2px;
-        margin-bottom: 2em;
-    }
+   
 
-    div.day > div,
-    #results > div {
-        border: 1px solid #e5e5e5;
-        border-radius: 3px;
-        -moz-border-radius: 3px;
-        background-color: white;
-    }
 
         #results-table,
         table.day {
@@ -363,29 +378,96 @@ a > img {
             }
 
 /* --- Document: --- */
-#document-info {
-    border-collapse: collapse;
-    border: 1px outset #ccc;
-    float: right;
-    max-width: 250px;
-    background-color: #ffffde;
-    margin: 0 0 10px 10px;
+
+#page,
+#document {
+    margin-left: 8px;
 }
 
-    #document-info > thead > tr > th {
-        border: 1px outset #ccc;
+    #page a:hover,
+    #document a:hover {
+        text-decoration: none;
     }
 
-    #document-info > tbody > tr > td {
-        /* border: 1px dotted #666; */
-        padding: 3px 5px;
-        font-size: 11px;
+    #page > div,
+    #document > div {
+        padding: 23px;
     }
 
-        #document-info > tbody > tr > td.label {
-            font-weight: bold;
-            text-align: right;
-            vertical-align: top;
+        #page > div > h1,
+        #document-title {
+            margin-top: 0;
+            font-weight: normal;
+            font-size: 24px;
         }
 
-    
+
+        #document-info {
+            border: 1px solid #c0b189;
+            float: right;
+            width: 260px;
+            background-color: #fcf9ef;
+            margin: 0 0 12px 12px;
+            font-size: 11px;
+        }
+
+            #document-info > h3 {
+                background-color: #e8e4cf;
+                color: #726d56;
+                padding: 10px;
+                margin: 0;
+                font-size: 14px;
+            }
+
+            #document-info > h4 {
+                background-color: #e8e4cf;
+                color: #726d56;
+                padding: 10px;
+                margin: 0;
+                font-size: 12px;
+            }
+
+
+            #document-info > div {
+                border-top: 1px dotted #b7b7b7;
+                text-align: center;
+            }
+
+                #document-info > div > a {
+                    display: block;
+                    padding: 13px;
+                    font-weight: bold;
+                }
+
+            #document-info > table,
+            #document-info > div > table {
+                width: 240px;
+                margin: 5px;
+            }
+
+                #document-info > table > tbody > tr > td,
+                #document-info > div > table > tbody > tr > td {
+                    padding: 4px 3px;
+                    font-size: 11px;
+                    text-align: left;
+                }
+
+                #document-info > table > tbody > tr > td.label,
+                #document-info > div > table > tbody > tr > td.label {
+                    width: 78px;
+                    font-weight: bold;
+                    text-align: right;
+                    vertical-align: top;
+                }
+
+/*--- Pages ---*/
+#page {
+    margin-top: 20px;
+}
+
+    #page h2,
+    #page h3,
+    #page h4,
+    #page h5 {
+        font-weight: normal;
+    }
