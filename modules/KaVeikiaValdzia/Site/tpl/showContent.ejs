@@ -60,17 +60,6 @@ function javascript()
         </div>
         <div id="main"><%
 
-            if (breadcrumbs) {
-                print('<div id="breadcrumbs"><a href="' + config.WEB_URL + '/">Pradžia</a> » ');
-                for (var i=0; i<breadcrumbs.length; i++) {
-                    print('<a href="' + config.WEB_URL + breadcrumbs[i][0] + '">' + breadcrumbs[i][1] + '</a> » ');
-                }
-                print('</div>');
-            }
-
-            if (title)
-                print('<h1>', title, '</h1>');
-
             print(html);
 
         %></div>
