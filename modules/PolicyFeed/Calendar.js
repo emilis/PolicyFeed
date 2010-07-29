@@ -36,7 +36,6 @@ exports.getActiveDays = function(req)
  */
 exports.showBlock = function(day)
 {
-    print("Calendar.showBlock", day);
     var tpl_file = require("fs").directory(module.path) + "/Calendar/tpl/showBlock.ejs";
 
     if (!day)
@@ -65,5 +64,4 @@ exports.getActiveMonthDays = function(year, month)
     }
 
     return result;
-    //return newObject("PolicyFeed/DocumentList").getActiveMonthDays(year, month);
 }
