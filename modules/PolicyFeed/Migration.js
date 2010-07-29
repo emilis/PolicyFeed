@@ -19,7 +19,7 @@
 
 require("core/date");
 
-var DB_old = loadObject("DB_old");
+//var DB_old = loadObject("DB_old");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
 
@@ -27,17 +27,12 @@ var Sequence = require("ctl/SimpleSequence");
 exports.oid2new = {};
 
 // old-source -> type map:
-var typemap = {
-    LRS_darbotvarkes: "darbotvarke",
-    LRS_pranesimai_spaudai: "pranesimas",
-    LRS_teises_aktai: "projektas",
-    LRV_darbotvarkes: "darbotvarke",
-    LRV_naujienos: "pranesimas"
-};
-
-var orgs = {
-    LRS: ["Seimas", "Lietuvos Respublikos Seimas"],
-    LRV: ["Vyriausybė", "Lietuvos Respublikos Vyriausybė"]
+exports.sourcemap = {
+    LRS_darbotvarkes: ["lrs.lt-darbotvarkes", "darbotvarke", "Seimas", "Lietuvos Respublikos Seimas"],
+    LRS_pranesimai_spaudai: ["lrs.lt-pranesimai", "pranesimas", "Seimas", "Lietuvos Respublikos Seimas"],
+    LRS_teises_aktai: ["lrs.lt-teises-aktai", "projektas", "Seimas", "Lietuvos Respublikos Seimas"],
+    LRV_darbotvarkes: ["lrv.lt-darbotvarkes", "darbotvarke", "Vyriausybė", "Lietuvos Respublikos Vyriausybė"],
+    LRV_naujienos: ["lrv.lt-naujienos", "pranesimas", "Vyriausybė", "Lietuvos Respublikos Vyriausybė"]
 };
 
 
@@ -77,6 +72,21 @@ exports.migrate = function() {
 /**
  *
  */
+exports.sourceToNewFields = function(doc, source) {
+    if (!source) {
+        throw Error('Migration.sourceToNewFields: document ' + doc.id + '/' + doc._id + ' has no source field.');
+    } else if (!this.sourcemap[source]) {
+        throw Error('Migration.sourceToNewFields: unsupported source "' + source + '" for document ' + doc.id + '/' + doc._id + '.');
+    } else {
+        [doc.parser, doc.type, doc.org, doc.organization] = this.sourcemap[source];
+        return doc;
+    }
+}
+
+
+/**
+ *
+ */
 exports.docs = function(ids) {
     if (ids === undefined)
         var sql = "select * from docs order by published asc";
@@ -108,9 +118,7 @@ exports.docs = function(ids) {
         data.title = fixString(data.title);
         data.html  = fixString(data.html);
 
-        data.type = typemap[data.source];
-        data.org = orgs[data.source.substr(0, 3)][0];
-        data.organization = orgs[data.source.substr(0, 3)][1];
+        data = this.sourceToNewFields(data, doc.source);
 
         var id = oid2new[data.original_id].replace("originals", "docs");
         JsonStorage.write(id, data);
@@ -143,13 +151,10 @@ exports.originals = function() {
 
         data.updated    = original.updated;
         data.published  = original.published;
-        data.parser     = original.source;
         data.url        = original.url
         data.html       = original.html;
 
-        data.type = typemap[original.source];
-        data.org = orgs[original.source.substr(0, 3)][0];
-        data.organization = orgs[original.source.substr(0, 3)][1];
+        data = this.sourceToNewFields(data, original.source);
 
         var id = "/originals/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + original.id;
 
