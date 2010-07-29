@@ -31,15 +31,11 @@ var prepareDate = function(str) {
     if (!str.match(/^\d\d\d\d-\d\d-\d\d.\d\d:\d\d:\d\d/))
         throw Error("Unsupported date format: " + str);
 
-    var d = new Date();
-    d.setFullYear(str.substr(0,4));
-    d.setMonth(parseInt(str.substr(5,2), 10) - 1);
-    d.setDate(str.substr(8,2));
-    d.setHours(str.substr(11,2));
-    d.setMinutes(str.substr(14,2));
-    d.setSeconds(str.substr(17,2));
+    var arr = str.replace(/[-T:. Z]/g, "-").split("-");
+    arr[1] = parseInt(arr[1], 10) - 1;
+    var timestamp = Date.apply(undefined, arr);
 
-    return d.toISOString();
+    return new Date(timestamp).toISOString();
 }
 
 
@@ -172,12 +168,36 @@ exports.search = function(query, options) {
 }
 
 
+function getYmd(str) {
+    var [year, month, day] = str.split("-");
+
+    year = parseInt(year, 10);
+    month = month ? (parseInt(month, 10) - 1) : 0;
+    day = day ? parseInt(day, 10) : 1;
+    
+    return [year, month, day];
+}
+
+
+/**
+ *
+ */
+exports.searchByDateRange = function(from, to, options) {
+    from = new Date(from);
+    to = new Date(to);
+
+    return this.search( "published:[" + from.toISOString() + " TO " + to.toISOString() + "]" );
+}
+
 /**
  *
  */
 exports.searchByDay = function(day) {
-    var query = "published:[" + day + "T00:00:00Z TO " + day + "T23:59:59.999Z]";
-    return this.search(query);
+    var [year, month, day] = getYmd(day);
+    var from = new Date(year, month, day, 0, 0, 0, 0);
+    var to = new Date(year, month, day + 1, 0, 0, 0, -1);
+
+    return this.searchByDateRange(from, to);
 }
 
 
@@ -185,8 +205,11 @@ exports.searchByDay = function(day) {
  *
  */
 exports.searchByMonth = function(month) {
-    var query = "published:[" + month + "-01T00:00:00Z TO " + month + "-01T00:00:00Z%2B1MONTH]";
-    return this.search(query);
+    var [year, month, day] = getYmd(day);
+    var from = new Date(year, month, day, 0, 0, 0, 0);
+    var to = new Date(year, month + 1, day, 0, 0, 0, -1);
+
+    return this.searchByDateRange(from, to);
 }
 
 
@@ -194,8 +217,11 @@ exports.searchByMonth = function(month) {
  *
  */
 exports.searchByYear = function(year) {
-    var query = "published:[" + year + "-01-01T00:00:00Z TO " + year + "-12-31T23:59:59.999Z]";
-    return this.search(query);
+    var [year, month, day] = getYmd(day);
+    var from = new Date(year, month, day, 0, 0, 0, 0);
+    var to = new Date(year + 1, month, day, 0, 0, 0, -1);
+
+    return this.searchByDateRange(from, to);
 }
 
 
