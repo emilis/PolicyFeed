@@ -78,7 +78,7 @@ exports.MODULES_DIR = WEB_DIR + "/modules";
 exports.gluestick = {
     interfaces: {
         DB: "ctl/DB/Sqlite",
-        //DB_new: "ctl/DB/Sqlite",
+        DB_old: "ctl/DB/MySQL",
         DB_urls: "ctl/DB/Sqlite",
         Events: "ctl/Events",
         Site: "KaVeikiaValdzia/Site",
@@ -94,6 +94,15 @@ exports.DB = {
 
 exports.DB_urls = {
     filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
+};
+
+exports.DB_old = {
+    host: "localhost",
+    db_name: "govsrvr",
+    user: "root",
+    password: "",
+    useUnicode: "yes",
+    characterEncoding: "UTF-8"
 };
 
 exports.Events = {

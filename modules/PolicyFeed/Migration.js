@@ -19,7 +19,7 @@
 
 require("core/date");
 
-//var DB_old = loadObject("DB_old");
+var DB_old = loadObject("DB_old");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
 
