@@ -31,11 +31,17 @@ var prepareDate = function(str) {
     if (!str.match(/^\d\d\d\d-\d\d-\d\d.\d\d:\d\d:\d\d/))
         throw Error("Unsupported date format: " + str);
 
-    var arr = str.replace(/[-T:. Z]/g, "-").split("-");
-    arr[1] = parseInt(arr[1], 10) - 1;
-    var timestamp = Date.apply(undefined, arr);
+    // Turn string into date parts array:
+    str = str.replace(/[-T:Z. ]/g, "-").split("-").map(function(item) { return parseInt(item, 10); });
 
-    return new Date(timestamp).toISOString();
+    var d = new Date();
+    d.setFullYear(str[0]);
+    d.setDate(str[2]); // Date before month! Or you'll get march instead of february every 30th and 31th of the month.
+    d.setMonth(str[1] - 1);
+    d.setHours(str[3]);
+    d.setMinutes(str[4]);
+    d.setSeconds(str[5]);
+    return d.toISOString();
 }
 
 
