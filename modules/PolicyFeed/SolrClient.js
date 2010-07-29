@@ -153,8 +153,7 @@ exports.onItemChange = function(action, _id, item) {
  *
  */
 exports.search = function(query, options) {
-    print(query);
-    query = query.replace(/\s+/g, "+");
+    query = encodeURIComponent(query);
 
     options = options || {};
     var {highlight, fields, limit} = options;
@@ -177,7 +176,7 @@ exports.search = function(query, options) {
  *
  */
 exports.searchByDay = function(day) {
-    var query = "published:[" + day + "T00:00:00Z+TO+" + day + "T23:59:59.999Z]";
+    var query = "published:[" + day + "T00:00:00Z TO " + day + "T23:59:59.999Z]";
     return this.search(query);
 }
 
@@ -186,7 +185,7 @@ exports.searchByDay = function(day) {
  *
  */
 exports.searchByMonth = function(month) {
-    var query = "published:[" + month + "-01T00:00:00Z+TO+" + month + "-01T00:00:00Z%2B1MONTH]";
+    var query = "published:[" + month + "-01T00:00:00Z TO " + month + "-01T00:00:00Z%2B1MONTH]";
     return this.search(query);
 }
 
@@ -195,7 +194,7 @@ exports.searchByMonth = function(month) {
  *
  */
 exports.searchByYear = function(year) {
-    var query = "published:[" + year + "-01-01T00:00:00Z+TO+" + year + "-12-31T23:59:59.999Z]";
+    var query = "published:[" + year + "-01-01T00:00:00Z TO " + year + "-12-31T23:59:59.999Z]";
     return this.search(query);
 }
 
