@@ -27,7 +27,6 @@ var ctlTemplate = require("ctl/Template");
 var ctlRequest = require("ctl/Request");
 
 var WebMapper = loadObject("WebMapper");
-var Site = loadObject("Site");
 
 
 /**
@@ -63,8 +62,6 @@ exports.showDocumentList = function(req)
  */
 exports.search = function(req)
 {
-    //todo: filter request parameters for invalid input.
-
     print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
 
     var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true});
@@ -136,8 +133,7 @@ exports.showDay = function(req, day)
 
     return WebMapper.returnHtml(
         this.showContent("showDocumentList", {
-            "mode": "search",
-            //"query": "published:" + day,
+            "day": day,
             "docs": docs,
             "numFound": numFound
             }));
@@ -240,7 +236,7 @@ exports.showSearchBlock = function(query) {
  */
 exports.showContent = function(tpl, content) {
     var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-    return Site.showContent( ctlTemplate.fetchObject(tpl_file, content) );
+    return loadObject("Site").showContent( ctlTemplate.fetchObject(tpl_file, content) );
 }
 
 

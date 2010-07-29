@@ -34,18 +34,17 @@ exports.getActiveDays = function(req)
 /**
  * Calendar block.
  */
-exports.showBlock = function()
+exports.showBlock = function(day)
 {
+    print("Calendar.showBlock", day);
     var tpl_file = require("fs").directory(module.path) + "/Calendar/tpl/showBlock.ejs";
 
-    var d = new Date();
-    var year = d.getFullYear();
-    var month = d.getMonth() + 1;
+    if (!day)
+        day = new Date().format("yyyy-MM");
 
     return loadObject("ctl/Template").fetch(tpl_file, {
-        year: year,
-        month: month,
-        days: this.getActiveMonthDays(year, month)
+        day: day,
+        days: this.getActiveMonthDays(day.substr(0, 4), day.substr(5, 2))
         });
 }
 
@@ -55,7 +54,7 @@ exports.showBlock = function()
  */
 exports.getActiveMonthDays = function(year, month)
 {
-    if (month < 10)
+    if (month < 10 && month.length != 2)
         month = "0" + month;
 
     var result = [];

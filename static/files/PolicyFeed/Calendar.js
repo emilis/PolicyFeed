@@ -20,7 +20,7 @@
 
 var PolicyFeedCalendar = {};
 
-PolicyFeedCalendar.nextMonth = function()
+PolicyFeedCalendar.nextMonth = function(selected)
 {
     var d = this.getCurrent();
     var month = d.getMonth();
@@ -32,10 +32,10 @@ PolicyFeedCalendar.nextMonth = function()
         d.setMonth(0);
     }
 
-    this.getActiveDays(d);
+    this.getActiveDays(d, selected);
 }
 
-PolicyFeedCalendar.prevMonth = function()
+PolicyFeedCalendar.prevMonth = function(selected)
 {
     var d = this.getCurrent();
     var month = d.getMonth();
@@ -47,9 +47,9 @@ PolicyFeedCalendar.prevMonth = function()
         d.setMonth(11);
     }
 
-    this.getActiveDays(d);
+    this.getActiveDays(d, selected);
 }
-
+/*
 PolicyFeedCalendar.nextYear = function()
 {
     var d = this.getCurrent();
@@ -63,8 +63,11 @@ PolicyFeedCalendar.prevYear = function()
     d.setFullYear(d.getFullYear() - 1);
     this.getActiveDays(d);
 }
+*/
 
-
+/**
+ * Returns Date object for the 1st day of month in calendar table head.
+ */
 PolicyFeedCalendar.getCurrent = function()
 {
     var title = $("#calendar .title").text();
@@ -78,23 +81,24 @@ PolicyFeedCalendar.getCurrent = function()
     return d;
 }
 
-PolicyFeedCalendar.getActiveDays = function(d)
+PolicyFeedCalendar.getActiveDays = function(d, selected)
 {
 
-    jQuery.getJSON(WEB_URL,
+    jQuery.getJSON(WEB_URL + "/",
             {
                 call: "PolicyFeed/Calendar:getActiveDays",
                 year: d.getFullYear(),
                 month: d.getMonth() + 1
                 },
-            function(data, status) { PolicyFeedCalendar.show(d, data) } );
+            function(data, status) { PolicyFeedCalendar.show(d, selected, data) } );
 }
 
-PolicyFeedCalendar.show = function(d, active_days)
+PolicyFeedCalendar.show = function(d, selected, active_days)
 {
     // set calendar title:
     $("#calendar thead th.title").text(d.getFullYear() + "-" + this.getMonthStr(d));
 
+    selected = selected.replace(/-/g, "/");
 
     // make active_days a dict:
     var ad = {};
@@ -115,23 +119,26 @@ PolicyFeedCalendar.show = function(d, active_days)
     for (var i=0; i<empty; i++)
         html += "<td>&nbsp;</td>";
 
-    var today = this.getIsoStr(new Date());
+    var today = this.getDatePath(new Date());
 
     i = 1;
     while (d.getDate() == i)
     {
+        var d_path = this.getDatePath(d);
+
         if (d.getDay() == 1 && i > 1)
             html += '<tr>';
 
-        if (this.getIsoStr(d) == today)
-            html += '<td class="today">';
-        else if (i in ad)
-            html += '<td class="active">';
-        else
-            html += '<td>';
+        // add classes to cell:
+        var classes = [];
+        if (d_path == today)
+            classes.push("today");
+        if (d_path == selected)
+            classes.push("selected");
+        html += '<td class="' + classes.join(" ") + '">';
 
         if (i in ad)
-            html += '<a href="' + WEB_URL + '/docs/' + this.getIsoStr(d) + '/">' + i + '</a>';
+            html += '<a href="' + WEB_URL + '/docs/' + d_path + '/">' + i + '</a>';
         else
             html += i;
 
@@ -180,7 +187,7 @@ PolicyFeedCalendar.getDateStr = function(d)
         return "" + dd;
 }
 
-PolicyFeedCalendar.getIsoStr = function(d)
+PolicyFeedCalendar.getDatePath= function(d)
 {
     return d.getFullYear() + '/' + this.getMonthStr(d) + '/' + this.getDateStr(d);
 }

@@ -6,9 +6,10 @@ import("core/date");
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
 var query;
+var day;
 
 returnVar("side", 
-    loadObject("PolicyFeed/Calendar").showBlock()
+    loadObject("PolicyFeed/Calendar").showBlock(day)
     );
 
 var wdays = [
