@@ -73,12 +73,7 @@ PolicyFeedCalendar.getCurrent = function()
     var title = $("#calendar .title").text();
     var ym = title.split("-");
 
-    var d = new Date();
-    d.setFullYear(ym[0]);
-    d.setMonth(parseInt(ym[1], 10) - 1);
-    d.setDate(1);
-    
-    return d;
+    return new Date(ym[0], ym[1] - 1, 1);
 }
 
 PolicyFeedCalendar.getActiveDays = function(d, selected)

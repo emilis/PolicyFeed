@@ -34,14 +34,7 @@ var prepareDate = function(str) {
     // Turn string into date parts array:
     str = str.replace(/[-T:Z. ]/g, "-").split("-").map(function(item) { return parseInt(item, 10); });
 
-    var d = new Date();
-    d.setFullYear(str[0]);
-    d.setDate(str[2]); // Date before month! Or you'll get march instead of february every 30th and 31th of the month.
-    d.setMonth(str[1] - 1);
-    d.setHours(str[3]);
-    d.setMinutes(str[4]);
-    d.setSeconds(str[5]);
-    return d.toISOString();
+    return new Date(str[0], str[1]-1, str[2], str[3], str[4], str[5]).toISOString();
 }
 
 
