@@ -198,9 +198,16 @@ exports.parsePage = function(parser_name, url, page) {
             doc.text = doc.html.asText();
             doc.html = filters["default"].filterXml(doc.html).asXml();
         }
+
         doc.html = filters["default"].filter(doc.html);
-        if (doc.converted_by == "abiword")
-            doc.html = filters["abiword"].filter(doc.html)
+
+        // run abiword filters:
+        if (doc.converted_by == "abiword") {
+            var window_name = page.getEnclosingWindow().name;
+            doc.html = filters["abiword"].filter(
+                htmlunit.getPageFromHtml(doc.html, url.url, window_name, "UTF-8")
+                );
+        }
 
         JsonStorage.write(doc._id, doc);
     }
@@ -300,7 +307,7 @@ exports.getFieldsFromDoc = function(file_name) {
 
     // Remove converted HTML to save disk space:
     //fs.remove(html_file_name);
-    loadObject("Events").create("PolicyFeed/Crawler.setFieldsFromDoc-debug", ["html_file_name", html_file_name]);
+    loadObject("Events").create("PolicyFeed/Crawler.getFieldsFromDoc-debug", ["html_file_name", html_file_name]);
 
     return fields;
 }
