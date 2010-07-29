@@ -10,6 +10,7 @@ var Parser = require('ringo/args').Parser;
 
 export('createApplication', 'createPackage', 'main', 'description');
 
+/** @ignore */
 var description = "Create a new RingoJS web application or package";
 
 /**
@@ -93,9 +94,8 @@ function copyJars(home, dest, symlink) {
     var jars = [
         "ringo.jar",
         "js.jar",
-        "slf4j/slf4j-api-1.5.10.jar",
         "jnr-posix/jaffl-0.5.jar",
-        "jnr-posix/jnr-posix-1.1.3.jar",
+        "jnr-posix/jnr-posix-1.1.3.jar"
     ];
     var libsrc = join(home, "lib");
     var libdest = join(dest, "WEB-INF", "lib");
