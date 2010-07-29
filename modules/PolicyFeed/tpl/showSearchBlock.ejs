@@ -1,6 +1,12 @@
 <%
 
+require("core/string");
 import("config");
+
+var query;
+
+if (query && query.entitize)
+    query = query.entitize();
 
 %><form id="search" action="<%= config.WEB_URL %>/docs/search/">
     <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
