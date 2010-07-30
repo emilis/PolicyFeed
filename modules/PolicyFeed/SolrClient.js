@@ -22,7 +22,9 @@ var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=publi
 
 
 var httpclient = require("ringo/httpclient");
-var jstorage = require("ctl/JsonStorage");
+var JsonStorage = require("ctl/JsonStorage");
+var Events = loadObject("Events");
+
 
 /**
  *
@@ -69,7 +71,7 @@ exports.itemToXml = function(item) {
  *
  */
 exports.indexItem = function(item) {
-    print("SolrClient.indexItem", item._id);
+    Events.create("PolicyFeed/SolrClient.indexItem-debug", item._id);
     try {
         var req = {
             method: "POST",
@@ -108,7 +110,7 @@ exports.reindex = function(path) {
     if (path === undefined)
         path = "/docs";
 
-    var gen = jstorage.iterate(path);
+    var gen = JsonStorage.iterate(path);
 
     for each (var doc in gen) {
         try {
@@ -126,7 +128,6 @@ exports.reindex = function(path) {
  *
  */
 exports.onItemChange = function(action, _id, item) {
-    print("SolrClient.onItemChange", action, _id);
     if (_id.indexOf("/docs/") > -1) {
         try {
             switch (action) {
