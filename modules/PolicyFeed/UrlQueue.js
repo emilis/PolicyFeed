@@ -83,8 +83,11 @@ Object.defineProperty(schedule, "load", {enumerable:false, value: function() {
     var stored = JsonStorage.read(STORAGE_PATH + "schedule");
     if (stored && stored.length) {
         for each (var url in stored) {
-            if (typeof(url) == "object" && url)
+            if (typeof(url) == "object" && url) {
+                if (url.time && !(url.time instanceof Date))
+                    url.time = new Date(url.time);
                 this.push(url);
+            }
         }
     }
     this.sort(time_sort);
