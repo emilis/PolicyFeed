@@ -92,9 +92,7 @@ var runThread = function(id) {
                 // Add url back to queue and hope the network problems will resolve:
                 UrlQueue.rescheduleUrl(id, WAITNETWORK);
             } else {
-                url.pid = id;
-                url.error = e;
-                UrlQueue.failedUrl(id, url);
+                UrlQueue.failedUrl(id, url, e);
                 print("BrowserController.runThread:processUrl-Error", id, e, "\n", e.stack);
             }
         } finally {

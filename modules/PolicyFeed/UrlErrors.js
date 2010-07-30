@@ -64,8 +64,8 @@ var last_notify_time;
 /**
  *
  */
-exports.addUrl = function(url) {
-    last_error = url;
+exports.addUrl = function(url, error) {
+    last_error = [url, error];
     last_error_time = new Date();
 
     try {
@@ -175,14 +175,14 @@ exports.showStats = function(time) {
 /**
  *
  */
-exports.save = function(url) {
+exports.save = function(url, err) {
     // Check and fix some issues with incomplete url data:
     if (!url.url)
         throw Error("PolicyFeed/UrlErrors.save(): unable to save an empty url.");
     if (url.parser === undefined)
         url.parser = "unknown";
-    if (!url.error)
-        url.error = { fileName: "unknown", lineNumber: "0" };
+    if (!err)
+        err = { fileName: "unknown", lineNumber: "0" };
     if (!url.title)
         url.title = "";
 
@@ -191,10 +191,11 @@ exports.save = function(url) {
     return db.prepared_query(sql, [
         new Date(),
         url.parser,
-        url.error.fileName + ":" + url.error.lineNumber,
+        err.fileName + ":" + err.lineNumber,
         url.url,
         url.title,
-        uneval(url)]);
+        uneval([url, err])
+        ]);
 }
 
 

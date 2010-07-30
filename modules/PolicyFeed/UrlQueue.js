@@ -302,8 +302,8 @@ exports.getUrl = function(pid) {
 /**
  *
  */
-exports.failedUrl = function(pid, url) {
-    UrlErrors.addUrl(url);
+exports.failedUrl = function(pid, url, err) {
+    UrlErrors.addUrl(url, err);
     unlockPid(pid);
 }
 
