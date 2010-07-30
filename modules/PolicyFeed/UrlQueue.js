@@ -83,7 +83,7 @@ Object.defineProperty(schedule, "load", {enumerable:false, value: function() {
     var stored = JsonStorage.read(STORAGE_PATH + "schedule");
     if (stored && stored.length) {
         for each (var url in stored) {
-            if (typeof(url) == "object")
+            if (typeof(url) == "object" && url)
                 this.push(url);
         }
     }
@@ -309,11 +309,17 @@ exports.failedUrl = function(pid, url, err) {
 
 
 /**
- * Re-schedules a locked URL for later.
+ * Re-schedules a locked URL for later. Returns false and removes url from locks if the url is already scheduled.
  */
 exports.rescheduleUrl = function(pid, after) {
-    this.scheduleUrl(locks[pid], new Date().getTime() + after);
-    unlockPid(pid);
+    if (this.isUrlScheduled(locks[pid].url)) {
+        unlockPid(pid);
+        return false;
+    } else {
+        this.scheduleUrl(locks[pid], new Date().getTime() + after);
+        unlockPid(pid);
+        return true;
+    }
 }
 
 
