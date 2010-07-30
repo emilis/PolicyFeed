@@ -205,7 +205,7 @@ exports.searchByDay = function(day) {
  *
  */
 exports.searchByMonth = function(month) {
-    var [year, month, day] = getYmd(day);
+    var [year, month, day] = getYmd(month);
     var from = new Date(year, month, day, 0, 0, 0, 0);
     var to = new Date(year, month + 1, day, 0, 0, 0, -1);
 
@@ -217,7 +217,7 @@ exports.searchByMonth = function(month) {
  *
  */
 exports.searchByYear = function(year) {
-    var [year, month, day] = getYmd(day);
+    var [year, month, day] = getYmd(year);
     var from = new Date(year, month, day, 0, 0, 0, 0);
     var to = new Date(year + 1, month, day, 0, 0, 0, -1);
 
