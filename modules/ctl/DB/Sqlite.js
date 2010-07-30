@@ -144,15 +144,9 @@ exports.query = function(sql, conn)
         var result = stmt.getUpdateCount();
         if (result > -1)
         {
-            try {
-                var gc = stmt.getGeneratedKeys();
-                if (gc)
-                    result = this.get_col(gc);
-            } catch (e) { 
-                var rowid = this.get_one("select last_insert_rowid()");
-                if (rowid)
-                    result = rowid;
-            }
+            var rowid = this.get_one("select last_insert_rowid()");
+            if (rowid)
+                result = rowid;
         }
         else
             result = false;
@@ -191,15 +185,9 @@ exports.prepared_query = function(sql, params, conn)
         var result = pStmt.getUpdateCount();
         if (result > -1)
         {
-            try {
-                var gc = pStmt.getGeneratedKeys();
-                if (gc)
-                    result = this.get_col(gc);
-            } catch (e) { 
-                var rowid = this.get_one("select last_insert_rowid()");
-                if (rowid)
-                    result = rowid;
-            }
+            var rowid = this.get_one("select last_insert_rowid()");
+            if (rowid)
+                result = rowid;
         }
         else
             result = false;
