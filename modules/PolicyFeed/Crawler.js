@@ -289,6 +289,9 @@ exports.saveOriginalFile = function(original_id, url, response) {
 }
 
 
+function quoteShellArg (str) {
+    return "'" + str.replace(/'/g, "\\'") + "'";
+}
 
 /**
  *
@@ -299,7 +302,10 @@ exports.getFieldsFromDoc = function(file_name) {
     var html_file_name = fs.directory(file_name) + "/converted.html";
 
     // Convert file to HTML and read the result if possible:
-    var proc = java.lang.Runtime.getRuntime().exec(["abiword", "--to", html_file_name, file_name]);
+    var proc = java.lang.Runtime.getRuntime().exec(["abiword",
+            "--to=html",
+            "--to-name=" + quoteShellArg(html_file_name),
+            quoteShellArg(file_name)]);
     proc.waitFor();
 
     // Set html field:
