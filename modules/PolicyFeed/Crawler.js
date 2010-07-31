@@ -289,23 +289,22 @@ exports.saveOriginalFile = function(original_id, url, response) {
 }
 
 
-function quoteShellArg (str) {
-    return "'" + str.replace(/'/g, "\\'") + "'";
-}
-
 /**
  *
  */
 exports.getFieldsFromDoc = function(file_name) {
     var fields = {};
 
-    var html_file_name = fs.directory(file_name) + "/converted.html";
+    // get file name with a changed extension:
+    var html_file_name = fs.base(file_name).split(".");
+    if (html_file_name.length > 1)
+        html_file_name.pop();
+    html_file_name = fs.directory(file_name) + "/" + html_file_name.join(".") + ".html";
 
     // Convert file to HTML and read the result if possible:
     var proc = java.lang.Runtime.getRuntime().exec(["abiword",
             "--to=html",
-            "--to-name=" + quoteShellArg(html_file_name),
-            quoteShellArg(file_name)]);
+            file_name]);
     proc.waitFor();
 
     // Set html field:
