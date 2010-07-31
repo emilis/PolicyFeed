@@ -205,6 +205,7 @@ exports.parsePage = function(parser_name, url, page) {
         if (doc.converted_by == "abiword") {
             var window_name = page.getEnclosingWindow().name;
             doc.html = filters["abiword"].filter(
+                doc,
                 htmlunit.getPageFromHtml(doc.html, url.url, window_name, "UTF-8")
                 );
         }
