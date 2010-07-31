@@ -131,6 +131,11 @@ exports.PolicyFeed = {
     Crawler: {
         parser_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Parsers",
         parser_prefix: "KaVeikiaValdzia/Parsers/"
+    },
+    UrlErrors: {
+        to: "policyfeed-errors@mailinator.com",
+        from: "policyfeed@localhost",
+        subject: "PolicyFeed/UrlErrors status"
     }
 };
 

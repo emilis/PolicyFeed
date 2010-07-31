@@ -23,7 +23,21 @@ var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
 var db = loadObject("DB_urls");
 
+var config = require("config");
+
 var MSG_TO = "policyfeed-errors@mailinator.com";
+var MSG_FROM = false;
+var MSG_SUBJECT = "PolicyFeed/UrlErrors status";
+
+if (config.PolicyFeed && config.PolicyFeed.UrlErrors) {
+    var c = config.PolicyFeed.UrlErrors;
+    if (c.to)
+        MSG_TO = c.to;
+    if (c.from)
+        MSG_FROM = c.from;
+    if (c.subject)
+        MSG_SUBJECT = c.subject;
+}
 
 
 /**
@@ -222,7 +236,10 @@ exports.notify = function() {
  *
  */
 exports.sendMessage = function(text) {
-    mail.send({to: MSG_TO, subject: "PolicyFeed/UrlErrors status", text: text});
+    var message = {to: MSG_TO, subject: MSG_SUBJECT, text: text};
+    if (MSG_FROM)
+        message.from = MSG_FROM;
+    mail.send(message);
 }
 
 
