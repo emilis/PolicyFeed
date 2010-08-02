@@ -152,13 +152,15 @@ exports.search = function(query, options) {
     query = encodeURIComponent(query);
 
     options = options || {};
-    var {highlight, fields, limit} = options;
+    var {highlight, fields, limit, offset} = options;
 
     var url = search_url;
     if (fields && fields.length)
         var url = url.replace(/fl=[^&]+/, "fl=" + fields.join(","));
     if (limit)
         var url = url.replace(/rows=[^&]+/, "rows=" + limit);
+    if (offset)
+        var url = url.replace("start=0", "start=" + offset);
     if (highlight)
         url = url.replace("&q=", "&hl=true&hl.fl=html&q=");;
 

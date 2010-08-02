@@ -191,6 +191,21 @@ div.day > div {
                     font-size: 22px;
                     color: #666;
                 }
+            #results-table > tfoot > tr > th {
+                padding: 10px 10px 10px 5px;
+                border-top: 1px dotted #ccc;
+                text-align: left;
+            }
+
+                #older {
+                    color: #047bbf;
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
+
+                #older:hover {
+                    text-decoration: none;
+                }
 
                 #results-table > tbody td,
                 table.day > tbody td {

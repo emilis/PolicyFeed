@@ -62,6 +62,9 @@ exports.showDocumentList = function(req)
  */
 exports.search = function(req)
 {
+    if (req.params.format && req.params.format == "json")
+        return this.loadSearchResults(req);
+
     print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
 
     var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true});
@@ -83,6 +86,32 @@ exports.search = function(req)
             "highlighting": highlighting,
             "numFound": numFound
             }));
+}
+
+
+/**
+ *
+ */
+exports.loadSearchResults = function(req) {
+    print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
+
+    var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true, offset: req.params.offset});
+    var docs = [];
+    var highlighting = {};
+
+    if (results && results.response) {
+        docs = results.response.docs || docs;
+    }
+    if (results && results.highlighting)
+        highlighting = results.highlighting;
+
+    return {
+        status: 200,
+        headers: {
+            "Content-Type": "application/x-javascript; charset=UTF-8"
+        },
+        body: [ JSON.stringify({docs: docs, snippets: highlighting}) ]
+    };
 }
 
 
