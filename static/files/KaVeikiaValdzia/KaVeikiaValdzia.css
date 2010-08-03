@@ -407,10 +407,12 @@ div.day > div {
                 #calendar > table a:visited {
                     background-color: #f4f5f3;
                 }
-
-            #calendar > table > tbody > tr > td.today > a {
+            #calendar > table > tbody > tr > td.today {
                 color: #d0001f;
                 font-size: 16px;
+            }
+            #calendar > table > tbody > tr > td.today > a {
+                color: #d0001f;
                 padding: 2px 0 3px 0;
             }
 
