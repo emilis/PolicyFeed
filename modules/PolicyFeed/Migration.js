@@ -22,6 +22,7 @@ require("core/date");
 var DB_old = loadObject("DB_old");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
+var UrlList = require("PolicyFeed/UrlList");
 
 // original_id to new added_id:
 exports.oid2new = {};
@@ -50,24 +51,23 @@ var fixString = function(str) {
     return str.replace(special_chars, " ").replace(/\s+/g, " ").trim();
 }
 
-//----------------------------------------------------------------------------
 
 /**
- * Migrate everything.
+ *
  */
-exports.migrate = function() {
+var getDateFromString = function(str) {
+    str = str.replace(/-T:.Z/g, "-").split("-").map(function (item) { return parseInt(item, 10); });
+    str[1]--; // fix month
 
-    print(new Date());
+    for (var i=0;i<7;i++) {
+        if (!str[i])
+            str[i] = 0;
+    }
 
-    this.originals();
-
-    print(new Date());
-
-    this.docs();
-
-    print(new Date());
+    return new Date(str[0], str[1], str[2], str[3], str[4], str[5], str[6]);
 }
 
+//----------------------------------------------------------------------------
 
 /**
  *
@@ -87,9 +87,50 @@ exports.sourceToNewFields = function(doc, source) {
 /**
  *
  */
-exports.docs = function(ids) {
+exports.getDataFromDoc = function(doc) {
+    try {
+        var data = JSON.parse(doc.meta);
+    } catch (e) {
+        print(doc.meta);
+        print(e);
+    }
+
+    data.updated        = getDateFromString(doc.updated);
+    data.published      = getDateFromString(doc.published);
+    data.comment_count  = parseInt(doc.comment_count, 10);
+    data.html           = fixString(doc.html);
+
+    data = this.sourceToNewFields(data, doc.source);
+    return data;
+}
+
+
+/**
+ *
+ */
+exports.getDataFromOriginal = function(doc) {
+    try {
+        var data = JSON.parse(doc.meta);
+    } catch (e) {
+        print(doc.meta);
+        print(e);
+    }
+
+    data.updated        = getDateFromString(doc.updated);
+    data.published      = getDateFromString(doc.published);
+    data.url            = doc.url;
+    data.html           = fixString(doc.html);
+
+    data = this.sourceToNewFields(data, doc.source);
+    return data;
+}
+
+/**
+ *
+ */
+exports.migrateDocs = function(ids) {
     if (ids === undefined)
-        var sql = "select * from docs order by published asc";
+        var sql = "select * from docs order by id asc";
     else
         var sql = "select * from docs where id in('" + ids.join("','") + "')";
 
@@ -100,79 +141,60 @@ exports.docs = function(ids) {
     rs.beforeFirst();
     while (rs.next())
     {
-        var doc = DB_old.get_row(rs);
-        try {
-            var data = JSON.parse(doc.meta);
-        } catch (e) {
-            print(doc.meta);
-            print(e);
+        var old_doc = DB_old.get_row(rs);
+        var url = old_doc.meta.url;
+
+        if (UrlList.exists(url)) {
+            var original = JsonStorage.read(UrlList.getDocId(url));
+
+            old_doc.published = getDateFromString(old_doc.published);
+            original.published = getDateFromString(original.published);
+
+            // if original.published is later, fix it according to old_doc.published:
+            if (old_doc.published < original.published) {
+                // same date:
+                if (original.published.format("yyyy-MM-dd") == old_doc.published.format("yyyy-MM-dd")) {
+                    // update original.published:
+                    original.published = old_doc.published;
+                    JsonStorage.write(original._id, original);
+
+                    // update doc.published:
+                    var doc = JsonStorage.read(original._id.replace("originals", "docs"));
+                    doc.published = original.published;
+                    JsonStorage.write(doc._id, doc);
+
+                } else {
+                    // move original+doc to another location
+                    original.published = old_doc.published;
+                    var new_id = "/originals/" + original.published.format("yyyy/MM/dd/") + old_doc.id;
+
+                    JsonStorage.move(original._id, new_id);
+                    JsonStorage.move(
+                            original._id.replace("originals", "docs"),
+                            new_id.replace("originals", "docs"));
+
+                    UrlList.removeUrl(url);
+                    UrlList.addUrl(url, new_id);
+                }
+            }
+        } else {
+            // create new document and original
+            var data = this.getDataFromDoc(old_doc);
+            var id = "/docs/" + data.published.format("yyyy/MM/dd/") + old_doc.id;
+        
+            JsonStorage.write(id, data);
+
+            var sql = "select * from originals where id=?";
+            var old_orig = DB_old.get_row(DB_old.prepared_query(sql, [old_doc.original_id]));
+            var original = this.getDataFromOriginal(old_orig);
+            id = id.replace("docs", "originals");
+
+            JsonStorage.write(id, original);
+            UrlList.addUrl(url, id);
         }
-
-        //data.id             = doc.id;
-        //data.original_id    = doc.original_id;
-        data.updated        = doc.updated;
-        data.published      = doc.published;
-        data.comment_count  = doc.comment_count;
-        data.html           = doc.html;
-
-        data.title = fixString(data.title);
-        data.html  = fixString(data.html);
-
-        data = this.sourceToNewFields(data, doc.source);
-
-        var id = oid2new[data.original_id].replace("originals", "docs");
-        JsonStorage.write(id, data);
     }
 
     rs.getStatement().close();
 }
 
 
-/**
- *
- */
-exports.originals = function() {
-    var sql = "select * from originals";
-
-    var rs = DB_old.query(sql);
-    if (!rs.first())
-        return false;
-
-    rs.beforeFirst();
-    while (rs.next())
-    {
-        var original = DB_old.get_row(rs);
-        try {
-            var data = JSON.parse(original.meta);
-        } catch (e) {
-            print(original.meta);
-            print(e);
-        }
-
-        data.updated    = original.updated;
-        data.published  = original.published;
-        data.url        = original.url
-        data.html       = original.html;
-
-        data = this.sourceToNewFields(data, original.source);
-
-        var id = "/originals/" + data.published.substr(0, 10).replace(/-/g, "/") + "/" + original.id;
-
-        JsonStorage.write(id, data);
-
-        oid2new[original.id] = id;
-    }
-
-    rs.getStatement().close();
-}
-
-
-/**
- *
- */
-exports.comments = function() {
-
-    var sql="select updated, parent_id, thread_id, author, user_id, score, text from govsrvr.comments";
-
-    var rs = db.query(sql);
-}
