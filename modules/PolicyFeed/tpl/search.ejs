@@ -29,7 +29,7 @@ print(require("PolicyFeed").showSearchBlock(query));
 <table id="results-table">
 <thead><tr><th colspan="4"><%
 
-    print('<span id="result-count">Rasta ' + numFound + ' rezultatų</span>');
+    print('<span id="result-count">Rodoma <em><span id="results-shown">' + docs.length +'</span> iš <span id="results-total">' + numFound + '</span></em> rezultatų pagal užklausą <em>"' + query + '"</em></span>');
     print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
     print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite RSS pranešimus su "' + query  + '"</a>');
 
@@ -75,8 +75,19 @@ for each(var doc in docs)
 
 %>
 </tbody>
+<%
+
+if (docs.length > 0) {
+
+    %>
 <tfoot><tr><th colspan="4">
-<a id="older" onClick="PolicyFeed.loadSearchResults(this);return false;">Senesni įrašai</a>
+    <a id="older" onClick="PolicyFeed.loadSearchResults(this);return false;">
+        <img id="older-image-still" src="<%=site_files%>/clock-still.gif" align="absmiddle">
+        <img id="older-image" src="<%=site_files%>/clock.gif" align="absmiddle" style="display: none;">
+        Senesni įrašai</a>
 </th></tr></tfoot>
+<%
+}
+%>
 </table>
 </div></div>

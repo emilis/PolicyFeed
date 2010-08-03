@@ -145,7 +145,13 @@ div.day > div {
         #result-count {
             font-size: 16px;
             font-weight: bold;
+            color: #999;
         }
+
+            #result-count > em {
+                color: black;
+                font-style: normal;
+            }
 
         #rss-search {
             margin-left: 1em;
@@ -207,6 +213,14 @@ div.day > div {
                     text-decoration: none;
                 }
 
+                    #older-image,
+                    #older-image-still {
+                        text-decoration: none;
+                    }
+
+            tr.added {
+                display: none;
+            }
                 #results-table > tbody td,
                 table.day > tbody td {
                     border-top: 1px dotted #ccc;
@@ -230,7 +244,7 @@ div.day > div {
                 td.org {
                     vertical-align: top;
                     font-size: 11px;
-                    padding: 7px 4px 4px;
+                    padding: 7px 4px 4px 10px;
                     width: 66px;
                 }
 
@@ -286,7 +300,7 @@ div.day > div {
                     color: #666;
                     text-align: right;
                     vertical-align: top;
-                    padding: 7px 4px 4px;
+                    padding: 7px 10px 4px 4px;
                 }
 
                     td.expand a {

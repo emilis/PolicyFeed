@@ -69,9 +69,11 @@ PolicyFeed.collapseDocument = function(id)
 PolicyFeed.loadSearchResults = function(link) {
     var q = document.getElementById("q").value;
 
-    var offset = link.offset || 0;
-    offset += 20;
+    var offset = parseInt(document.getElementById("results-shown").innerHTML, 10);
     link.offset = offset;
+
+    document.getElementById("older-image").style.display = "";
+    document.getElementById("older-image-still").style.display = "none";
 
     var url = WEB_URL + "/docs/search/?q=" + q + "&format=json&offset=" + offset;
 
@@ -106,7 +108,7 @@ function utcToLocalDate(str)
 PolicyFeed.doLoadSearchResults = function(data, status) {
     var html = "";
     for each (var doc in data.docs) {
-        html += '<tr id="' + doc.id.replace(/\//g, "-") + '">';
+        html += '<tr id="' + doc.id.replace(/\//g, "-") + '" class="added">';
             html += '<td class="org" nowrap="nowrap" align="right">';
                 html += '<a href="/docs/search/?q=org:' + doc.org + '" title="' + doc.organization + '">' + doc.org + '&nbsp;»</a></td>';
             html += '<td class="type"><a href="/docs/search/?q=type:' + doc.type + '" title="' + doc.type + '">';
@@ -120,4 +122,17 @@ PolicyFeed.doLoadSearchResults = function(data, status) {
         html += '</tr>';
     }
     jQuery("#results-table > tbody").append(html);
+
+    jQuery("tr.added").fadeIn(500);
+    jQuery("tr.added").removeClass("added");
+
+    var shown = document.getElementById("older").offset + data.docs.length;
+    document.getElementById("results-shown").innerHTML = shown;
+    var total = parseInt(document.getElementById("results-total").innerHTML, 10);
+
+    if (shown >= total)
+        jQuery("#results-table > tfoot").fadeOut(500);
+
+    document.getElementById("older-image").style.display = "none";
+    document.getElementById("older-image-still").style.display = "";
 }
