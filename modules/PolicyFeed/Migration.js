@@ -36,21 +36,30 @@ exports.sourcemap = {
     LRV_naujienos: ["lrv.lt-naujienos", "pranesimas", "Vyriausybė", "Lietuvos Respublikos Vyriausybė"]
 };
 
+// old-short-source -> source:
+exports.short_to_long_source = {
+    "LRS-PS": "LRS_pranesimai_spaudai",
+    "LRS-DB": "LRS_darbotvarkes",
+    "LRS-TA": "LRS_teises_aktai",
+    "LRV-NA": "LRV_naujienos",
+    "LRV-NAU": "LRV_naujienos",
+    "LRV-DB": "LRV_darbotvarkes"
+};
 
 // Create special chars RegExp:
-var special_chars = ["["];
+var special_chars = [];
 for (var i=0;i<32;i++)
     special_chars.push(String.fromCharCode(i));
-special_chars.push("]");
-special_chars = new RegExp(special_chars.join(""), "g");
+special_chars = "[" + special_chars.join("") + "]";
 
-/**
- *
- */
-var fixString = function(str) {
-    return str.replace(special_chars, " ").replace(/\s+/g, " ").trim();
+var jreg_replace = function(pattern, replacement, str) {
+    return java.util.regex.Pattern.compile(pattern).matcher(str).replaceAll(replacement);
 }
 
+exports.fixString = function(str) {
+    str = jreg_replace(special_chars, " ", str);
+    return jreg_replace("\\s+", " ", str).trim();
+}
 
 /**
  *
@@ -72,7 +81,10 @@ var getDateFromString = function(str) {
 /**
  *
  */
-exports.sourceToNewFields = function(doc, source) {
+exports.sourceToNewFields = function(doc, source, short_source) {
+    if (!source && short_source && this.short_to_long_source[short_source])
+        source = this.short_to_long_source[short_source];
+
     if (!source) {
         throw Error('Migration.sourceToNewFields: document ' + doc.id + '/' + doc._id + ' has no source field.');
     } else if (!this.sourcemap[source]) {
@@ -88,19 +100,23 @@ exports.sourceToNewFields = function(doc, source) {
  *
  */
 exports.getDataFromDoc = function(doc) {
-    try {
-        var data = JSON.parse(doc.meta);
-    } catch (e) {
-        print(doc.meta);
-        print(e);
+    if (typeof(doc.meta) == "string" || doc.meta instanceof String) {
+        try {
+            var data = JSON.parse(doc.meta);
+        } catch (e) {
+            print(doc.meta);
+            print(e);
+        }
+    } else {
+        var data = doc.meta;
     }
 
     data.updated        = getDateFromString(doc.updated);
     data.published      = getDateFromString(doc.published);
     data.comment_count  = parseInt(doc.comment_count, 10);
-    data.html           = fixString(doc.html);
+    data.html           = this.fixString(doc.html);
 
-    data = this.sourceToNewFields(data, doc.source);
+    data = this.sourceToNewFields(data, data.source, data.short_source);
     return data;
 }
 
@@ -109,20 +125,61 @@ exports.getDataFromDoc = function(doc) {
  *
  */
 exports.getDataFromOriginal = function(doc) {
-    try {
-        var data = JSON.parse(doc.meta);
-    } catch (e) {
-        print(doc.meta);
-        print(e);
+    if (typeof(doc.meta) == "string" || doc.meta instanceof String) {
+        try {
+            var data = JSON.parse(doc.meta);
+        } catch (e) {
+            print(doc.meta);
+            print(e);
+        }
+    } else {
+        var data = doc.meta;
     }
 
     data.updated        = getDateFromString(doc.updated);
     data.published      = getDateFromString(doc.published);
     data.url            = doc.url;
-    data.html           = fixString(doc.html);
+    data.html           = this.fixString(doc.html);
 
-    data = this.sourceToNewFields(data, doc.source);
+    data = this.sourceToNewFields(data, data.source, data.short_source);
     return data;
+}
+
+
+/**
+ *
+ */
+exports.fixUrlList = function() {
+    var gen = JsonStorage.iterate("/originals");
+    for each (var original in gen) {
+        if (!UrlList.exists(original.url)) {
+            UrlList.addUrl(original.url, original._id);
+        } else {
+            var id = UrlList.getDocId(original.url);
+            if (id != original._id) {
+                if (id.replace("docs", "originals") == original._id || !JsonStorage.exists(id)) {
+                    UrlList.removeUrl(original.url);
+                    UrlList.addUrl(original.url, original._id);
+                    print("Fixing url: ", original._id, id, original.url);
+                } else if (!JsonStorage.exists(id.replace("originals", "docs"))) {
+                    JsonStorage.remove(id);
+                    UrlList.removeUrl(original.url);
+                    UrlList.addUrl(original.url, original._id);
+                    print("Fixing url, removing conflicting original: ", original._id, id, original.url);
+                } else {
+                    var other = JsonStorage.read(id);
+                    if (other.published > original.published || (other.published == original.published && id > original._id)) {
+                        JsonStorage.remove(id);
+                        UrlList.removeUrl(original.url);
+                        UrlList.addUrl(original.url, original._id);
+                    } else {
+                        JsonStorage.remove(original._id);
+                    }
+                    print("Removing newer original: ", original._id, id, original.url);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -134,18 +191,22 @@ exports.migrateDocs = function(ids) {
     else
         var sql = "select * from docs where id in('" + ids.join("','") + "')";
 
-    var rs = DB_old.query(sql);
-    if (!rs.first())
+    var stmt = DB_old.getConnection().createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+    if (stmt.execute(sql))
+        var rs = stmt.getResultSet();
+    else
         return false;
 
-    rs.beforeFirst();
     while (rs.next())
     {
+        var messages = [];
         var old_doc = DB_old.get_row(rs);
+        old_doc.meta = JSON.parse(old_doc.meta);
         var url = old_doc.meta.url;
 
         if (UrlList.exists(url)) {
             var original = JsonStorage.read(UrlList.getDocId(url));
+            messages.push("Existing: " + original._id);
 
             old_doc.published = getDateFromString(old_doc.published);
             original.published = getDateFromString(original.published);
@@ -157,11 +218,13 @@ exports.migrateDocs = function(ids) {
                     // update original.published:
                     original.published = old_doc.published;
                     JsonStorage.write(original._id, original);
+                    messages.push("Updated original");
 
                     // update doc.published:
                     var doc = JsonStorage.read(original._id.replace("originals", "docs"));
                     doc.published = original.published;
                     JsonStorage.write(doc._id, doc);
+                    messages.push("Updated doc");
 
                 } else {
                     // move original+doc to another location
@@ -173,25 +236,41 @@ exports.migrateDocs = function(ids) {
                             original._id.replace("originals", "docs"),
                             new_id.replace("originals", "docs"));
 
+                    messages.push("Moved original from " + original._id + " to " + new_id);
+
                     UrlList.removeUrl(url);
                     UrlList.addUrl(url, new_id);
                 }
+            } else {
+                messages.push("Document exists and should be up to date");
             }
         } else {
             // create new document and original
-            var data = this.getDataFromDoc(old_doc);
+            var data = exports.getDataFromDoc(old_doc);
+
             var id = "/docs/" + data.published.format("yyyy/MM/dd/") + old_doc.id;
         
             JsonStorage.write(id, data);
+            messages.push("New doc written: " + id);
 
             var sql = "select * from originals where id=?";
-            var old_orig = DB_old.get_row(DB_old.prepared_query(sql, [old_doc.original_id]));
-            var original = this.getDataFromOriginal(old_orig);
-            id = id.replace("docs", "originals");
+            var ors = DB_old.prepared_query(sql, [old_doc.original_id]);
+            if (ors.first()) {
+                var old_orig = DB_old.get_row(ors);
+                var original = this.getDataFromOriginal(old_orig);
+            } else {
+                var original = data;
+            }
+            ors.getStatement().close();
 
+            // create original
+            id = id.replace("docs", "originals");
             JsonStorage.write(id, original);
             UrlList.addUrl(url, id);
+            messages.push("New original written: " + id);
         }
+
+        print(old_doc.id, messages.join(". "));
     }
 
     rs.getStatement().close();
