@@ -21,11 +21,10 @@ require("core/date");
 
 var DB_old = loadObject("DB_old");
 var JsonStorage = require("ctl/JsonStorage");
-var Sequence = require("ctl/SimpleSequence");
 var UrlList = require("PolicyFeed/UrlList");
+var SolrClient = require("PolicyFeed/SolrClient");
 
-// original_id to new added_id:
-exports.oid2new = {};
+//----------------------------------------------------------------------------
 
 // old-source -> type map:
 exports.sourcemap = {
@@ -56,6 +55,8 @@ var jreg_replace = function(pattern, replacement, str) {
     return java.util.regex.Pattern.compile(pattern).matcher(str).replaceAll(replacement);
 }
 
+//----------------------------------------------------------------------------
+
 exports.fixString = function(str) {
     str = jreg_replace(special_chars, " ", str);
     return jreg_replace("\\s+", " ", str).trim();
@@ -64,8 +65,8 @@ exports.fixString = function(str) {
 /**
  *
  */
-var getDateFromString = function(str) {
-    str = str.replace(/-T:.Z/g, "-").split("-").map(function (item) { return parseInt(item, 10); });
+exports.getDateFromString = function(str) {
+    str = str.replace(/[- T:.Z]/g, "-").split("-").map(function (item) { return parseInt(item, 10); });
     str[1]--; // fix month
 
     for (var i=0;i<7;i++) {
@@ -76,7 +77,6 @@ var getDateFromString = function(str) {
     return new Date(str[0], str[1], str[2], str[3], str[4], str[5], str[6]);
 }
 
-//----------------------------------------------------------------------------
 
 /**
  *
@@ -111,8 +111,8 @@ exports.getDataFromDoc = function(doc) {
         var data = doc.meta;
     }
 
-    data.updated        = getDateFromString(doc.updated);
-    data.published      = getDateFromString(doc.published);
+    data.updated        = this.getDateFromString(doc.updated);
+    data.published      = this.getDateFromString(doc.published);
     data.comment_count  = parseInt(doc.comment_count, 10);
     data.html           = this.fixString(doc.html);
 
@@ -136,8 +136,8 @@ exports.getDataFromOriginal = function(doc) {
         var data = doc.meta;
     }
 
-    data.updated        = getDateFromString(doc.updated);
-    data.published      = getDateFromString(doc.published);
+    data.updated        = this.getDateFromString(doc.updated);
+    data.published      = this.getDateFromString(doc.published);
     data.url            = doc.url;
     data.html           = this.fixString(doc.html);
 
@@ -145,6 +145,21 @@ exports.getDataFromOriginal = function(doc) {
     return data;
 }
 
+//----------------------------------------------------------------------------
+
+/**
+ *
+ */
+exports.migrate = function() {
+    print("========= Migrating all =========");
+    print("--------- Fixing UrlList ---------");
+    this.fixUrlList();
+    print("--------- Importing docs ---------");
+    this.migrateDocs();
+    print("--------- Reindexing docs ---------");
+    SolrClient.reindex();
+    print("========= End of migration =========");
+}
 
 /**
  *
