@@ -156,6 +156,7 @@ exports.migrate = function() {
     this.fixUrlList();
     print("--------- Importing docs ---------");
     this.migrateDocs();
+    DB_old.close();
     print("--------- Reindexing docs ---------");
     SolrClient.reindex();
     print("========= End of migration =========");
@@ -223,8 +224,8 @@ exports.migrateDocs = function(ids) {
             var original = JsonStorage.read(UrlList.getDocId(url));
             messages.push("Existing: " + original._id);
 
-            old_doc.published = getDateFromString(old_doc.published);
-            original.published = getDateFromString(original.published);
+            old_doc.published = this.getDateFromString(old_doc.published);
+            original.published = this.getDateFromString(original.published);
 
             // if original.published is later, fix it according to old_doc.published:
             if (old_doc.published < original.published) {
@@ -236,9 +237,10 @@ exports.migrateDocs = function(ids) {
                     messages.push("Updated original");
 
                     // update doc.published:
-                    var doc = JsonStorage.read(original._id.replace("originals", "docs"));
+                    var id = original._id.replace("originals", "docs");
+                    var doc = JsonStorage.read(id);
                     doc.published = original.published;
-                    JsonStorage.write(doc._id, doc);
+                    JsonStorage.write(id, doc);
                     messages.push("Updated doc");
 
                 } else {
