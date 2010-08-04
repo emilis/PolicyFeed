@@ -167,6 +167,8 @@ exports.copy = function(from, to) {
     from = path + this.fixId(from);;
     to = path + this.fixId(to);
 
+    fs.makeTree(fs.directory(to));
+
     if (fs.isDirectory(from))
         fs.copy(from, to);
 
@@ -182,6 +184,8 @@ exports.copy = function(from, to) {
 exports.move = function(from, to) {
     from = path + this.fixId(from);
     to = path + this.fixId(to);
+
+    fs.makeTree(fs.directory(to));
 
     if (fs.isDirectory(from))
         fs.move(from, to);
