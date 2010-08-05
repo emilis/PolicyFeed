@@ -8,21 +8,31 @@ returnVar("title", "Programuotojams");
 
 <h2>API</h2>
 
-<p>Šiuo metu galite gauti struktūruotą informaciją apie dokumentus. Pvz.:</p>
+<table border="1" cellpadding="5">
+<thead><tr>
+    <th>URL</th>
+    <th>Duomenys</th>
+</tr></thead>
+<tbody>
+<tr><td>/docs/rss/</td><td>20 naujausių dokumentų.</td></tr>
+<tr><td>/docs/rss/?q=zodis</td><td>20 naujausių dokumentų, kuriuose yra žodis "zodis" ir jo gramatinės formos (linksniai, kt.).</td></tr>
+<tr><td nowrap="nowrap">/docs/2010/05/17/12541.json/</td><td>Dokumento duomenys JSON formatu</td></tr>
+</tbody>
+</table>
 
-<pre>http://kaveikiavaldzia.lt/docs/123.json/</pre>
+<p>Jei norite gauti visus mūsų turimus dokumentus JSON formatu viename archyve -- <a href="mailto:emilis.d@gmail.com">parašykite</a>. Gailme aptarti ir galimybę pastoviai sinchronizuoti duomenis su jūsų sistema.</p>
 
 <h2>Atviras kodas</h2>
 
-<p>Svetainės kodas yra laisvai prieinamas internete pagal <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html">Affero GNU Public License (AGPL)</a>.</p>
+<p>Svetainės kodas yra laisvai prieinamas internete pagal <a href="http://www.fsf.org/licensing/licenses/agpl-3.0.html">GNU Affero General Public License (AGPL)</a>.</p>
 
-<p>Projektas vystomas <a href="https://launchpad.net/">Launchpad</a> svetainėje: <a href="https://launchpad.net/policyfeed">https://launchpad.net/policyfeed</a>. Naudojama <a href="http://bazaar.canonical.com/en/">Bazaar</a> versijų kontrolės sistema.</p>
+<p>Projektas vystomas <a href="http://github.com/">GitHub</a> svetainėje: <a href="http://github.com/emilis/PolicyFeed">http://github.com/emilis/PolicyFeed</a>.</p>
 
 <p>Norintys galite parsisiųsti kodą tokios komandos pagalba:</p>
 
-<pre>bzr branch lp:~emilis-d/policyfeed/trunk</pre>
+<pre>git clone git@github.com:emilis/PolicyFeed.git</pre>
 
-<p>Siūlau pradėti nagrinėtis nuo failo <a href="http://bazaar.launchpad.net/~emilis-d/policyfeed/trunk/annotate/head%3A/README.txt">README.txt</a>.</p>
+<p>Apie tai kaip pasileisti aplikaciją, skaitykite <a href="http://github.com/emilis/PolicyFeed/blob/master/README.md">README</a> faile.</p>
 
 <h2>Architektūra</h2>
 
@@ -36,25 +46,13 @@ returnVar("title", "Programuotojams");
     <li>Linux.</li>
 </ol>
 
-<p>Kiti moduliai:</p>
-
-<ul>
-    <li><a href="http://jetty.codehaus.org/jetty/">Jetty web serveris</a> (įtrauktas į RingoJS paketą).</li>
-    <li><a href="http://www.mysql.com/">MySQL duomenų bazė</a> per <a href="http://dev.mysql.com/downloads/connector/j/">JDBC jungtį</a>.</li>
-    <li>Valstybės institucijų HTML ir RSS puslapiai "išgliaudomi" su <a href="http://htmlunit.sourceforge.net/">HtmlUnit "naršykle"</a>.
-    <ul>
-        <li>Papildomai dar kartais į "gliaudomą" puslapį įterpiama <a href="http://jquery.com/">jQuery biblioteka</a>.</li>
-    </ul></li>
-    <li>Word dokumentai konvertuojami komandinėje eilutėje su <a href="http://www.abisource.com/">Abiword</a>.</li>
-</ul>
-
 <h3>Kodėl pasirinkau tokią architektūrą?</h3>
 
 <ol>
     <li><p>Nes noriu, kad jei kas sumanytų prisijungti prie manęs programuojant, turėtų kuo mažiau sunkumų: PHP/Ruby/Python patinka ne visiems, JavaScript moka beveik visi web programuotojai.</p></li>
     <li><p>Jau seniai norėjau išbandyti ir pasižiūrėti ar galima programuoti JavaScript serverio pusėje -- taip juk reikia naudoti mažiau programavimo kalbų. Padariau išvadą, kad galima ir yra patogu.</p></li>
-    <li><p>Šiame projekte reikia perdirbinėti labai daug HTML puslapių, tai mano vienas iš tikslų buvo pabandyti tam panaudoti jQuery -- patogiausią man žinomą įrankį manipuliuoti HTML struktūromis. Galutiniame variante daugiau naudoju htmlunit (nes dažniausiai užtenka <a href="http://en.wikipedia.org/wiki/XPath">XPath</a> ir <a href="http://en.wikipedia.org/wiki/Document_Object_Model">DOM</a> funkcijų), bet yra vietų, kur neišsiverčiu ir be jQuery.</p></li>
-    <li><p>Iš mano bandytų <a href="http://en.wikipedia.org/wiki/Server-side_JavaScript">Server-Side JavaScript (SSJS)</a> platformų, man labiausiai patiko RingoJS -- veikia stabiliai, lengvai ir greitai. Projekto komanda nedidelė ir draugiška, su tomis technologijomis dirba jau senokai. Norėjau išbandyti <a href="http://en.wikipedia.org/wiki/V8_%28JavaScript_engine%29">V8</a> ir jo "draugus", bet man jų nepavyko susikompiliuoti savo 64bitų linux kompiuteryje.</p></li>
+    <li><p>Šiame projekte reikia perdirbinėti labai daug HTML puslapių, tai mano vienas iš tikslų buvo pabandyti tam panaudoti jQuery -- patogiausią man žinomą įrankį manipuliuoti HTML struktūromis. Galutiniame variante daugiau naudoju <a href="http://htmlunit.sourceforge.net/">htmlunit</a> (nes dažniausiai užtenka <a href="http://en.wikipedia.org/wiki/XPath">XPath</a> ir <a href="http://en.wikipedia.org/wiki/Document_Object_Model">DOM</a> funkcijų), bet yra vietų, kur neišsiverčiu ir be jQuery.</p></li>
+    <li><p>Iš mano bandytų <a href="http://en.wikipedia.org/wiki/Server-side_JavaScript">Server-Side JavaScript (SSJS)</a> platformų, man labiausiai patiko RingoJS -- veikia stabiliai, lengvai ir greitai. Projekto komanda nedidelė ir draugiška, su tomis technologijomis dirba jau senokai. Norėjau išbandyti <a href="http://en.wikipedia.org/wiki/V8_%28JavaScript_engine%29">V8</a> ir jo "draugus", bet tuo metu kai pradėjau kurti šią svetainę man jų nepavyko susikompiliuoti savo 64bitų linux kompiuteryje.</p></li>
 </ol>
 
 </div></div>
