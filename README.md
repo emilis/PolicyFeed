@@ -20,9 +20,9 @@ This should start all three processes (Website, Crawler and Solr):
 
 You should see a Crawler console. Website and Solr will be forked to background. Their PIDs will be written to `data/www.pid` and `data/solr.pid`. Output will be logged to `data/log/www-server.log` and `data/log/solr-server.log`.
 
-Now open your browser at http://localhost:8080/
+Now open your browser at <a href="http://localhost:8080/">http://localhost:8080/</a>.
 
-_Note: Solr server will be running alongside on port 8081._
+_Note: Solr server will be running alongside on port <a href="http://localhost:8081/solr/select/?q=*:*">8081</a>._
 
 ### Other platforms ###
 
@@ -46,14 +46,21 @@ Website and Crawler are built on <a href="http://ringojs.org/">RingoJS</a> platf
 
 ## License ##
 
-PolicyFeed government news aggregator
-Copyright (C) 2009,2010 Emilis Dambauskas, emilis.d@gmail.com
+    PolicyFeed government news aggregator
+    Copyright (C) 2009,2010 Emilis Dambauskas, emilis.d@gmail.com
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    PolicyFeed is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
+    PolicyFeed is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Team ##
 
