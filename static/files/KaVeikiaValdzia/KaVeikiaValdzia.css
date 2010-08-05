@@ -524,9 +524,7 @@ div.day > div {
     margin-top: 20px;
 }
 
-    #page h2,
-    #page h3,
-    #page h4,
-    #page h5 {
+    #page h2 {
         font-weight: normal;
     }
+
