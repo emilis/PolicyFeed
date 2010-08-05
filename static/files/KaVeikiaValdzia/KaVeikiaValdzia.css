@@ -8,6 +8,10 @@ body {
     background: white url('left-bg.png') repeat-y scroll 0 0;
 }
 
+pre, code, tt {
+    font-family: monospace;
+}
+
 a:link { color: #047bbf; }
 
 a:visited { color: #551A8B; }
