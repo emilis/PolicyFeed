@@ -12,13 +12,21 @@ PolicyFeed is an opensource news aggregator built for aggregating and extracting
 
 ## Starting servers ##
 
-This should start all three processes (Website, Crawler and Solr) under Linux:
+### Linux ###
+
+This should start all three processes (Website, Crawler and Solr):
 
     $ bin/start-all.sh
 
-_You should see a Crawler console. Website and Solr will be forked to background. Their PIDs will be written to `data/www.pid` and `data/solr.pid`. Output will be logged to `data/log/www-server.log` and `data/log/solr-server.log`._
+You should see a Crawler console. Website and Solr will be forked to background. Their PIDs will be written to `data/www.pid` and `data/solr.pid`. Output will be logged to `data/log/www-server.log` and `data/log/solr-server.log`.
 
-_To start the app on other platforms, look inside shell scripts in bin/ directory and try runing the `java -jar ...` commands yourself._
+Now open your browser at http://localhost:8080/
+
+_Note: Solr server will be running alongside on port 8081._
+
+### Other platforms ###
+
+Look inside shell scripts in bin/ directory and try runing the `java -jar ...` commands yourself.
 
 ## Credits ##
 
