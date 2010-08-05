@@ -7,7 +7,7 @@
 
     <property name="data" location="data" />
     <property name="uploads" location="static/uploads" />
-    <property name="log" location="${data}/log" />
+    <property name="search.log" location="${data}/log/solr" />
     <property name="pf.src" location="src/policyfeed" />
     <property name="search.src" location="src/search" />
     <property name="search.ant" location="${search.src}/build.xml" />
@@ -15,7 +15,7 @@
   
     <target name="init" description="Create needed dirs and files.">
         <mkdir dir="${data}"/>
-        <mkdir dir="${log}" />
+        <mkdir dir="${search.log}" />
         <chmod dir="${data}" type="both" perm="a+rw"/>
         <mkdir dir="${uploads}"/>
         <chmod dir="${uploads}" type="both" perm="a+rw"/>
