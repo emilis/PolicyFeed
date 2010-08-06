@@ -148,8 +148,28 @@ exports.onItemChange = function(action, _id, item) {
 /**
  *
  */
+exports.compileQuery = function(q) {
+    // special syntax for OR queries:
+    if (q.indexOf(",")) {
+        q = q.split('"');
+        for (var i in q) {
+            // unquoted items:
+            if (!(i % 2)) {
+                q[i] = q[i].trim().split(",").join(" OR ");
+            }
+        }
+        q = q.join('"');
+    }
+
+    return encodeURIComponent(q);
+}
+
+
+/**
+ *
+ */
 exports.search = function(query, options) {
-    query = encodeURIComponent(query);
+    query = this.compileQuery(query);
 
     options = options || {};
     var {highlight, fields, limit, offset} = options;
