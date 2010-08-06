@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="kvvanalyzer" default="default">
+<project name="kvvanalyzer" default="dist">
 
   <description>
     KVV Solr search
