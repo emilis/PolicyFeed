@@ -5,6 +5,9 @@ import("config");
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
 var query;
+if (query && query.entitize)
+    query = query.entitize();
+
 
 /**
  * Converts an ISO string back to Date object.
