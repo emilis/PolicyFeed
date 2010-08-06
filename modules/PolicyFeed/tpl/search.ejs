@@ -27,7 +27,7 @@ print(require("PolicyFeed").showSearchBlock(query));
 %>
 <div id="results"><div>
 <table id="results-table">
-<thead><tr><th colspan="4"><%
+<thead><tr><th colspan="5"><%
 
     print('<span id="result-count">Rodoma <em><span id="results-shown">' + docs.length +'</span> iš <span id="results-total">' + numFound + '</span></em> rezultatų pagal užklausą <em>"' + query + '"</em></span>');
     print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
@@ -66,10 +66,8 @@ for each(var doc in docs)
         print('<p>', highlighting[doc.id].html.join("</p><p>") , '</p>');
     print('</td>');
     
-    print('<td class="expand">');
-    print(doc.published.format("yyyy-MM-dd"), "&nbsp;");
-    print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
-    print('</td>');
+    print('<td class="time" nowrap="nowrap">', doc.published.format("yyyy-MM-dd"), "</td>");
+    print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>');
     print('</tr>');
 }
 
@@ -80,7 +78,7 @@ for each(var doc in docs)
 if (docs.length > 0 && docs.length < numFound) {
 
     %>
-<tfoot><tr><th colspan="4">
+<tfoot><tr><th colspan="5">
     <a id="older" onClick="PolicyFeed.loadSearchResults(this);return false;">
         <img id="older-image-still" src="<%=site_files%>/clock-still.gif" align="absmiddle">
         <img id="older-image" src="<%=site_files%>/clock.gif" align="absmiddle" style="display: none;">

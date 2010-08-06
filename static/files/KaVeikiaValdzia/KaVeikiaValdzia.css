@@ -263,8 +263,9 @@ div.day > div {
 
                 td.type {
                     vertical-align: top;
-                    padding: 6px 2px 4px;
+                    padding: 8px 2px 4px;
                     width: 35px;
+                    font-size: 6px;
                 }
                 
                 td.title {
@@ -299,12 +300,19 @@ div.day > div {
                             -moz-border-radius: 2px;
                         }
 
+                td.time {
+                    font-size: 9px;
+                    color: #666;
+                    vertical-align: top;
+                    padding: 8px 2px 4px 4px;
+                }
+
                 td.expand {
                     font-size: 9px;
                     color: #666;
                     text-align: right;
                     vertical-align: top;
-                    padding: 7px 10px 4px 4px;
+                    padding: 7px 10px 4px 2px;
                 }
 
                     td.expand a {
@@ -385,6 +393,10 @@ div.day > div {
                 font-family: Arial, sans-serif;
                 font-size: 12px;
                 font-weight: bold;
+            }
+
+            #calendar > table th.title {
+                width: auto;
             }
 
                 #calendar th > a {

@@ -20,30 +20,23 @@
 
 var PolicyFeed = {};
 
-PolicyFeed.expandDocument = function(link)
-{
+PolicyFeed.expandDocument = function(link) {
     var tr = link.parentNode.parentNode;
-    if (!tr.expanded)
-    {
+    if (!tr.expanded) {
         var url = link.href + ".json";
         jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument);
-    }
-    else if (tr.expanded == "expanded")
-    {
+    } else if (tr.expanded == "expanded") {
         tr.expanded = "hidden";
         jQuery(tr).removeClass("expanded");
         jQuery(tr.nextSibling).css("display", "none");
-    }
-    else if (tr.expanded == "hidden")
-    {
+    } else if (tr.expanded == "hidden") {
         tr.expanded = "expanded";
         jQuery(tr).addClass("expanded");
         jQuery(tr.nextSibling).css("display", "");
     }
 }
 
-PolicyFeed.doExpandDocument = function(data, status)
-{
+PolicyFeed.doExpandDocument = function(data, status) {
     var tr_id = data._id.replace(/\//g, "-");
     var tr = document.getElementById(tr_id);
 
@@ -52,13 +45,12 @@ PolicyFeed.doExpandDocument = function(data, status)
     jQuery(tr).addClass("expanded");
     jQuery(tr).after(
         '<tr id="' + tr_id + '-content" class="content">'
-        + '<td colspan="4">' + data.html + '</td>'
+        + '<td colspan="5">' + data.html + '</td>'
         + '</tr>');
 }
 
 
-PolicyFeed.collapseDocument = function(id)
-{
+PolicyFeed.collapseDocument = function(id) {
     var tr = document.getElementById(id);
     tr.expanded = "hidden";
     jQuery(tr).removeClass("expanded");
@@ -84,9 +76,11 @@ PolicyFeed.loadSearchResults = function(link) {
 /**
  * Converts an ISO string back to Date object.
  */
-function utcToLocalDate(str)
-{
-    var arr = str.replace(/[-T:.Z]/g, "-").split("-").map(function (item) { return parseInt(item, 10); });
+function utcToLocalDate(str) {
+    var arr = str.replace(/[-T:.Z]/g, "-").split("-");
+    for (var i in arr) {
+        arr[i] = parseInt(arr[i], 10);
+    }
     arr[1]--;
 
     var d = Date.UTC(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5]);
@@ -118,8 +112,8 @@ PolicyFeed.doLoadSearchResults = function(data, status) {
                 if (data.snippets[doc.id] && data.snippets[doc.id].html)
                     html += '<p>' + data.snippets[doc.id].html.join("</p><p>").replace(/-{5,}/g, "-----") + '</p>';
             html += '</td>';
-            html += '<td class="expand">' + utcToLocalDate(doc.published) + '&nbsp;';
-                html += '<a href="' + doc.id + '" onclick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>';
+            html += '<td class="time">' + utcToLocalDate(doc.published) + '</td>';
+            html += '<td class="expand"><a href="' + doc.id + '" onclick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>';
         html += '</tr>';
     }
     jQuery("#results-table > tbody").append(html);

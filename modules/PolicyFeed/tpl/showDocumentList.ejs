@@ -66,7 +66,7 @@ for each(var doc in docs)
         
         wday = wdays[doc.published.getDay()];
         print('<div class="day"><div><table class="day">');
-        print('<thead><tr><th colspan="4">' + dday + ' / ' + wday + '</th></tr></thead>');
+        print('<thead><tr><th colspan="5">' + dday + ' / ' + wday + '</th></tr></thead>');
         print('<tbody>');
 
         day = dday;
@@ -82,10 +82,8 @@ for each(var doc in docs)
         print('<a href="', config.WEB_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
-    print('<td class="expand">');
-        print(doc.published.format("HH:mm"), "&nbsp;");
-        print('<a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a>');
-    print('</td>');
+    print('<td class="time">', doc.published.format("HH:mm"), "</td>");
+    print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>');
     print('</tr>');
 
 }

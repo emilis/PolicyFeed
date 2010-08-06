@@ -19,7 +19,7 @@ function showCalendar(selected, active_days)
 
     var html = '<div id="calendar"><h3>Kalendorius</h3><table cellspacing="1" border="0"><thead>';
     html += '<tr><th colspan="2"><a onclick="PolicyFeedCalendar.prevMonth(\'' + selected + '\')">&laquo;</a></th>';
-    html += '<th colspan="3" class="title">' + year + '-' + month + '</th>';
+    html += '<th colspan="3" class="title" nowrap="nowrap">' + year + '-' + month + '</th>';
     html += '<th colspan="2"><a onclick="PolicyFeedCalendar.nextMonth(\'' + selected + '\')">&raquo;</a></th></tr>';
     html += '<tr class="wd"><th>Pr</th><th>An</th><th>Tr</th><th>Kt</th><th>Pn</th><th>Št</th><th>Sk</th></tr>';
     html += "</thead><tbody>";
