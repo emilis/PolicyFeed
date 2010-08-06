@@ -107,7 +107,8 @@ function utcToLocalDate(str)
  */
 PolicyFeed.doLoadSearchResults = function(data, status) {
     var html = "";
-    for each (var doc in data.docs) {
+    for (var i in data.docs) {
+        var doc = data.docs[i];
         html += '<tr id="' + doc.id.replace(/\//g, "-") + '" class="added">';
             html += '<td class="org" nowrap="nowrap" align="right">';
                 html += '<a href="/docs/search/?q=org:' + doc.org + '" title="' + doc.organization + '">' + doc.org + '&nbsp;»</a></td>';
