@@ -6,6 +6,8 @@
         <link>http://kaveikiavaldzia.lt/</link>
         <%
 
+var ctlDate = require("ctl/Date");
+
 function println(line) {
     print(line, "\n");
 }
@@ -13,11 +15,11 @@ function println(line) {
 
 for each (var doc in docs) {
     println('<item>');
-    println('<title><![CDATA[' + doc.org + '» ' + doc.type + '» ' + doc.title + ']]></title>');
-    println('<description><![CDATA[' + doc.html + ']]></description>');
-    println('<link>http://kaveikiavaldzia.lt' + doc.id + '</link>');
-    println('<guid>http://kaveikiavaldzia.lt' + doc.id + '</guid>');
-    println('<pubDate>' + new Date(doc.published).toString() + '</pubDate>');
+        println('<title><![CDATA[' + doc.org + '» ' + doc.type + '» ' + doc.title + ']]></title>');
+        println('<link>http://kaveikiavaldzia.lt' + doc.id + '</link>');
+        println('<guid>http://kaveikiavaldzia.lt' + doc.id + '</guid>');
+        println('<pubDate>' + ctlDate.fromUTCString(doc.published).toString() + '</pubDate>');
+        println('<description><![CDATA[' + doc.html + ']]></description>');
     println('</item>');
 }
 
