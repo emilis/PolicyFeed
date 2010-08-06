@@ -7,12 +7,14 @@ var side;
 var html;
 var breadcrumbs;
 
+var salt = new Date().format("yyyyMMdd");
+
 
 function css()
 {
     var html = "";
     for (var i=0; i<arguments.length; i++)
-        html += '<link rel="stylesheet" type="text/css" href="' + config.FILES_URL + '/' + arguments[i] + '.css?123">';
+        html += '<link rel="stylesheet" type="text/css" href="' + config.FILES_URL + '/' + arguments[i] + '.css?' + salt + '">';
     return html;
 }
 
@@ -20,7 +22,7 @@ function javascript()
 {
     var html = "";
     for (var i=0; i<arguments.length; i++)
-        html += '<script type="text/javascript" src="' + config.FILES_URL + '/' + arguments[i] + '.js?123"></script>';
+        html += '<script type="text/javascript" src="' + config.FILES_URL + '/' + arguments[i] + '.js?' + salt + '"></script>';
     return html;
 }
 
