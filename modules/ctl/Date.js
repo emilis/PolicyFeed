@@ -19,24 +19,46 @@
 
 
 /**
+ *
+ */
+exports.stringToArray = function(str) {
+    var arr = str.trim().replace(/[- T:.Z]/g, "-").split("-").map(function (item) { return parseInt(item, 10); });
+    
+    for (var i=0;i<7;i++) {
+        if (!arr[i])
+            arr[i] = 0;
+    }
+
+    return arr;
+}
+
+/**
  * 
  */
-Object.defineProperty(Date.prototype, "fromISOString", {
-    value: function (str) {
+exports.fromISOString = function(str) {
 
-        if (!str.match(/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.?\d*Z$/))
-            throw Error("Not an ISO date format: " + str + ".");
+    if (str instanceof Date) {
+        return str;
+    } else {
+        var arr = this.stringToArray(str);
+        arr[1]--; // prepare month value
+        return new Date(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+    }
+}
 
-        this.setUTCFullYear(str.substr(0, 4));
-        this.setUTCMonth(parseInt(str.substr(5, 2), 10) - 1);
-        this.setUTCDate(str.substr(8, 2));
-        this.setUTCHours(str.substr(11, 2));
-        this.setUTCMinutes(str.substr(14, 2));
-        this.setUTCSeconds(str.substr(17, 2));
 
-        if (str.length > 21) {
-            this.setUTCMilliseconds( str.substr(20, str.length - 21).pad("0", 3).substr(0, 3) );
-            }
-    }, writable: true
-});
+/**
+ *
+ */
+exports.fromUTCString = function(str) {
+
+    if (str instanceof Date) {
+        return str;
+    } else {
+        var arr = this.stringToArray(str);
+        arr[1]--; // prepare month value
+        return new Date(Date.UTC(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]));
+    }
+
+}
 
