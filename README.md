@@ -37,7 +37,7 @@ Website and Crawler are built on <a href="http://ringojs.org/">RingoJS</a> platf
 * <a href="http://lucene.apache.org/solr/">Solr</a>
 * <a href="http://htmlunit.sourceforge.net/">HtmlUnit</a>
 * <a href="http://www.zentus.com/sqlitejdbc/">SqliteJDBC</a>
-* <a href="http://sourceforge.net/projects/ltstemmer/">Lithuanian Stemmer</a>
+* <a href="http://github.com/zmedelis/ltlangpack">Lithuanian language processing tools</a>
 
 <b>RingoJS packages:</b>
 
