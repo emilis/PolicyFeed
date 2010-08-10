@@ -24,7 +24,7 @@ PolicyFeed.expandDocument = function(link) {
     var tr = link.parentNode.parentNode;
     if (!tr.expanded) {
         var url = link.href + ".json";
-        jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument);
+        jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument(tr.id));
     } else if (tr.expanded == "expanded") {
         tr.expanded = "hidden";
         jQuery(tr).removeClass("expanded");
@@ -36,17 +36,18 @@ PolicyFeed.expandDocument = function(link) {
     }
 }
 
-PolicyFeed.doExpandDocument = function(data, status) {
-    var tr_id = data._id.replace(/\//g, "-");
-    var tr = document.getElementById(tr_id);
+PolicyFeed.doExpandDocument = function(tr_id) {
+    return function(data, status) {
+        var tr = document.getElementById(tr_id);
 
-    tr.expanded = "expanded";
+        tr.expanded = "expanded";
 
-    jQuery(tr).addClass("expanded");
-    jQuery(tr).after(
-        '<tr id="' + tr_id + '-content" class="content">'
-        + '<td colspan="5">' + data.html + '</td>'
-        + '</tr>');
+        jQuery(tr).addClass("expanded");
+        jQuery(tr).after(
+            '<tr id="' + tr_id + '-content" class="content">'
+            + '<td colspan="5">' + data.html + '</td>'
+            + '</tr>');
+    }
 }
 
 
