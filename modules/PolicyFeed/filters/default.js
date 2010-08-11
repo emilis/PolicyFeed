@@ -22,7 +22,8 @@ var remove = [
     "<span[^>]*>",
     "</span>",
     "<font[^>]*>",
-    "</font>"];
+    "</font>",
+    "<p/>"];
 
 
 var attr_start = "<([^>]+)\\s";
