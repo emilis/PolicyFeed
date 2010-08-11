@@ -21,6 +21,8 @@ var DomElement = com.gargoylesoftware.htmlunit.html.DomElement;
 
 var fs = require("fs");
 var htmlunit = require("htmlunit");
+var ctlDate = require("ctl/Date");
+
 var UrlQueue = require("PolicyFeed/UrlQueue");
 var UrlList = require("PolicyFeed/UrlList");
 var BrowserController = require("PolicyFeed/BrowserController");
@@ -160,7 +162,7 @@ exports.checkFeed = function(parser_name, url, page) {
     // Save url to originals, add to UrlList and UrlQueue:
     urls.map(function (item) {
         // create originals:
-        var id = "/originals/" + item.published.substr(0, 10).replace(/-/g, "/") + "/";
+        var id = "/originals/" + ctlDate.formatFromString(item.published, "yyyy/MM/dd/");
         id += Sequence.next();
 
         print("adding page:", id, item.published, item.url, item.title);
