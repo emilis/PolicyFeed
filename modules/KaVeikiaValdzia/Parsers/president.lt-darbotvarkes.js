@@ -53,9 +53,10 @@ exports.extractPageData = function(original, page) {
 
     var content = page.getElementById("inner-container");
 
+    // Change title (removes dates from titles in RSS and other feeds for this website):
     var title = content.getFirstByXPath('./h6');
-    if (title)
-        doc.title = title.asText();
+    if (title && title.asText && title.asText().trim())
+        doc.title = title.asText().trim();
     title.remove();
 
     doc.html = content;
