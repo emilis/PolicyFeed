@@ -1,6 +1,7 @@
 <%
 
 var config = require("config");
+var ctlDate = require("ctl/Date");
 
 if (doc.meta)
 {
@@ -16,8 +17,6 @@ returnVar("title", doc.title);
 
 // breadcrumbs:
 //*
-var day = doc.published.substr(0, 10);
-
 var breadcrumbs = [
     [ doc._id.substr(0, 10), doc._id.substr(6, 4) ],
     [ doc._id.substr(0, 13), doc._id.substr(11, 2) ],
@@ -68,7 +67,7 @@ function obj_key_value(obj) {
     obj_key_value({
         "Įstaiga": doc.organization,
         "Tipas": doc.type,
-        "Publikuotas": doc.published
+        "Publikuotas": ctlDate.formatFromString(doc.published, "yyyy-MM-dd HH:mm")
         });
 
 %></tbody></table>

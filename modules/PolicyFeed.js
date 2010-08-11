@@ -22,6 +22,7 @@ var config = getObjectConfig("PolicyFeed") || {};
 
 var fs = require("fs");
 var JsonStorage = require("ctl/JsonStorage");
+var ctlDate = require("ctl/Date");
 var SolrClient = require("PolicyFeed/SolrClient");
 var ctlTemplate = require("ctl/Template");
 var ctlRequest = require("ctl/Request");
@@ -217,6 +218,9 @@ exports.showDocument = function(req, id)
     var doc = JsonStorage.read(id);
     if (!doc)
         return this.showError(404);
+
+    if (doc.published.match(/\.\d+Z$/))
+        doc.published = ctlDate.fromUTCString(doc.published);
 
     return WebMapper.returnHtml(
         this.showContent("showDocument", {
