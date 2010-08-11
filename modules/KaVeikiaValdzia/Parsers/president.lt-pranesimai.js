@@ -28,7 +28,8 @@ for (var key in Parser)
 
 
 // --- Parser config: ---
-exports.feed_url = "http://www.president.lt/lt/rss/rss.rss";
+exports.feed_url = ["http://www.president.lt/lt/rss/rss.rss",
+    "http://www.president.lt/lt/rss/rss_kalbos.rss"];
 
 exports.doc_template = {
     type: "pranesimas",
