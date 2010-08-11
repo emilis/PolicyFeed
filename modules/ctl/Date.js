@@ -17,6 +17,8 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require("core/date");
+
 
 /**
  *
@@ -62,3 +64,12 @@ exports.fromUTCString = function(str) {
 
 }
 
+
+/**
+ *
+ */
+exports.formatFromString = function(str, format) {
+    if (!(str instanceof Date))
+        str = this.fromISOString(str);
+    return str.format(format);
+}
