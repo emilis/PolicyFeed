@@ -59,6 +59,36 @@ div.day > div {
         float: right;
     }
 
+    #menu-ext {
+        display: block;
+        float: right;
+        height: 48px;
+        margin: 0;
+        padding: 0;
+    }
+
+        #menu-ext > li {
+            display: inline;
+            float: right;
+            border-left: 1px dotted #828282;
+        }
+
+            #menu-ext > li > a {
+                display: inline;
+                float: right;
+                padding: 16px 20px 14px 22px;
+                background-color: #5c5950;
+                color: white;
+                text-decoration: none;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            #menu-ext > li > a:hover {
+                background-color: #4b4841;
+            }
+
     #menu {
         display: block;
         float: left;
@@ -68,36 +98,32 @@ div.day > div {
         padding: 0;
     }
 
-        #menu li {
+        #menu > li {
             display: inline;
             float: left;
-            border-left: 1px dotted #828282;
+            border-right: 1px dotted #828282;
         }
 
-            #menu > li.first {
-                border: 0px;
+            #menu > li > a {
+                display: inline;
+                float: left;
+                padding: 16px 20px 14px 22px;
+                background-color: #5c5950;
+                color: white;
+                text-decoration: none;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                font-weight: bold;
+                /*text-transform: uppercase;*/
             }
 
-                #menu > li > a {
-                    display: inline;
-                    float: left;
-                    padding: 16px 20px 14px 22px;
-                    background-color: #4a4a4a;
-                    color: white;
-                    text-decoration: none;
-                    font-family: Arial, sans-serif;
-                    font-size: 12px;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                }
+            #menu > li > a:hover {
+                background-color: #4b4841;
+            }
 
-                #menu > li > a:hover {
-                    background-color: #000;
-                }
-
-                #menu > li > a.active {
-                    background-color: #000;
-                }
+            #menu > li > a.active {
+                background-color: #4b4841;
+            }
 /* --- Main: --- */
 
 #main {
