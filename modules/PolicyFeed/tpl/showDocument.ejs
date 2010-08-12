@@ -3,6 +3,8 @@
 var config = require("config");
 var ctlDate = require("ctl/Date");
 
+var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+
 if (doc.meta)
 {
     doc.title = doc.meta.title;
@@ -28,12 +30,12 @@ returnVar("breadcrumbs", breadcrumbs);
 
 // --- Side --- --- ----------------------------------------------------------
 
-var icons = '<img align="top" src="' + config.FILES_URL + '/KaVeikiaValdzia/';
+var icons = '<img align="top" src="' + site_files;
 
 icons = {
-    ext: icons + 'ext.png">',
-    search: icons + 'search.png">',
-    script: icons + 'script.png">'
+    ext: icons + '/ext.png">',
+    search: icons + '/search.png">',
+    script: icons + '/script.png">'
     };
 
 function tr_key_value(label, value, print_empty) {
@@ -60,6 +62,7 @@ function obj_key_value(obj) {
 
 <div id="document"><div>
 
+<div id="document-side">
 <div id="document-info">
 <h3>Apie dokumentą</h3>
 <table><tbody><%
@@ -111,6 +114,19 @@ if (doc.teises_aktas)
 
 
 %>
+</div>
+<fieldset id="document-share">
+<legend>Pasidalink:</legend>
+<ul>
+    <li><a href="http://www.facebook.com/share.php?u=http://kaveikiavaldzia.lt<%= doc._id %>"><img src="<%= site_files %>/fb.gif" align="absmiddle">Facebook</a></li>
+    <li><a href="http://twitter.com/home?status=http://kaveikiavaldzia.lt<%= doc._id %>"><img src="<%= site_files %>/twitter.gif" align="absmiddle">Twitter</a></li>
+
+</ul>
+<form id="email-doc">
+    <span>El. paštu:</span><br>
+    <input name="email" class="email"><input type="button" class="button" name="share" value="Siųsti">
+</form>
+</fieldset>
 </div>
 
 <h1 id="document-title"><%=doc.title%></h1>
