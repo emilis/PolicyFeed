@@ -26,14 +26,15 @@ var SEARCH_DIR = config.WEB_DIR + "/search";
 // --- init ------------------------------------------------------------------
 
 var solrconfig = fs.open(SEARCH_DIR + "/conf/solrconfig.xml", {read: true, binary: true})
-var sc = new org.apache.solr.core.SolrConfig(SEARCH_DIR, "config", solrconfig)
+exports.SolrConfig = new org.apache.solr.core.SolrConfig(SEARCH_DIR, "config", solrconfig)
 
 var schema = fs.open(SEARCH_DIR + "/conf/schema.xml", {read: true, binary: true})
-var is = new org.apache.solr.schema.IndexSchema(sc, "schema", schema)
+exports.IndexSchema = new org.apache.solr.schema.IndexSchema(exports.SolrConfig, "schema", schema)
 
-var sqp = new org.apache.solr.search.SolrQueryParser(is, "html")
+exports.SolrQueryParser = new org.apache.solr.search.SolrQueryParser(exports.IndexSchema, "html")
+exports.SolrQueryParser.setDefaultOperator(org.apache.lucene.queryParser.QueryParser.Operator.AND);
 
-var a = is.getAnalyzer()
+exports.Analyzer = exports.IndexSchema.getAnalyzer();
 
 
 // --- functions -------------------------------------------------------------
@@ -42,7 +43,33 @@ var a = is.getAnalyzer()
  *
  */
 exports.parseQuery = function(query) {
-    return sqp.parse(query);
+    return this.SolrQueryParser.parse(query);
+}
+
+
+/**
+ *
+ */
+exports.showQuery = function(query) {
+    if (query.class == org.apache.lucene.search.TermQuery) {
+        return query.getTerm().text();
+    } else if (query.class == org.apache.lucene.search.PhraseQuery) {
+        return ["SEQ",  query.getTerms().map(function (item) { return item.text(); }).join(" ")];
+    } else if (query.class == org.apache.lucene.search.BooleanQuery) {
+        var a = query.getClauses().map(exports.showQuery);
+        a.unshift("BOOL");
+        return a;
+    } else if (query.class == org.apache.lucene.search.BooleanClause) {
+        var prefix = "CLAUSE:";
+        if (query.required)
+            prefix += "REQ";
+        if (query.prohibited)
+            prefix += "NOT";
+
+        return [prefix, exports.showQuery(query.getQuery())];
+    } else {
+        throw Error("Unknown query class " + query.class);
+    }
 }
 
 
@@ -50,7 +77,7 @@ exports.parseQuery = function(query) {
  *
  */
 exports.tokenizeText = function(text) {
-    return a.tokenStream("html", java.io.StringReader( text ));
+    return this.Analyzer.tokenStream("html", java.io.StringReader( text ));
 }
 
 
