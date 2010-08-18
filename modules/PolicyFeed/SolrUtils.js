@@ -19,6 +19,7 @@
 
 var config = require("config");
 var fs = require("fs");
+var ctlDate = require("ctl/Date");
 var ctlString = require("ctl/String");
 
 var SEARCH_DIR = config.WEB_DIR + "/search";
@@ -70,6 +71,35 @@ exports.showQuery = function(query) {
     } else {
         throw Error("Unknown query class " + query.class);
     }
+}
+
+
+/**
+ *
+ */
+exports.queryDocument = function(doc, queries) {
+    var mi = new org.apache.lucene.index.memory.MemoryIndex();
+
+    // Add document fields:
+    mi.addField("id", doc.id, this.Analyzer);
+    mi.addField("published", ctlDate.formatFromString(doc.published, Date.ISOFORMAT), this.Analyzer);
+    mi.addField("type", doc.type, this.Analyzer);
+    mi.addField("org", doc.org, this.Analyzer);
+    mi.addField("organization", doc.organization, this.Analyzer);
+    mi.addField("title", doc.title, this.Analyzer);
+
+    if (!doc.text)
+        mi.addField("html", this.tokenizeHtml(doc.html));
+    else
+        mi.addField("html", doc.text, this.Analyzer);
+
+    // Run queries and return the matching ones:
+    return queries.filter(function (query) {
+            if (typeof(query) == "string")
+                return mi.search(exports.parseQuery(query));
+            else
+                return mi.search(query);
+        });
 }
 
 
