@@ -585,7 +585,7 @@ div.day > div {
                     display: block;
                     margin: 0;
                     padding: 10px;
-                    /*border-bottom: 1px dotted #b7b7b7;*/
+                    border-bottom: 1px dotted #b7b7b7;
                 }
 
                     #document-share > ul > li {
@@ -594,7 +594,6 @@ div.day > div {
                     }
 
                 #document-share > form {
-                    display: none;
                     padding: 10px;
                     margin: 0;
                 }

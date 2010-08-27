@@ -21,6 +21,7 @@ var config = getObjectConfig("PolicyFeed") || {};
 
 
 var fs = require("fs");
+var mail = require("ringo/mail");
 var JsonStorage = require("ctl/JsonStorage");
 var ctlDate = require("ctl/Date");
 var SolrClient = require("PolicyFeed/SolrClient");
@@ -252,6 +253,31 @@ exports.showDocumentFormat = function(req, id, format)
     }
     else
         return this.showError(404);
+}
+
+
+/**
+ *
+ */
+exports.shareByEmail = function(req, id) {
+    print("PolicyFeed.shareByEmail", id, req.params.email);
+
+    var doc = JsonStorage.read(id);
+    var email = req.params.email;
+
+    mail.send({
+        to: email,
+        subject: "Nuoroda iš KaVeikiaValdzia.lt: " + doc.title,
+        html: this.showHtml("shareByEmail", { doc: doc })
+        });
+
+    return {
+        status: 200,
+        headers: {
+            "Content-Type": "text/plain"
+        },
+        body: [ "OK" ]
+    };
 }
 
 //----------------------------------------------------------------------------

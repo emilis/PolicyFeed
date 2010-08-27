@@ -124,7 +124,8 @@ if (doc.teises_aktas)
 </ul>
 <form id="email-doc">
     <span>El. paštu:</span><br>
-    <input name="email" class="email"><input type="button" class="button" name="share" value="Siųsti">
+    <input id="share-email" name="email" class="email">
+    <input id="share-email-button" type="button" class="button" name="share" value="Siųsti" onClick="PolicyFeed.shareByEmail('<%= doc._id %>');">
 </form>
 </fieldset>
 </div>

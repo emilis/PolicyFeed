@@ -1,0 +1,16 @@
+<table border="1" cellpadding="10"><tbody><tr><td bgcolor="#fffdcb">
+<p>Sveiki,</p>
+<p>kažkuris KąVeikiaValdžia.lt svetainės lankytojas nusprendė pasidalinti su Jumis šiuo dokumentu.</p>
+<p><em>Jei nepageidaujate gauti tokių pranešimų, ar gavote jį per klaidą. Prašome spausti čia:</em><br>
+<a href="#">http://.....</a></p>
+</td></tr></tbody></table>
+
+<p><b>Organizacija:</b> <%= doc.organization %><br>
+<b>Tipas:</b> <%= doc.type %><br>
+<b>Publikuotas:</b> <%= doc.published %><br>
+<b>Nuoroda:</b> <a href="http://kaveikiavaldzia.lt<%= doc._id %>">http://kaveikiavaldzia.lt<%= doc._id %></a><br>
+<b>Originalus dokumentas:</b> <a href="<%= doc.url %>"><%= doc.url %></a></p>
+
+<h1><%= doc.title %></h1>
+
+<%= doc.html %>
