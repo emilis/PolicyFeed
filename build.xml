@@ -12,6 +12,8 @@
     <property name="search.src" location="src/search" />
     <property name="search.ant" location="${search.src}/build.xml" />
     <property name="url.db" value="policyfeed_urls.sqlite3" />
+    <property name="user.db" value="users.sqlite3" />
+
   
     <target name="init" description="Create needed dirs and files.">
         <mkdir dir="${data}"/>
@@ -20,6 +22,7 @@
         <mkdir dir="${uploads}"/>
         <chmod dir="${uploads}" type="both" perm="a+rw"/>
         <copy file="${pf.src}/${url.db}" tofile="${data}/${url.db}" />
+        <copy file="${pf.src}/${user.db}" tofile="${data}/${user.db}" />
     </target>
 
     <target name="install-search" description="Build and install libs related to Solr search.">
