@@ -337,6 +337,10 @@ exports.get_column_value = function(rs, column, meta)
     // Note: Types variable declared at the beginning of this module.
     switch (type)
     {
+        case Types.NULL:
+            return null;
+            break;
+
         case Types.BIGINT:
         case Types.INTEGER:
         case Types.SMALLINT:
