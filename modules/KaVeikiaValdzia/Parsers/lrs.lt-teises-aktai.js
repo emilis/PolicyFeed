@@ -19,8 +19,9 @@
 
 
 // Requirements:
-require("core/date");
+var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
+var UrlQueue = require("PolicyFeed/UrlQueue");
 
 
 exports.extendObject("PolicyFeed/Parser");
@@ -89,7 +90,7 @@ exports.parseFeedItem = function(item) {
 
         // Fix 00:00 time for "published" field:
         var published = item.getFirstByXPath("pubDate").asText();
-        published = published.replace(/\./g, "-").replace(/ 00:00/, new Date().format(" HH:mm:ss"));
+        published = published.replace(/\./g, "-").replace(/ 00:00/, dates.format(new Date(), " HH:mm:ss"));
 
         // Result object:
         var result =  {
@@ -174,7 +175,7 @@ exports.extractPageData = function(original, page) {
 
     // Schedule "nėra teksto" docs for re-check after 5 minutes:
     if (doc.html.match("nėra teksto HTML formatu")) {
-        require("PolicyFeed/UrlQueue").scheduleUrl({
+        UrlQueue.scheduleUrl({
             url: doc.url,
             domain: "www.lrs.lt",
             parser: this.name,

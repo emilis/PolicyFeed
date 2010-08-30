@@ -17,7 +17,7 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require("core/date");
+var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
 
 // Extends:
@@ -55,7 +55,7 @@ exports.extractFeedItems = function(page) {
                 return {
                     url: item.getAttribute("href"),
                     title: item.asText(),
-                    published: new Date().format("yyyy-MM-dd HH:mm:ss"),
+                    published: dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
                     summary: ""
                 };
             });

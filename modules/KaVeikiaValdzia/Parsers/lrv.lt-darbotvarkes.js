@@ -18,13 +18,12 @@
 */
 
 // --- Requirements: ---
+var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
 
 // --- Extend PolicyFeed/Parser: ---
 
-var Parser = require("PolicyFeed/Parser");
-for (var key in Parser)
-    exports[key] = Parser[key];
+exports.extendObject("PolicyFeed/Parser");
 
 // --- Parser config: ---
 exports.feed_url = [
@@ -110,7 +109,7 @@ exports.parseFeedItem = function()
         var result = {
             url: url,
             title: day + i_link.asText(),
-            published: new Date().format("yyyy-MM-dd HH:mm:ss"),
+            published: dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
         };
 
         result.parser = name;

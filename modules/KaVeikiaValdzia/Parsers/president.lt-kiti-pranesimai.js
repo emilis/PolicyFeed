@@ -20,12 +20,11 @@
 
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
+var dates = require("ringo/utils/dates");
 var ctlDate = require("ctl/Date");
 
 // --- Extend PolicyFeed/Parser : ---
-var Parser = require("PolicyFeed/Parser");
-for (var key in Parser)
-    exports[key] = Parser[key];
+exports.extendObject("PolicyFeed/Parser");
 
 
 // --- Parser config: ---
@@ -75,8 +74,8 @@ exports.extractFeedItems = function (page) {
             published = ctlDate.fromISOString(published);
             var d = new Date();
 
-            if (published.format("HH:mm:ss") == "00:00:00") {
-                if (published.format("yyyy-MM-dd") == d.format("yyyy-MM-dd")) {
+            if (dates.format(published, "HH:mm:ss") == "00:00:00") {
+                if (dates.format(published, "yyyy-MM-dd") == dates.format(d, "yyyy-MM-dd")) {
                     published.setHours(d.getHours());
                     published.setMinutes(d.getMinutes());
                     published.setSeconds(d.getSeconds());

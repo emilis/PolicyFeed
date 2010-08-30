@@ -22,9 +22,7 @@
 var htmlunit = require("htmlunit");
 
 // --- Extend PolicyFeed/Parser : ---
-var Parser = require("PolicyFeed/Parser");
-for (var key in Parser)
-    exports[key] = Parser[key];
+exports.extendObject("PolicyFeed/Parser");
 
 
 // --- Parser config: ---

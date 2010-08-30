@@ -17,7 +17,7 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require("core/string");
+var strings = require("ringo/utils/strings");
 
 var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
@@ -132,7 +132,7 @@ function textTable(fields, list) {
     for (var field in fields) {
         format = fields[field];
         if (format)
-            str += "| " + field.toString().pad(format[0], format[1], format[2]) + " ";
+            str += "| " + strings.pad(field.toString(), format[0], format[1], format[2]) + " ";
         else
             str += "| " + field + " ";
     }
@@ -143,7 +143,7 @@ function textTable(fields, list) {
             for (var field in fields) {
                 format = fields[field];
                 if (format)
-                    item_str += "| " + item[field].toString().pad(format[0], format[1], format[2]) + " ";
+                    item_str += "| " + strings.pad(item[field].toString(), format[0], format[1], format[2]) + " ";
                 else
                     item_str += "| " + item[field] + " ";
             }
