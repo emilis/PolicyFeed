@@ -9,10 +9,11 @@ CONFIG_DIR="$ROOT_DIR/config/config";
 set -o monitor
 
 java \
-  -jar "$LIB_DIR/jetty/start.jar"\
-  -Dsolr.solr.home="$ROOT_DIR/search"\
-  -Dsolr.data.dir="$ROOT_DIR/data/solr"\
-  "$CONFIG_DIR/jetty-solr.xml" &
+    -jar "$LIB_DIR/jetty/start.jar"\
+    -Dsolr.solr.home="$ROOT_DIR/search"\
+    -Dsolr.data.dir="$ROOT_DIR/data/solr"\
+    OPTIONS=All\
+    "$CONFIG_DIR/jetty-solr.xml" &
 
 # save pid of java process:
 echo $! > "$ROOT_DIR/data/solr.pid"
