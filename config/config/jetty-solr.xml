@@ -84,8 +84,8 @@
           <Call name="addAppProvider">
             <Arg>
               <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
-                <Set name="monitoredDir">lib/webapps</Set>
-                <Set name="defaultsDescriptor">config/config/webdefault.xml</Set>
+                <Set name="monitoredDir"><Property name="jetty.home" default="." />/lib/webapps</Set>
+                <Set name="defaultsDescriptor"><Property name="jetty.home" default="."/>/config/config/webdefault.xml</Set>
                 <Set name="scanInterval">5</Set>
               </New>
             </Arg>
