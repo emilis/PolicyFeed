@@ -22,6 +22,8 @@
  */
 
 
+var objects = require("ringo/utils/objects");
+
 var config = require("config").WebMapper || {
     'default_call': 'Site:showIndex',
     'allowed': [
@@ -36,7 +38,7 @@ var default_headers = {
 
 exports.status = default_status;
 
-exports.headers = default_headers.clone();
+exports.headers = objects.clone(default_headers);
 
 exports.req = {};
 
@@ -66,7 +68,7 @@ exports.index = function(req)
 exports.mapRequest = function(req)
 {
     this.status = default_status;
-    this.headers = default_headers.clone();
+    this.headers = objects.clone(default_headers);
 
     var p = req.params || {};
 
@@ -115,7 +117,7 @@ exports.returnHtml = function(html)
 exports.returnResponse = function(response)
 {
     this.status = default_status;
-    this.headers = default_headers.clone();
+    this.headers = objects.clone(default_headers);
     return response;
 }
 

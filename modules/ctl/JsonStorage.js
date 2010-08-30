@@ -36,8 +36,8 @@
 
 module.shared = true;
 
-import("config");
-import("fs");
+var config = require("config");
+var fs = require("fs");
 
 /**
  * Path where document data is stored.

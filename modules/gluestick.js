@@ -17,6 +17,8 @@
     along with Gluestick framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var objects = require("ringo/utils/objects");
+
 
 /*
  * NOTE! The line below makes all objects shared between requests.
@@ -27,7 +29,7 @@ module.shared = true;
 /**
  * Global config:
  */
-import("config");
+var config = require("config");
 
 
 /**
@@ -83,10 +85,10 @@ exports.getObjectConfig = function(name, new_config)
 
     // Apply implementation config on top of interface config:
     if (interfaces[name] != undefined)
-        oconfig = oconfig.clone(this.getObjectConfig(interfaces[name]), true);
+        oconfig = objects.clone(oconfig, this.getObjectConfig(interfaces[name]), true);
 
     // Apply
-    return oconfig.clone(new_config, true);
+    return objects.clone(oconfig, new_config, true);
 }
 
 
@@ -105,7 +107,7 @@ exports.loadObject = function(name, new_config)
         if (cache[name]._constructor && new_config)
         {
             // Return a clone with additional configuration:
-            var obj = cache[name].clone(false, true);
+            var obj = objects.clone(cache[name], false, true);
             obj._constructor(this.getObjectConfig(name, new_config));
             return obj
         }
@@ -159,7 +161,7 @@ exports.newObject = function(name, new_config)
             new_cache[name] = require(name);
     }
 
-    var obj = new_cache[name].clone(false, true);
+    var obj = objects.clone(new_cache[name], false, true);
     
     if (obj._constructor)
         obj._constructor(this.getObjectConfig(name, new_config));
@@ -191,13 +193,11 @@ exports.extendObject = function(parentObject)
     for (var propName in parentObject)
     {
         if (parentObject[propName] != undefined && parentObject[propName].constructor == Object)
-            this[propName] = parentObject[propName].clone(false, true);
+            this[propName] = objects.clone(parentObject[propName], false, true);
         else
             this[propName] = parentObject[propName];
     }
 
     this._parent = parentObject;
 }
-
-
 
