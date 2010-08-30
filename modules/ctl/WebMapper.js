@@ -23,6 +23,7 @@
 
 
 var objects = require("ringo/utils/objects");
+var arrays = require("ringo/utils/arrays");
 
 var config = require("config").WebMapper || {
     'default_call': 'Site:showIndex',
@@ -127,13 +128,13 @@ exports.returnResponse = function(response)
  */
 function isCallAllowed(obj_name, action)
 {
-    if (!config.allowed.contains(obj_name))
+    if (!arrays.contains(config.allowed, obj_name))
         return false;
     else
     {
         var obj = loadObject(obj_name);
         if (typeof(obj.web_actions) == "object" && (obj.web_actions instanceof Array))
-            return obj.web_actions.contains(action);
+            return arrays.contains(obj.web_actions, action);
         else
             return true;
     }

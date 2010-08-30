@@ -223,10 +223,15 @@ exports.showDocument = function(req, id)
     if (doc.published.match(/\.\d+Z$/))
         doc.published = ctlDate.fromUTCString(doc.published);
 
-    return WebMapper.returnHtml(
-        this.showContent("showDocument", {
-            "doc": doc
-            }));
+    return {
+        status: 200,
+        headers: {
+            "Content-Type": "text/html; charset=utf-8"
+        },
+        body: [
+            this.showContent("showDocument", {
+                "doc": doc
+                }) ]};
 }
 
 

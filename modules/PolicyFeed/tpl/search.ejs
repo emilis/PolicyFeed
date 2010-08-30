@@ -1,6 +1,7 @@
 <%
 
-import("config");
+var config = require("config");
+var dates = require("ringo/utils/dates");
 
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
@@ -69,7 +70,7 @@ for each(var doc in docs)
         print('<p>', highlighting[doc.id].html.join("</p><p>") , '</p>');
     print('</td>');
     
-    print('<td class="time" nowrap="nowrap">', doc.published.format("yyyy-MM-dd"), "</td>");
+    print('<td class="time" nowrap="nowrap">', dates.format(doc.published, "yyyy-MM-dd"), "</td>");
     print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>');
     print('</tr>');
 }

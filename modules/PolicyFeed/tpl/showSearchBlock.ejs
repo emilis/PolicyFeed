@@ -1,7 +1,7 @@
 <%
 
-require("core/string");
-import("config");
+var strings = require("ringo/utils/strings");
+var config = require("config");
 
 var query;
 
@@ -11,7 +11,7 @@ var query;
 
     var suggestions = ["Kubilius", '"žmogaus teisės"', "Šilutė", "žvejyba, žūklė, medžioklė"];
     suggestions = suggestions.map(function (item) {
-            return '<a href="' + config.WEB_URL + '/docs/search/?q=' + item.entitize() + '">' + item + '</a>';
+            return '<a href="' + config.WEB_URL + '/docs/search/?q=' + strings.entitize(item) + '">' + item + '</a>';
             });
     print(suggestions.join(", "));
     

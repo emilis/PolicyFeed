@@ -1,5 +1,7 @@
 <%
 
+var dates = require("ringo/utils/dates");
+
 var site_files = config.FILES_URL + "/KaVeikiaValdzia";
 
 var title;
@@ -7,7 +9,7 @@ var side;
 var html;
 var breadcrumbs;
 
-var salt = new Date().format("yyyyMMdd");
+var salt = dates.format(new Date(), "yyyyMMdd");
 
 
 function css()
