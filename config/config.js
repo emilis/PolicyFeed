@@ -1,6 +1,6 @@
 module.shared = true;
 
-import("fs");
+var fs = require("fs");
 
 var ROOT_DIR = fs.absolute(module.directory + "../");
 
@@ -29,12 +29,11 @@ exports.urls = [
 
 /*
 exports.middleware = [
-    'ringo/middleware/gzip',
-    'ringo/middleware/etag',
-    'ringo/middleware/responselog',
-    'ringo/middleware/error',
-    'ringo/middleware/notfound'
-    // 'ringo/middleware/profiler'
+    require('ringo/middleware/gzip').middleware,
+    require('ringo/middleware/etag').middleware,
+    require('ringo/middleware/responselog').middleware,
+    require('ringo/middleware/error').middleware,
+    require('ringo/middleware/notfound').middleware
 ];
 //*/
 
@@ -43,9 +42,9 @@ exports.app = require('ringo/webapp').handleRequest;
 
 /*
 exports.macros = [
-    './helpers',
-    'ringo/skin/macros',
-    'ringo/skin/filters'
+    require('./helpers'),
+    require('ringo/skin/macros'),
+    require('ringo/skin/filters')
 ];
 */
 
