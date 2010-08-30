@@ -1,0 +1,12 @@
+<h1>Atsisakyti pranešimų iš KąVeikiaValdžia.lt:</h1>
+<p><em>Jūs paspaudėte nuorodą laiške siųstame į <%= user.email %>.<br>Ar norėtumėte, kad nebesiųstume jums laiškų šiuo adresu?</em></p>
+
+<form method="post" action="">
+<input type="hidden" name="call" value="PolicyFeed/Users/Preferences.submitBlockForm">
+<input type="hidden" name="key" value="<%= user.key %>">
+<p><input type="submit" value="Atsisakyti"> | <a href="#"><font size="2">Į pirmą puslapį</font></a></p>
+</form>
+
+<p><br><small><em>Jei vėliau norėsite užsisakyti naujienas jums reikės pranešti mums adresu emilis.d@gmail.com iš šio savo el. pašto adreso.</em></small></p>
+
+<p><small><em>Susisiekti.</em></small></p>
