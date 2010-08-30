@@ -21,6 +21,7 @@ module.shared = true;
 
 var config = require("config");
 
+var strings = require("ringo/utils/strings");
 var bs = require("ringo/storage/berkeleystore");
 var store = new bs.Store( config.DATA_DIR );
 
@@ -34,7 +35,7 @@ exports.Item = store.defineEntity("UrlListItem");
  *
  */
 exports.exists = function(url) {
-    return this.Item.query().equals("url", url.digest()).select().length > 0;
+    return this.Item.query().equals("url", strings.digest(url)).select().length > 0;
 }
 
 
@@ -50,7 +51,7 @@ exports.isNew = function(url) {
  *
  */
 exports.getDocId = function(url) {
-    var list = this.Item.query().equals("url", url.digest()).select();
+    var list = this.Item.query().equals("url", strings.digest(url)).select();
     if (list.length > 0)
         return list[0].id;
 }
@@ -60,7 +61,7 @@ exports.getDocId = function(url) {
  *
  */
 exports.addUrl = function(url, doc_id) {
-    var item = new this.Item({url: url.digest(), id: doc_id});
+    var item = new this.Item({url: strings.digest(url), id: doc_id});
     item.save();
     return item;
 }
@@ -70,7 +71,7 @@ exports.addUrl = function(url, doc_id) {
  *
  */
 exports.getUrl = function(url) {
-    var list = this.Item.query().equals("url", url.digest()).select();
+    var list = this.Item.query().equals("url", strings.digest(url)).select();
     if (list.length > 0)
         return list[0];
 }
