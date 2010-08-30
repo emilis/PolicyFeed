@@ -3,8 +3,7 @@
  * [JSGI 0.3 request object](http://wiki.commonjs.org/wiki/JSGI/Level0/A/Draft2#Request).
  */
 
-require('core/object');
-require('core/string');
+var objects = require('ringo/utils/objects');
 var {isUrlEncoded, parseParameters} = require('./parameters');
 var {isFileUpload, parseFileUpload} = require('./fileupload');
 
@@ -100,7 +99,7 @@ function Request(request) {
     Object.defineProperty(request, "params", {
         get: function() {
             if (!params) {
-                params = Object.merge(this.postParams, this.queryParams);
+                params = objects.merge(this.postParams, this.queryParams);
             }
             return params;
         }
@@ -279,7 +278,7 @@ function Session(request) {
      */
     Object.defineProperty(this, "isNew", {
         get: function() {
-            getSession().isNew();
+            return getSession().isNew();
         }
     })
 

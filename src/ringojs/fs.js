@@ -8,6 +8,7 @@
  * to the functions exported by [fs-base](./fs-base).
  */
 
+var arrays = require('ringo/utils/arrays');
 var fsBase = require('fs-base');
 include('io');
 
@@ -244,7 +245,7 @@ function absolute(path) {
  * extension.
  */
 function base(path, ext) {
-    var name = split(path).peek();
+    var name = arrays.peek(split(path));
     if (ext && name) {
         var diff = name.length - ext.length;
         if (diff > -1 && name.lastIndexOf(ext) == diff) {
@@ -278,11 +279,15 @@ function extension(path) {
 }
 
 /**
- * Join a list of paths using the local file system's path separator and
- * normalize the result.
+ * Join a list of paths using the local file system's path separator.
+ * The result is not normalized, so `join("..", "foo")` returns `"../foo"`.
+ * @see http://wiki.commonjs.org/wiki/Filesystem/Join
+ *
  */
 function join() {
-    return normal(Array.join(arguments, SEPARATOR));
+    // filter out empty strings to avoid join("", "foo") -> "/foo"
+    var args = Array.filter(arguments, function(p) p != "")
+    return args.join(SEPARATOR);
 }
 
 /**
@@ -333,7 +338,7 @@ function resolve() {
         for (var j = 0; j < parts.length; j++) {
             var part = parts[j];
             if (part == '..') {
-                if (elements.length > 0 && elements.peek() != '..') {
+                if (elements.length > 0 && arrays.peek(elements) != '..') {
                     elements.pop();
                 } else if (!root) {
                     elements.push(part);
@@ -558,7 +563,7 @@ for (var i = 0; i < pathed.length; i++) {
         return function () {
             return new Path(exports[name].apply(
                 this,
-                [this.toString()].concat(Array.prototype.slice.call(arguments))
+                [this.toString()].concat(Array.slice(arguments))
             ));
         };
     })(name);

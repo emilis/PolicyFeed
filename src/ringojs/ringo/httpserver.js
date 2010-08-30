@@ -4,8 +4,6 @@
 
 export('Server');
 
-require('core/object');
-
 var log = require('ringo/logging').getLogger(module.id);
 
 
@@ -215,9 +213,9 @@ function Server(options) {
 
     // Allow definition of app/static mappings in server config for convenience
     if (options.staticDir) {
-        var fileutils = require('ringo/fileutils');
+        var files = require('ringo/utils/files');
         var staticContext = this.getContext(options.staticMountpoint || '/static', options.virtualHost);
-        staticContext.serveStatic(fileutils.resolveId(options.config, options.staticDir));
+        staticContext.serveStatic(files.resolveId(options.config, options.staticDir));
     }
 
     // Start listeners. This allows us to run on priviledged port 80 under jsvc

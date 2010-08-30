@@ -12,8 +12,8 @@
  * logger will render a stack trace for it and append it to the log message.</p>
  */
 
-require('core/string');
-var utils = require('ringo/utils');
+var strings = require('ringo/utils/strings');
+var debug = require('ringo/utils/debug');
 
 var configured = false;
 // interval id for configuration watcher
@@ -112,7 +112,7 @@ var setConfig = exports.setConfig = function(resource, watchForUpdates) {
     var {path, url} = resource;
     var PropertyConfigurator = org.apache.log4j.PropertyConfigurator;
     var DOMConfigurator = org.apache.log4j.xml.DOMConfigurator;
-    var configurator = path.endsWith('.properties') || path.endsWith('.props') ?
+    var configurator = strings.endsWith(path, '.properties') || strings.endsWith(path, '.props') ?
                        PropertyConfigurator : DOMConfigurator;
     if (typeof configurator.configure === "function") {
         configurator.configure(url);
@@ -174,13 +174,13 @@ function intercept(level, name, message) {
 }
 
 function formatMessage(args) {
-    var message = utils.format.apply(null, args);
+    var message = strings.format.apply(null, args);
     for each (var arg in args) {
         if (arg instanceof Error || arg instanceof java.lang.Throwable) {
             message  = [
                 message,
-                utils.getScriptStack(arg, "\nScript stack:\n"),
-                utils.getJavaStack(arg, "Java stack:\n")
+                debug.getScriptStack(arg, "\nScript stack:\n"),
+                debug.getJavaStack(arg, "Java stack:\n")
             ].join('');
         }
     }

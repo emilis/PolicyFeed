@@ -1,5 +1,5 @@
-require('core/string');
-var Response = require('ringo/webapp/response').Response;
+var strings = require('ringo/utils/strings');
+var {Response} = require('ringo/webapp/response');
 var engine = require('ringo/engine');
 var log = require('ringo/logging').getLogger(module.id);
 var Buffer = require('ringo/buffer').Buffer;
@@ -21,7 +21,7 @@ function handleError(request, error) {
     var res = new Response();
     res.status = 500;
     res.contentType = 'text/html';
-    var msg = String(error).escapeHtml();
+    var msg = strings.escapeHtml(String(error));
     res.writeln('<html><title>', msg, '</title>');
     res.writeln('<body><h1>', msg, '</h1>');
     var errors = engine.getErrors();
@@ -33,14 +33,14 @@ function handleError(request, error) {
     }
     if (error.stack) {
         res.writeln('<h3>Script Stack</h3>');
-        res.writeln('<pre>', error.stack, '</pre>');        
+        res.writeln('<pre>', error.stack, '</pre>');
     }
     if (error.rhinoException) {
         res.writeln('<h3>Java Stack</h3>');
         var writer = new java.io.StringWriter();
         var printer = new java.io.PrintWriter(writer);
         error.rhinoException.printStackTrace(printer);
-        res.writeln('<pre>', writer.toString().escapeHtml(), '</pre>');
+        res.writeln('<pre>', strings.escapeHtml(writer.toString()), '</pre>');
     }    
     res.writeln('</body></html>');
     log.error(error);
@@ -51,9 +51,9 @@ function renderSyntaxError(error) {
     var buffer = new Buffer();
     buffer.write("<div class='stack'>in ").write(error.sourceName);
     buffer.write(", line ").write(error.line);
-    buffer.write(": <b>").write(error.message.escapeHtml()).write("</b></div>");
+    buffer.write(": <b>").write(strings.escapeHtml(error.message)).write("</b></div>");
     if (error.lineSource) {
-        buffer.write("<pre>").write(error.lineSource.escapeHtml()).write("\n");
+        buffer.write("<pre>").write(strings.escapeHtml(error.lineSource)).write("\n");
         for (var i = 0; i < error.offset - 1; i++) {
             buffer.write(' ');
         }

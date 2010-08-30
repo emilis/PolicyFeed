@@ -1,7 +1,6 @@
-require('core/object');
-require('core/array');
+var objects = require('ringo/utils/objects');
 var {Path} = require('fs');
-var futils = require('ringo/fileutils');
+var files = require('ringo/utils/files');
 include('ringo/engine');
 include('ringo/functional');
 include('./storeutils');
@@ -103,7 +102,7 @@ function Store(path) {
         } else if (isEntity(arg)) {
             return arg;
         } else if (arg instanceof Object) {
-            var entity = arg.clone({});
+            var entity = objects.clone(arg, {});
             Object.defineProperty(entity, "_key", {
                 value: createKey(type, generateId(type))
             });
@@ -127,7 +126,7 @@ function Store(path) {
         }
 
         var tempFileName = type + id + ".";
-        var tempfile = new Path(futils.createTempFile(tempFileName, ".tmp", base));
+        var tempfile = new Path(files.createTempFile(tempFileName, ".tmp", base));
 
         if(log.isDebugEnabled())
             log.debug("Storing object: " + entity.toSource());
@@ -166,14 +165,14 @@ function Store(path) {
         if (!dir.exists() || !dir.isDirectory()) {
             return [];
         }
-        var files = dir.listPaths();
+        var paths = dir.listPaths();
         var list = [];
 
-        for each (var file in files) {
-            if (!file.isFile() || futils.isHidden(file)) {
+        for each (var path in paths) {
+            if (!path.isFile() || files.isHidden(path)) {
                 continue;
             }
-            list.push(create(type, createKey(type, file.base())));
+            list.push(create(type, createKey(type, path.base())));
         }
         return list;
     }

@@ -1,18 +1,12 @@
-include('binary');
-include('io');
-include('ringo/buffer');
-include('./util');
-include('./mime');
-require('core/date');
+var {ByteArray} = require('binary');
+var {Stream} = require('io');
+var {Buffer} = require('ringo/buffer');
+var {Headers, getMimeParameter} = require('./util');
+var {mimeType} = require('./mime');
+var dates = require('ringo/utils/dates');
+var webenv = require('ringo/webapp/env');
 
-export('Response',
-       'skinResponse',
-       'jsonResponse',
-       'xmlResponse',
-       'staticResponse',
-       'redirectResponse',
-       'notFoundResponse',
-       'errorResponse');
+export('Response');
 
 function Response() {
 
@@ -23,7 +17,7 @@ function Response() {
         return response;
     }
 
-    var config = require('ringo/webapp/env').config;
+    var config = webenv.getConfig();
     var status = 200;
     var charset = config && config.charset || 'utf-8';
     var contentType = config && config.contentType || 'text/html';
@@ -189,7 +183,7 @@ function Response() {
                 new Date(0) : new Date(Date.now() + days * 1000 * 60 * 60 * 24);
             var cookieDateFormat = "EEE, dd-MMM-yyyy HH:mm:ss zzz";
             buffer.write("; expires=");
-            buffer.write(expires.format(cookieDateFormat, "en", "GMT"));
+            buffer.write(dates.format(expires, cookieDateFormat, "en", "GMT"));
         }
         options = options || {};
         var path = options.path || "/";
@@ -230,39 +224,36 @@ function Response() {
 
 /**
  * A response object rendered from a skin.
- * @param {Resource|String} skin the skin resource or path.
+ * @param {Resource|String} skin the skin resource or path
  * @param {Object} context the skin context object
  */
-function skinResponse(skin, context) {
+Response.skin = function (skin, context) {
     if (!(skin instanceof org.ringojs.repository.Resource)) {
-        // try locating resource relative to implicit this object
-        // which may be the calling module
-        skin = typeof this.getResource === "function" ?
-                this.getResource(skin) : getResource(skin);
+        skin = getResource(skin);
     }
     var render = require('ringo/skin').render;
     return new Response(render(skin, context));
-}
+};
 
 /**
  * Create a response object containing the JSON representation of an object.
  * @param {Object} object the object whose JSON representation to return
  */
-function jsonResponse(object) {
+Response.json = function (object) {
     var res = new Response(JSON.stringify(object));
     res.contentType = 'application/json';
     return res;
-}
+};
 
 /**
  * Create a response containing the given XML document
  * @param {XML|String} xml an XML document
  */
-function xmlResponse(xml) {
+Response.xml = function (xml) {
     var res = new Response(typeof xml === 'xml' ? xml.toXMLString() : xml);
     res.contentType = 'application/xml';
     return res;
-}
+};
 
 /**
  * A response representing a static resource.
@@ -270,15 +261,15 @@ function xmlResponse(xml) {
  * @param {String} contentType optional MIME type. If not defined,
  *         the MIME type is detected from the file name extension.
  */
-function staticResponse(resource, contentType) {
+Response.static = function (resource, contentType) {
     if (typeof resource == 'string') {
         resource = getResource(resource);
     }
     if (!(resource instanceof org.ringojs.repository.Resource)) {
-        throw Error("Wrong argument for staticResponse: " + typeof(resource));
+        throw Error("Wrong argument for static response: " + typeof(resource));
     }
     if (!resource.exists()) {
-        return notFoundResponse(String(resource));
+        return Response.notFound(String(resource));
     }
     var input;
     return {
@@ -308,25 +299,25 @@ function staticResponse(resource, contentType) {
             }
         }
     };
-}
+};
 
 /**
  * Create a response that redirects the client to a different URL.
  * @param {String} location the new location
  */
-function redirectResponse(location) {
+Response.redirect = function (location) {
     return {
         status: 303,
         headers: {Location: location},
         body: ["See other: " + location]
     };
-}
+};
 
 /**
  * Create a 404 not-found response.
  * @param {String} location the location that couldn't be found
  */
-function notFoundResponse(location) {
+Response.notFound = function (location) {
     var msg = 'Not Found';
     return {
         status: 404,
@@ -338,17 +329,17 @@ function notFoundResponse(location) {
                 '<p>The requested URL ', String(location), ' was not found on the server.</p>',
                 '</body></html>']
     };
-}
+};
 
 /**
  * Create a 500 error response.
  * @param {String} msg the message of response body
  */
-function errorResponse(msg) {
+Response.error = function (msg) {
     return {
         status: 500,
         headers: {'Content-Type': 'text/plain'},
         body: [typeof msg === 'undefined' ? 'Something went wrong.' :
                 String(msg)]
     };
-}
+};
