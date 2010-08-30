@@ -17,6 +17,11 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var fs = require("fs");
+var dates = require("ringo/utils/dates");
+var JsonStorage = require("ctl/JsonStorage");
+var ctlTemplate = require("ctl/Template");
+
 /**
  * Returns JSON web response for month days containing documents.
  */
@@ -36,12 +41,12 @@ exports.getActiveDays = function(req)
  */
 exports.showBlock = function(day)
 {
-    var tpl_file = require("fs").directory(module.path) + "/Calendar/tpl/showBlock.ejs";
+    var tpl_file = fs.directory(module.path) + "/Calendar/tpl/showBlock.ejs";
 
     if (!day)
-        day = new Date().format("yyyy-MM");
+        day = dates.format(new Date(), "yyyy-MM");
 
-    return loadObject("ctl/Template").fetch(tpl_file, {
+    return ctlTemplate.fetch(tpl_file, {
         day: day,
         days: this.getActiveMonthDays(day.substr(0, 4), day.substr(5, 2))
         });
@@ -58,7 +63,7 @@ exports.getActiveMonthDays = function(year, month)
 
     var result = [];
     try {
-        result = require("ctl/JsonStorage").listDirectories("/docs/" + year + "/" + month);
+        result = JsonStorage.listDirectories("/docs/" + year + "/" + month);
     } catch (e) {
         result = [];
     }
