@@ -19,6 +19,7 @@
 
 module.shared = true;
 
+var arrays = require("ringo/utils/arrays");
 var UrlErrors = require("PolicyFeed/UrlErrors");
 var JsonStorage = require("ctl/JsonStorage");
 
@@ -281,7 +282,7 @@ exports.getUrl = function(pid) {
         if (url.time > t)
             break; // exit loop when we reach urls in the future.
         else if (this.requestDomain(url.domain) && lockUrl(pid, url)) {
-            schedule.remove(url);
+            arrays.remove(schedule, url);
             schedule.save();
             return url;
         }
@@ -291,7 +292,7 @@ exports.getUrl = function(pid) {
     // check fifo:
     for each (var url in fifo) {
         if (this.requestDomain(url.domain) && lockUrl(pid, url)) {
-            fifo.remove(url);
+            arrays.remove(fifo, url);
             fifo.save();
             return url;
         }
