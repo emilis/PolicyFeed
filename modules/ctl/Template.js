@@ -130,7 +130,8 @@ exports.fetchObject = function(tpl_file_name, vars, output_var_name)
     catch (error)
     {
         print(uneval(error));
-        return '<p class="error">There was an error processing template file "' + tpl_file_name + '".</p>';
+        vars.__return[output_var_name] = '<p class="error">There was an error processing template file "' + tpl_file_name + '".</p>';
+        return vars.__return;
     }
 
     vars.__return[output_var_name] = vars.__output;
