@@ -1,5 +1,5 @@
 /*
-    Copyright 2009 Emilis Dambauskas
+    Copyright 2009,2010 Emilis Dambauskas
 
     This file is part of Gluestick framework.
 
@@ -17,187 +17,142 @@
     along with Gluestick framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var config = require("config");
 var objects = require("ringo/utils/objects");
 
 
-/*
- * NOTE! The line below makes all objects shared between requests.
+/**
+ * Dictionary of loaded module names.
  */
-module.shared = true;
+var loaded = {};
 
 
 /**
- * Global config:
- */
-var config = require("config");
-
-
-/**
- * loadObject() object cache:
- */
-var cache = {};
-
-
-/**
- * newObject() object template cache:
- */
-var new_cache = {};
-
-
-/**
- * List of interface implementations:
+ * Interface configuration and cache:
  */
 if (config.gluestick && config.gluestick.interfaces)
     var interfaces = config.gluestick.interfaces;
 else
     var interfaces = {};
 
-
-/**
- * Get configuration for an object name.
- *
- * @param string name Object name
- * @param optional Object new_config Additional configuration parameters
- * @return Object Configuration for the object = config(name) + [config(interfaces[name])] + new_config.
- */
-exports.getObjectConfig = function(name, new_config)
-{
-    /* Searches for object config in config.js.
-     * E.g. getObjectConfig("my/brillant/bean") would check:
-     *     config.my
-     *     config.my.brillant
-     *     config.my.brillant.bean
-     * ... and return the result or return {};
-     */
-    var path = name.split("/");
-    var oname = "";
-    var oconfig = config;
-    while (oname = path.shift())
-    {
-        if (oconfig[oname])
-            oconfig = oconfig[oname];
-        else
-        {
-            oconfig = {};
-            break;
-        }
-    }
-
-    // Apply implementation config on top of interface config:
-    if (interfaces[name] != undefined)
-        oconfig = objects.clone(oconfig, this.getObjectConfig(interfaces[name]), true);
-
-    // Apply
-    return objects.clone(oconfig, new_config, true);
-}
-
-
-/**
- * Get object by name.
- *
- * @param string name Object name 
- * @param optional Object new_config Additional configuration for the object.
- * @return Object An object created from the parameters.
- */
-exports.loadObject = function(name, new_config)
-{
-    if (cache[name] != undefined)
-    {
-        // Return from cache if possible:
-        if (cache[name]._constructor && new_config)
-        {
-            // Return a clone with additional configuration:
-            var obj = objects.clone(cache[name], false, true);
-            obj._constructor(this.getObjectConfig(name, new_config));
-            return obj
-        }
-        else
-            // Return from cache:
-            return cache[name]
-    }
-    else
-    {
-        // Cache miss.
-        if (interfaces[name] != undefined)
-            // Require an implementation of an interface:
-            var obj = newObject(name, new_config); //require(interfaces[name]);
-        else
-        {
-            var obj = require(name);
-
-            // Execute _constructor() method if exists:
-            if (obj._constructor)
-                obj._constructor(this.getObjectConfig(name, new_config));
-        }
-
-        if (new_config != undefined)
-            // Do not cache objects with custom config:
-            return obj;
-        else
-        {
-            // Save in cache:
-            cache[name] = obj;
-            return cache[name];
-        }
+// Prepare interfaces:
+for (var name in interfaces) {
+    if (typeof(interfaces[name]) == "string") {
+        interfaces[name] = {
+            module: interfaces[name],
+            config: {},
+            configured: false
+        };
     }
 }
 
 
 /**
- * Get a new object instance by name.
  *
- * @param string name Object name 
- * @param optional Object new_config Additional configuration for the object.
  */
-exports.newObject = function(name, new_config)
-{
-    if (!new_cache[name])
-    {
-        // Create a template in cache:
-        if (interfaces[name] != undefined)
-            // Require an implementation of an interface:
-            new_cache[name] = require(interfaces[name]);
-        else
-            new_cache[name] = require(name);
-    }
-
-    var obj = objects.clone(new_cache[name], false, true);
+var loadInterfaceConfig = function(name) {
+    var iface = interfaces[name];
     
-    if (obj._constructor)
-        obj._constructor(this.getObjectConfig(name, new_config));
+    if (!iface) {
+        throw Error(module.id + ".loadInterfaceConfig() error: interface '" + name + "' does not exist!");
+    }
+    
+    if (!iface.configured) {
+        iface.config = iface.config || {};
+        var mod_config = config[iface.module] || {};
+        iface.config = objects.clone(mod_config, iface.config);
+        iface.configured = true;
+    }
 
+    return iface.config;
+
+}
+
+/**
+ *
+ */
+exports.getModuleConfig = function(name, new_config) {
+
+    var new_config = new_config || {};
+
+    if (interfaces[name]) {
+        return objects.clone(loadInterfaceConfig(name), new_config);
+    } else {
+        return objects.clone(mod_config, new_config);
+    }
+}
+
+
+/**
+ *
+ */
+exports.extendModule = function(child, with_parent) {
+    return objects.clone(with_parent, child, true);
+}
+
+
+/**
+ *
+ */
+exports.constructModule = function(module_name, config) {
+    var mod = require(module_name);
+    if (mod._constructor)
+        mod._constructor(config);
+    return mod;
+}
+
+
+/**
+ *
+ */
+exports.constructModuleClone = function(module_name, config) {
+    var mod = objects.clone(require(module_name), false, true);
+    if (mod._constructor)
+        mod._constructor(config);
+    return mod;
+}
+
+
+/**
+ *
+ */
+exports.loadModule = function(name, config) {
+
+    if (config) {
+        config = this.getModuleConfig(name, config);
+        name = (interfaces[name]) ? interfaces[name].module || name;
+        return this.constructModuleClone(name, config);
+    } else {
+        if (interfaces[name]) {
+            var iface = interfaces[name];
+            if (!iface.obj) {
+                // Cache loaded module object in corresponding config variable:
+                iface.obj = this.constructModuleClone(iface.module, this.getModuleConfig(name));
+            }
+            return iface.obj;
+        } else {
+            if (!loaded[name]) {
+                var obj = this.constructModule(name, this.getModuleConfig(name));
+                loaded[name] = true; // Cache loaded state so that we do not construct modules every time we load them.
+                return obj;
+            } else {
+                return require(name);
+            }
+        }
+    }
+}
+
+
+/**
+ *
+ */
+exports.cloneModule = function(name, config) {
+    var obj = objects.clone(this.loadModule(name), false, true);
+    if (config) {
+        config = this.getModuleConfig(name, config);
+    }
+    obj._constructor(config);
     return obj;
 }
 
-
-/**
- * Empties all caches.
- */
-exports.clearCache = function()
-{
-    cache = {};
-    new_cache = {};
-}
-
-
-/**
- * Provides a crutch for people needing OOP class extension mechanism.
- *
- * @param mixed parentObject Parent object or parent object name.
- */
-exports.extendObject = function(parentObject)
-{
-    if (typeof(parentObject) == "string")
-        parentObject = require(parentObject);
-
-    for (var propName in parentObject)
-    {
-        if (parentObject[propName] != undefined && parentObject[propName].constructor == Object)
-            this[propName] = objects.clone(parentObject[propName], false, true);
-        else
-            this[propName] = parentObject[propName];
-    }
-
-    this._parent = parentObject;
-}
 
