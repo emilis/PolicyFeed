@@ -1,4 +1,6 @@
-module.shared = true;
+/*
+ * PolicyFeed configuration for website and crawler.
+ */
 
 var fs = require("fs");
 
@@ -27,7 +29,7 @@ exports.urls = [
     [ /.*/, 'ctl/WebMapper'] 
 ];
 
-/*
+/*/ Left over from RingoJS demoapp config.
 exports.middleware = [
     require('ringo/middleware/gzip').middleware,
     require('ringo/middleware/etag').middleware,
@@ -40,13 +42,13 @@ exports.middleware = [
 // the JSGI app
 exports.app = require('ringo/webapp').handleRequest;
 
-/*
+/*/ Left over from RingoJS demoapp config.
 exports.macros = [
     require('./helpers'),
     require('ringo/skin/macros'),
     require('ringo/skin/filters')
 ];
-*/
+//*/
 
 exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
@@ -55,86 +57,73 @@ exports.contentType = 'text/html';
 
 // --- Gluestick constants: ---
 
-var WEB_DIR = ROOT_DIR;
-var WEB_URL = "";
-exports.WEB_DIR = ROOT_DIR;
-exports.WEB_URL = WEB_URL;
+exports.DIRS = {
+    root:       ROOT_DIR,
+    files:      ROOT_DIR + "/static/files",
+    uploads:    ROOT_DIR + "/static/uploads",
+    config:     ROOT_DIR + "/config",
+    data:       ROOT_DIR + "/data",
+    lib:        ROOT_DIR + "/lib",
+    packages:   ROOT_DIR + "/lib/packages",
+    modules:    ROOT_DIR + "/modules"
+};
 
-exports.FILES_DIR = WEB_DIR + "/static/files";
-exports.FILES_URL = WEB_URL + "/static/files";
-exports.UPLOADS_DIR = WEB_DIR + "/static/uploads";
-exports.UPLOADS_URL = WEB_URL + "/static/uploads";
-
-exports.CONFIG_DIR = WEB_DIR + "/config";
-exports.DATA_DIR = WEB_DIR + "/data";
-exports.LIB_DIR = WEB_DIR + "/lib";
-exports.PACKAGES_DIR = exports.LIB_DIR + "/packages";
-exports.MODULES_DIR = WEB_DIR + "/modules";
+var base_url = "";
+exports.URLS = {
+    base:       base_url,
+    files:      base_url + "/static/files",
+    uploads:    base_url + "/static/uploads"
+};
 
 
-// --- Gluestick config: ---
+// --- Gluestick interfaces: ---
 
 exports.gluestick = {
     interfaces: {
-        DB: "ctl/DB/Sqlite",
-        DB_old: "ctl/DB/MySQL",
-        DB_urls: "ctl/DB/Sqlite",
-        Events: "ctl/Events",
+        DB: {
+            module: "ctl/DB/Sqlite",
+            config: {
+                filename: exports.DATA_DIR + "/default.sqlite3"
+            }},
+        DB_urls: {
+            module: "ctl/DB/Sqlite",
+            config: {
+                filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
+            }},
+        Events: {
+            module: "ctl/Events",
+            config: {
+                callbacks: [
+                    [ /./,                      "ctl/Events/Logger:logEvent" ],
+                    [ /(debug|error|warning)/,  "ctl/Events/ShellWriter:printEvent" ]
+                ]
+            }},
         Site: "KaVeikiaValdzia/Site",
-        WebMapper: "ctl/WebMapper"
+        WebMapper: {
+            module: "ctl/WebMapper",
+            config: {
+                default_call: "Site:showIndex",
+                allowed: [
+                    "Site",
+                    "PolicyFeed",
+                    "PolicyFeed/Calendar",
+                    "PolicyFeed/Comments"
+                ]
+            }}
     }
-};
-
-// --- Interface config: ---
-
-exports.DB = {
-    filename: exports.DATA_DIR + "/default.sqlite3",
-};
-
-exports.DB_urls = {
-    filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
-};
-
-exports.DB_old = {
-    host: "localhost",
-    db_name: "govsrvr",
-    user: "root",
-    password: "",
-    useUnicode: "yes",
-    characterEncoding: "UTF-8"
-};
-
-exports.Events = {
-    callbacks: [
-        [ /./,                                  "ctl/Events/Logger:logEvent" ],
-        [ /(debug|error|warning)/,                    "ctl/Events/ShellWriter:printEvent" ]
-    ]
-};
-
-
-exports.WebMapper = {
-    default_call: "Site:showIndex",
-    allowed: [
-        "Site",
-        "PolicyFeed",
-        "PolicyFeed/Calendar",
-        "PolicyFeed/Comments"
-    ]
 };
 
 
 // --- Module config: ---
 
+exports["PolicyFeed/Crawler"] = {
+    parser_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Parsers",
+    parser_prefix: "KaVeikiaValdzia/Parsers/"
+};
 
-exports.PolicyFeed = {
-    Crawler: {
-        parser_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Parsers",
-        parser_prefix: "KaVeikiaValdzia/Parsers/"
-    },
-    UrlErrors: {
-        to: "policyfeed-errors@mailinator.com",
-        from: "policyfeed@localhost",
-        subject: "PolicyFeed/UrlErrors status"
-    }
+exports["PolicyFeed/UrlErrors"] = {
+    to: "policyfeed-errors@mailinator.com",
+    from: "policyfeed@localhost",
+    subject: "PolicyFeed/UrlErrors status"
 };
 
