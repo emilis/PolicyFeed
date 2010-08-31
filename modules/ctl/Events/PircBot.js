@@ -17,6 +17,8 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var gluestick = require("gluestick");
+
 exports.config = {};
 
 /**
@@ -27,7 +29,7 @@ exports._constructor = function(config)
     this.config = config;
     this.channels = config.channels;
 
-    this.bot = loadObject("ctl/irc/PircBot");
+    this.bot = gluestick.loadModule("ctl/irc/PircBot");
 
     if (this.channels)
         this.bot.joinChannels(this.channels);

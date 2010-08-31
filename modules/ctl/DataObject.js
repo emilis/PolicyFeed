@@ -18,8 +18,6 @@
 */
 
 
-module.shared = true;
-
 // You should set values to these in your child objects:
 exports._fieldNames = [];
 

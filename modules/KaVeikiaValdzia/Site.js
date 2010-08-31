@@ -62,11 +62,15 @@ exports.showError = function(msg)
         msg = 404;
 
     if (typeof(msg) == "number")
-        loadObject("WebMapper").status = msg;
+        var status = msg;
     else
-        loadObject("WebMapper").status = 501;
+        var status = 501;
 
-    return ctlTemplate.fetch(this.dirname + "/tpl/showError.ejs", { code: code });
+    return {
+        status: status,
+        headers: {},
+        body: [ ctlTemplate.fetch(this.dirname + "/tpl/showError.ejs", { code: msg }) ]
+    };
 }
 
 
@@ -80,7 +84,7 @@ exports.showPage = function(req, name)
     var file_name = this.dirname + "/pages/" + name + ".ejs";
 
     if (!fs.exists(file_name))
-        return WebMapper.returnHtml(this.showError(404));
+        return this.showError(404);
     else
     {
         return WebMapper.returnHtml(

@@ -21,13 +21,14 @@ var config = require("config");
 var fs = require("fs");
 var dates = require("ringo/utils/dates");
 
+var LOG_DIR = config.DIRS.data + "/log";
 
 /**
  *
  */
 exports.logEvent = function(name, data)
 {
-    var path = config.DATA_DIR + "/log/" + dates.format(new Date(), "yyyy/MM");
+    var path = LOG_DIR + dates.format(new Date(), "/yyyy/MM");
     if (!fs.exists(path))
         fs.makeTree(path);
     path += dates.format(new Date(), "/dd") + ".log";

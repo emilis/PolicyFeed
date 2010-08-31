@@ -17,11 +17,12 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var gluestick = require("gluestick");
 var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
 
 // Extends:
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/w5_sale.ses_pos";

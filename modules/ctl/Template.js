@@ -187,8 +187,6 @@ exports.compileCode = function(str)
         }
     }
 
-    //loadObject("Events").create("ctl/Template:compileCode-debug", code);
-
     return code;
 }
 

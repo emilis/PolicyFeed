@@ -17,7 +17,7 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+var gluestick = require("gluestick");
 
 exports.config = {};
 
@@ -30,13 +30,12 @@ exports._constructor = function(config)
 /**
  * Creates an event.
  */
-exports.create = function(name, data)
-{
-    for each (var call in this.getCallbackList(name))
-    {
+exports.create = function(name, data) {
+
+    this.getCallbackList(name).map(function(call) {
         var [obj, method] = call.split(":");
-        loadObject(obj)[method](name, data);
-    }
+        gluestick.loadModule(obj)[method](name, data);
+    });
 }
 
 

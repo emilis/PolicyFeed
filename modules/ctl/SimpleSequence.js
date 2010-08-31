@@ -17,10 +17,10 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+var config = require("config");
 var fs = require("fs");
 
-var file_name = require("config").DATA_DIR + "/SimpleSequence.txt";
+var file_name = config.DIRS.data + "/SimpleSequence.txt";
 
 var current = 0;
 var fs_sync = 10;

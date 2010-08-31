@@ -17,8 +17,10 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
+var htmlunit = require("htmlunit");
+var sleep = java.lang.Thread.sleep;
 
-module.shared = true;
 
 /**
  * Period to check for new urls when idle.
@@ -28,9 +30,7 @@ var WAITDOMAIN = 500;
 var WAITNETWORK = 60*1000;
 
 
-var sleep = java.lang.Thread.sleep;
-var htmlunit = require("htmlunit");
-
+// Internal vars:
 var UrlQueue;
 var Crawler;
 
@@ -80,7 +80,7 @@ var runThread = function(id) {
                 url = UrlQueue.getUrl(id);
             }
         } catch (e) {
-            print("BrowserController.runThread:getUrl-Error", id, e, "\n", e.stack);
+            print(module.id + ".runThread:getUrl-Error", id, e, "\n", e.stack);
         }
 
         // process url:
@@ -93,7 +93,7 @@ var runThread = function(id) {
                 UrlQueue.rescheduleUrl(id, WAITNETWORK);
             } else {
                 UrlQueue.failedUrl(id, url, e);
-                print("BrowserController.runThread:processUrl-Error", id, e, "\n", e.stack);
+                print(module.id + ".runThread:processUrl-Error", id, e, "\n", e.stack);
             }
         } finally {
             // spawn a new thread with the same id [and exit]

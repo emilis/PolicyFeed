@@ -5,13 +5,13 @@ var config = require("config");
 
 var query;
 
-%><form id="search" action="<%= config.WEB_URL %>/docs/search/">
+%><form id="search" action="<%= config.URLS.base %>/docs/search/">
     <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">
     <p id="search-hint">PVZ.: <%
 
     var suggestions = ["Kubilius", '"žmogaus teisės"', "Šilutė", "žvejyba, žūklė, medžioklė"];
     suggestions = suggestions.map(function (item) {
-            return '<a href="' + config.WEB_URL + '/docs/search/?q=' + strings.entitize(item) + '">' + item + '</a>';
+            return '<a href="' + config.URLS.base + '/docs/search/?q=' + strings.entitize(item) + '">' + item + '</a>';
             });
     print(suggestions.join(", "));
     

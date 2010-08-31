@@ -21,35 +21,27 @@
  * A WebMapper module. Maps HTTP request parameters to appropriate module functions.
  */
 
-
-var objects = require("ringo/utils/objects");
+var config = require("config");
+var gluestick = require("gluestick");
 var arrays = require("ringo/utils/arrays");
 
-var config = require("config").WebMapper || {
-    'default_call': 'Site:showIndex',
-    'allowed': [
-        'Site'
-        ] 
-};
 
 var default_status = 200;
 var default_headers = {
     "Content-Type": "text/html; charset=UTF-8"
 };
 
-exports.status = default_status;
-
-exports.headers = objects.clone(default_headers);
-
-exports.req = {};
-
 
 /**
- * Sets a response header.
+ *
  */
-exports.header = function(name, value)
-{
-    this.headers[name] = value;
+exports._constructor = function(config) {
+    module.config = config || {
+        'default_call': 'Site:showIndex',
+        'allowed': [
+            'Site'
+            ] 
+    };
 }
 
 
@@ -58,7 +50,7 @@ exports.header = function(name, value)
  */
 exports.index = function(req)
 {
-    return loadObject("WebMapper").mapRequest(req);
+    return this.mapRequest(req);
 }
 
 
@@ -68,9 +60,6 @@ exports.index = function(req)
  */
 exports.mapRequest = function(req)
 {
-    this.status = default_status;
-    this.headers = objects.clone(default_headers);
-
     var p = req.params || {};
 
     var obj_name = "";
@@ -81,32 +70,32 @@ exports.mapRequest = function(req)
     else if (typeof(p.object) == 'string' && typeof(p.action) == 'string')
         [obj_name, action] = [p.object, p.action];
     else
-        [obj_name, action] = config.default_call.split(':');
+        [obj_name, action] = module.config.default_call.split(':');
 
     if (!isCallAllowed(obj_name, action))
         [obj_name, action] = ["Site", "showError"];
 
-    var body = loadObject(obj_name)[action](req);
+    var body = gluestick.loadModule(obj_name)[action](req);
 
-    if (typeof(body) != "string")
+    if (typeof(body) != "string") {
         return this.returnResponse(body);
-    else
+    } else {
         return this.returnResponse({
-            "status":   this.status,
-            "headers":  this.headers,
+            "status":   default_status,
+            "headers":  default_headers,
             "body":     [ body ]
         });
+    }
 }
 
 
 /**
  *
  */
-exports.returnHtml = function(html)
-{
+exports.returnHtml = function(html) {
     return this.returnResponse({
-        "status":   this.status,
-        "headers":  this.headers,
+        "status":   default_status,
+        "headers":  default_headers,
         "body":     [ html ]
     });
 }
@@ -115,10 +104,20 @@ exports.returnHtml = function(html)
 /**
  *
  */
-exports.returnResponse = function(response)
-{
-    this.status = default_status;
-    this.headers = objects.clone(default_headers);
+exports.returnResponse = function(response) {
+    if (!response.status) {
+        response.status = default_status;
+    }
+
+    if (!response.headers) {
+        response.headers = default_headers;
+    } else {
+        for (var key in default_headers) {
+            if (!response.headers[key])
+                response.headers[key] = default_headers[key];
+        }
+    }
+
     return response;
 }
 
@@ -128,11 +127,11 @@ exports.returnResponse = function(response)
  */
 function isCallAllowed(obj_name, action)
 {
-    if (!arrays.contains(config.allowed, obj_name))
+    if (!arrays.contains(module.config.allowed, obj_name))
         return false;
     else
     {
-        var obj = loadObject(obj_name);
+        var obj = gluestick.loadModule(obj_name);
         if (typeof(obj.web_actions) == "object" && (obj.web_actions instanceof Array))
             return arrays.contains(obj.web_actions, action);
         else
@@ -144,28 +143,25 @@ function isCallAllowed(obj_name, action)
 /**
  *  Returns a response object with redirect status and header.
  */
-exports.redirect = function(call)
-{
-    this.status = 301; // Moved permanently;
-    this.headers.Location = require("config").WEB_URL + "/?call=" + call;
+exports.redirect = function(call) {
 
-    return this.returnResponse({
-        'status':   this.status,
-        'headers':  this.headers,
+    return {
+        'status':   301,
+        'headers':  {
+            Location: config.URLS.base + "/?call=" + call
+        }
         'body':     []
-    });
+    };
 }
 
 
-exports.redirectToUrl = function(url)
-{
-    this.status = 301; // Moved permanently;
-    this.headers.Location = url;
-
-    return this.returnResponse({
-        "status":   this.status,
-        "headers":  this.headers,
+exports.redirectToUrl = function(url) {
+    return {
+        "status":   301,
+        "headers":  {
+            Location: url
+        }
         "body":     []
-    });
+    };
 }
 

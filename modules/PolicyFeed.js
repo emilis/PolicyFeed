@@ -17,9 +17,6 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var config = getObjectConfig("PolicyFeed") || {};
-
-
 var fs = require("fs");
 var mail = require("ringo/mail");
 var JsonStorage = require("ctl/JsonStorage");
@@ -27,8 +24,10 @@ var ctlDate = require("ctl/Date");
 var SolrClient = require("PolicyFeed/SolrClient");
 var ctlTemplate = require("ctl/Template");
 var ctlRequest = require("ctl/Request");
+var gluestick = require("gluestick");
 
-var WebMapper = loadObject("WebMapper");
+var Site = gluestick.loadModule("Site");
+var WebMapper = gluestick.loadModule("WebMapper");
 
 
 /**
@@ -218,7 +217,7 @@ exports.showDocument = function(req, id)
 
     var doc = JsonStorage.read(id);
     if (!doc)
-        return this.showError(404);
+        return Site.showError(404);
 
     if (doc.published.match(/\.\d+Z$/))
         doc.published = ctlDate.fromUTCString(doc.published);
@@ -245,7 +244,7 @@ exports.showDocumentFormat = function(req, id, format)
     var doc = JsonStorage.read(id);
     
     if (!doc)
-        return this.showError(404);
+        return Site.showError(404);
     else if (format == "json")
     {
         return {
@@ -257,7 +256,7 @@ exports.showDocumentFormat = function(req, id, format)
         };
     }
     else
-        return this.showError(404);
+        return Site.showError(404);
 }
 
 
@@ -300,7 +299,7 @@ exports.showSearchBlock = function(query) {
  */
 exports.showContent = function(tpl, content) {
     var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-    return loadObject("Site").showContent( ctlTemplate.fetchObject(tpl_file, content) );
+    return Site.showContent( ctlTemplate.fetchObject(tpl_file, content) );
 }
 
 
@@ -310,22 +309,5 @@ exports.showContent = function(tpl, content) {
 exports.showHtml = function(tpl, content) {
     var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
     return ctlTemplate.fetch(tpl_file, content)
-}
-
-/**
- *
- */
-exports.showError = function(msg)
-{
-    var status = 501;
-    // if is numeric:
-    if (parseInt(msg, 10).toString() == msg.toString())
-        status = msg;
-
-    return {
-        status: status,
-        headers: {},
-        body: [ "<h1>Error - " + msg + "</h1>" ]
-    };
 }
 

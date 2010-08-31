@@ -2,14 +2,16 @@
 
 var config = require("config");
 var dates = require("ringo/utils/dates");
+var Calendar = require("PolicyFeed/Calendar");
 
-var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+var BASE_URL = config.URLS.base;
+var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
 var query;
 var day;
 
 returnVar("side", 
-    loadObject("PolicyFeed/Calendar").showBlock(day)
+    Calendar.showBlock(day)
     );
 
 var wdays = [
@@ -72,14 +74,14 @@ for each(var doc in docs)
         day = dday;
     }
 
-    url = config.WEB_URL + doc.id;
+    url = BASE_URL + doc.id;
     div_id = doc.id.replace(/\//g, "-");
 
     print('<tr id="' + div_id + '">');
     print('<td class="org" nowrap="nowrap" align="right">');
-        print('<a href="', config.WEB_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
+        print('<a href="', BASE_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
     print('<td class="type">');
-        print('<a href="', config.WEB_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
+        print('<a href="', BASE_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
     print('<td class="time">', dates.format(doc.published, "HH:mm"), "</td>");

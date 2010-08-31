@@ -17,13 +17,14 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
+// Requirements:
 var config = require("config");
-
 var strings = require("ringo/utils/strings");
 var bs = require("ringo/storage/berkeleystore");
-var store = new bs.Store( config.DATA_DIR );
+
+// Internal vars:
+var store = new bs.Store( config.DIRS.data );
+
 
 /**
  *

@@ -17,10 +17,10 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
+var gluestick = require("gluestick");
 
 // Extends ./List.js:
-exports.extendObject("ctl/DataObject/List");
+gluestick.extendModule(exports, "ctl/DataObject/List");
 
 exports._constructor = function()
 {

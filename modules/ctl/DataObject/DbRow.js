@@ -17,11 +17,12 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var gluestick = require("gluestick");
+var Events = gluestick.loadModule("Events");
 
-module.shared = true;
 
 // Extends ../DataObject.js:
-exports.extendObject("ctl/DataObject");
+gluestick.extendModule(exports, "ctl/DataObject");
 
 // --- Attributes: ---
 exports._db = false;
@@ -36,7 +37,7 @@ exports._tableName = false;
 exports.getDb = function()
 {
     if (!this._db)
-        this._db = loadObject("DB");
+        this._db = gluestick.loadModule("DB");
     return this._db;
 }
 
@@ -89,14 +90,14 @@ exports.read = function(id)
  */
 exports.save = function()
 {
-    loadObject("Events").create(this._tableName + ":save", this.toObject());
+    Events.create(this._tableName + ":save", this.toObject());
     try {
         if (this.exists())
             return this.update();
         else
             return this.insert();
     } catch (err) {
-        loadObject("Events").create(this._tableName + ":save-error", err);
+        Events.create(this._tableName + ":save-error", err);
     }
 }
 

@@ -17,8 +17,6 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
 var arrays = require("ringo/utils/arrays");
 var UrlErrors = require("PolicyFeed/UrlErrors");
 var JsonStorage = require("ctl/JsonStorage");
@@ -32,7 +30,7 @@ var DEFAULT_DELAY = 1000;
 /**
  * Storage path on disk:
  */
-var STORAGE_PATH = "/PolicyFeed/UrlQueue/";
+var STORAGE_PATH = "/" + module.id + "/";
 
 //----------------------------------------------------------------------------
 

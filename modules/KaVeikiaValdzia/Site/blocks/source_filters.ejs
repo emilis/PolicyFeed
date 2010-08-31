@@ -12,11 +12,11 @@
         for (var source in sources)
         {
             print('<li><a href="',
-                config.WEB_URL,
+                config.URLS.base,
                 '/docs/search/?q=',
                 source.toUpperCase(),
                 '"><img src="',
-                config.FILES_URL,
+                config.URLS.files,
                 '/KaVeikiaValdzia/', 
                 source,
                 '.gif" align="top">&nbsp; ',
@@ -26,6 +26,6 @@
 
     %>
     </ul>
-    <div align="right"><a href="<%= config.WEB_URL %>/pages/saltiniai">nuorodos į šaltinius...</a></div>
+    <div align="right"><a href="<%= config.URLS.base %>/pages/saltiniai">nuorodos į šaltinius...</a></div>
 </div>
 

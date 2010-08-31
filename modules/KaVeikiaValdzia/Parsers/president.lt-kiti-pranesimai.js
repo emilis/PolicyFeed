@@ -22,9 +22,10 @@
 var htmlunit = require("htmlunit");
 var dates = require("ringo/utils/dates");
 var ctlDate = require("ctl/Date");
+var gluestick = require("gluestick");
 
 // --- Extend PolicyFeed/Parser : ---
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 
 // --- Parser config: ---

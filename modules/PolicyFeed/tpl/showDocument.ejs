@@ -3,7 +3,8 @@
 var config = require("config");
 var ctlDate = require("ctl/Date");
 
-var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+var BASE_URL = config.URLS.base;
+var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
 if (doc.meta)
 {
@@ -51,12 +52,12 @@ function obj_key_value(obj) {
 
 %>
 <div id="breadcrumbs">
-    <a href="<%= config.WEB_URL %>/">Pradžia</a> » 
+    <a href="<%= BASE_URL %>/">Pradžia</a> » 
 <%
 
-    print('<a href="', config.WEB_URL, doc._id.substr(0, 10), '">', doc._id.substr(6, 4), '</a> » ');
-    print('<a href="', config.WEB_URL, doc._id.substr(0, 13), '">', doc._id.substr(11, 2), '</a> » ');
-    print('<a href="', config.WEB_URL, doc._id.substr(0, 16), '">', doc._id.substr(14, 2), '</a>');
+    print('<a href="', BASE_URL, doc._id.substr(0, 10), '">', doc._id.substr(6, 4), '</a> » ');
+    print('<a href="', BASE_URL, doc._id.substr(0, 13), '">', doc._id.substr(11, 2), '</a> » ');
+    print('<a href="', BASE_URL, doc._id.substr(0, 16), '">', doc._id.substr(14, 2), '</a>');
 
 %></div>
 
@@ -78,7 +79,7 @@ function obj_key_value(obj) {
 
 
     var formatai = {
-        JSON: config.WEB_URL + doc._id + ".json"
+        JSON: BASE_URL + doc._id + ".json"
     };
 
     if (doc.teises_aktas && doc.teises_aktas.word)
@@ -102,7 +103,7 @@ if (doc.teises_aktas)
 
     obj_key_value({
         "Rūšis": ta.rusis,
-        "Numeris": '<a href="' + config.WEB_URL + '/docs/search/?q=' + ta.numeris + '">' + ta.numeris + icons.search + '</a>',
+        "Numeris": '<a href="' + BASE_URL + '/docs/search/?q=' + ta.numeris + '">' + ta.numeris + icons.search + '</a>',
         "Statusas": ta.statusas
         });
 

@@ -23,7 +23,8 @@ var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=publi
 
 var httpclient = require("ringo/httpclient");
 var JsonStorage = require("ctl/JsonStorage");
-var Events = loadObject("Events");
+var gluestick = require("gluestick")
+var Events = gluestick.loadModule("Events");
 
 
 /**

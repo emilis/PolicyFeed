@@ -17,9 +17,6 @@
     along with HtmlUnit functions.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
-
 importClass(com.gargoylesoftware.htmlunit.WebClient,
         com.gargoylesoftware.htmlunit.BrowserVersion,
         com.gargoylesoftware.htmlunit.WebRequestSettings,
@@ -30,6 +27,9 @@ importClass(com.gargoylesoftware.htmlunit.WebClient,
         com.gargoylesoftware.htmlunit.WebResponseImpl,
         com.gargoylesoftware.htmlunit.util.NameValuePair
         );
+
+var gluestick = require("gluestick");
+var Events = gluestick.loadModule("Events");
 
 
 var web_client = new WebClient(BrowserVersion.FIREFOX_3);
@@ -87,7 +87,7 @@ exports.getWindow = function(name)
  */
 exports.getPage = function(url, window_name)
 {
-    loadObject("Events").create("htmlunit.getpage-debug", [window_name, url]);
+    Events.create("htmlunit.getpage-debug", [window_name, url]);
 
     return web_client.getPage(
             this.getWindow(window_name),
@@ -101,7 +101,7 @@ exports.getPage = function(url, window_name)
  */
 exports.getPageFromHtml = function(str, url, window_name, charset)
 {
-    loadObject("Events").create("htmlunit.getPageFromHtml-debug", [window_name, url, charset]);
+    Events.create("htmlunit.getPageFromHtml-debug", [window_name, url, charset]);
 
     return web_client.loadWebResponseInto(
             this.getWebResponseFromString(str, charset, url),

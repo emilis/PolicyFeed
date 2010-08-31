@@ -18,10 +18,11 @@
 */
 
 // Requirements:
+var gluestick = require("gluestick");
 var htmlunit = require("htmlunit");
 
 // Extends:
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 // Config:
 

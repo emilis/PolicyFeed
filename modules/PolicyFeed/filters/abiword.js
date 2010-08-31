@@ -57,7 +57,7 @@ exports.filter = function(doc, page) {
         nodes.map(function (item) {
                 var src = item.getAttribute("src");
                 if (src.match(".html_files/")) {
-                    src = config.UPLOADS_URL + doc._id.replace("/docs", "") + "/" + src;
+                    src = config.URLS.uploads + doc._id.replace("/docs", "") + "/" + src;
                     item.setAttribute("src", src);
                 }
             });

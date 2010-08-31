@@ -34,8 +34,6 @@
         - No methods for search within objects.
 */
 
-module.shared = true;
-
 var config = require("config");
 var fs = require("fs");
 
@@ -43,7 +41,7 @@ var fs = require("fs");
  * Path where document data is stored.
  * todo: let configure this dir.
  */
-var path = config.DATA_DIR + "/JsonStorage/";
+var path = config.DIRS.data + "/JsonStorage/";
 
 
 /**
@@ -147,7 +145,7 @@ exports.write = function(id, data) {
     try {
         var text = JSON.stringify(data);
     } catch (e) {
-        throw Error("ctl/JsonStorage: Unable to convert data to JSON for document " + id);
+        throw Error(module.id + ".write: Unable to convert data to JSON for document " + id);
     }
 
     var file_name = this.getFileName(id);

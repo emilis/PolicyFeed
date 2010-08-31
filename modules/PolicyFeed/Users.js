@@ -17,11 +17,10 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
 var config = require("config");
+var gluestick = require("gluestick");
 
-var DB = loadObject("DB_users");
+var DB = gluestick.loadModule("DB_users");
 
 
 /**

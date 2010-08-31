@@ -19,9 +19,12 @@
 
 var DomElement = com.gargoylesoftware.htmlunit.html.DomElement;
 
+var config = require("config");
+var gluestick = require("gluestick");
 var fs = require("fs");
 var htmlunit = require("htmlunit");
 var ctlDate = require("ctl/Date");
+var Events = gluestick.loadModule("Events");
 
 var UrlQueue = require("PolicyFeed/UrlQueue");
 var UrlList = require("PolicyFeed/UrlList");
@@ -256,7 +259,7 @@ exports.saveOriginal = function(parser_name, url, page) {
             for (var key in fields)
                 original[key] = fields[key];
         } else {
-            throw Error("PolicyFeed/Crawler.saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
+            throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
         }
     } else if (page instanceof com.gargoylesoftware.htmlunit.SgmlPage) {
         // Sgml page is parent class for HtmlPage, XmlPage and XhtmlPage.
@@ -264,7 +267,7 @@ exports.saveOriginal = function(parser_name, url, page) {
         original.html = page.asXml();
     }
     else
-        throw Error("PolicyFeed/Crawler.saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
+        throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
 
     // save original:
     JsonStorage.write(original._id, original);
@@ -277,7 +280,7 @@ exports.saveOriginal = function(parser_name, url, page) {
  *
  */
 exports.saveOriginalFile = function(original_id, url, response) {
-    var dir_name = require("config").UPLOADS_DIR + original_id.replace("/originals/", "/");
+    var dir_name = config.DIRS.uploads + original_id.replace("/originals/", "/");
     var file_name = dir_name + "/"
         + url.split("/").pop().replace(/[^-._a-z0-9]/gi, "-");
 
@@ -315,7 +318,7 @@ exports.getFieldsFromDoc = function(file_name) {
 
     // Remove converted HTML to save disk space:
     //fs.remove(html_file_name);
-    loadObject("Events").create("PolicyFeed/Crawler.getFieldsFromDoc-debug", ["html_file_name", html_file_name]);
+    Events.create("PolicyFeed/Crawler.getFieldsFromDoc-debug", ["html_file_name", html_file_name]);
 
     return fields;
 }

@@ -61,7 +61,7 @@ function showCalendar(selected, active_days)
         html += '<td class="' + classes.join(" ") + '">';
 
         if (i in ad)
-            html += '<a href="' + config.WEB_URL + '/docs/' + d_path + '/">' + i + '</a>';
+            html += '<a href="' + config.URLS.base + '/docs/' + d_path + '/">' + i + '</a>';
         else
             html += i;
         

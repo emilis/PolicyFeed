@@ -22,7 +22,7 @@ var fs = require("fs");
 var ctlDate = require("ctl/Date");
 var ctlString = require("ctl/String");
 
-var SEARCH_DIR = config.WEB_DIR + "/search";
+var SEARCH_DIR = config.DIRS.root + "/search";
 
 // --- init ------------------------------------------------------------------
 

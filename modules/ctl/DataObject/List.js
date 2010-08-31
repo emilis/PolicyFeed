@@ -17,8 +17,6 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
 exports.dataObjectName = false;
 
 exports.list = new Array();

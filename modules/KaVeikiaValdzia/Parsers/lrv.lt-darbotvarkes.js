@@ -20,10 +20,12 @@
 // --- Requirements: ---
 var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
+var gluestick = require("gluestick");
+var Events = gluestick.loadModule("Events");
 
 // --- Extend PolicyFeed/Parser: ---
 
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 // --- Parser config: ---
 exports.feed_url = [
@@ -102,7 +104,7 @@ exports.parseFeedItem = function()
         if (lt_months[month])
             month = lt_months[month];
         else
-            loadObject("Events").create("KaVeikiaValdzia/Parsers/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
+            Events.create("KaVeikiaValdzia/Parsers/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
 
         day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
 

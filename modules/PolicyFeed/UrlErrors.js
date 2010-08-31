@@ -17,20 +17,22 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
+var config = require("config");
+var gluestick = require("gluestick");
 var strings = require("ringo/utils/strings");
 
 var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
-var db = loadObject("DB_urls");
+var db = gluestick.loadModule("DB_urls");
 
-var config = require("config");
 
 var MSG_TO = "policyfeed-errors@mailinator.com";
 var MSG_FROM = false;
 var MSG_SUBJECT = "PolicyFeed/UrlErrors status";
 
-if (config.PolicyFeed && config.PolicyFeed.UrlErrors) {
-    var c = config.PolicyFeed.UrlErrors;
+if (config[module.id]) {
+    var c = config[module.id];
     if (c.to)
         MSG_TO = c.to;
     if (c.from)
@@ -159,7 +161,7 @@ function textTable(fields, list) {
  *
  */
 exports.showStats = function(time) {
-    var str = "PolicyFeed/UrlErrors report\n";
+    var str = module.id + " report\n";
     
     if (time) {
         str += "\nURLs since " + time + ":";
@@ -192,7 +194,7 @@ exports.showStats = function(time) {
 exports.save = function(url, err) {
     // Check and fix some issues with incomplete url data:
     if (!url.url)
-        throw Error("PolicyFeed/UrlErrors.save(): unable to save an empty url.");
+        throw Error(module.id + ".save(): unable to save an empty url.");
     if (url.parser === undefined)
         url.parser = "unknown";
     if (!err)
@@ -269,7 +271,7 @@ exports.schedule = function(delay) {
                     waiting = that.schedule(current_delay - 1);
                 }
             } catch (e) {
-                print(new Date().toISOString(), "UrlErrors(scheduled):Error:", e);
+                print(new Date().toISOString(), module.id + "(scheduled):Error:", e);
             }
         }, delays[current_delay]*60*1000);
 }

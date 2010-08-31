@@ -2,7 +2,9 @@
 
 var dates = require("ringo/utils/dates");
 
-var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+var BASE_URL = config.URLS.base;
+var FILES_URL = config.URLS.files;
+var site_files = FILES_URL + "/KaVeikiaValdzia";
 
 var title;
 var side;
@@ -16,7 +18,7 @@ function css()
 {
     var html = "";
     for (var i=0; i<arguments.length; i++)
-        html += '<link rel="stylesheet" type="text/css" href="' + config.FILES_URL + '/' + arguments[i] + '.css?' + salt + '">';
+        html += '<link rel="stylesheet" type="text/css" href="' + FILES_URL + '/' + arguments[i] + '.css?' + salt + '">';
     return html;
 }
 
@@ -24,7 +26,7 @@ function javascript()
 {
     var html = "";
     for (var i=0; i<arguments.length; i++)
-        html += '<script type="text/javascript" src="' + config.FILES_URL + '/' + arguments[i] + '.js?' + salt + '"></script>';
+        html += '<script type="text/javascript" src="' + FILES_URL + '/' + arguments[i] + '.js?' + salt + '"></script>';
     return html;
 }
 
@@ -36,14 +38,14 @@ function javascript()
         <title>KąVeikiaValdžia: <%= title %></title>
         <link rel="icon" type="image/png" href="<%= site_files %>/favicon.png">
         <link rel="shortcut icon" type="image/png" href="<%= site_files %>/favicon.png">
-        <link rel="alternate" type="application/rss+xml" title="Newest documents RSS" href="<%= config.WEB_URL %>/docs/rss/">
+        <link rel="alternate" type="application/rss+xml" title="Newest documents RSS" href="<%= BASE_URL %>/docs/rss/">
         <%
 
         print(css(
             "KaVeikiaValdzia/KaVeikiaValdzia",
             "PolicyFeed/PolicyFeed"));
 
-        print('<script type="text/javascript">var WEB_URL = "', config.WEB_URL, '"; var FILES_URL = "', config.FILES_URL, '"; </script>');
+        print('<script type="text/javascript">var WEB_URL = "', BASE_URL, '"; var FILES_URL = "', FILES_URL, '"; </script>');
 
         print(javascript(
             "jquery/jquery",
@@ -54,12 +56,12 @@ function javascript()
     </head>
     <body>
         <div id="top">
-            <a id="logo" href="<%= config.WEB_URL %>/"><img src="<%= site_files %>/logo.png" border="0"></a>
+            <a id="logo" href="<%= BASE_URL %>/"><img src="<%= site_files %>/logo.png" border="0"></a>
             <img id="top-end" src="<%= site_files %>/menu-end.png">
                         <ul id="menu">
-                <li class="first"><a href="<%= config.WEB_URL %>/">NAUJAUSI DOKUMENTAI</a></li>
-                <li><a href="<%= config.web_url %>/pages/apie">APIE PROJEKTĄ</a></li>
-                <li><a href="<%= config.web_url %>/pages/programuotojams">PROGRAMUOTOJAMS</a></li>
+                <li class="first"><a href="<%= BASE_URL %>/">NAUJAUSI DOKUMENTAI</a></li>
+                <li><a href="<%= BASE_URL %>/pages/apie">APIE PROJEKTĄ</a></li>
+                <li><a href="<%= BASE_URL %>/pages/programuotojams">PROGRAMUOTOJAMS</a></li>
             </ul>
 <ul id="menu-ext">
                 <li><a href="http://manovalstybe.lt/topics/kaveikiavaldzia-lt/" target="_blank">Tinklaraštis<img src="<%= site_files %>/external-link.gif"></a></li>

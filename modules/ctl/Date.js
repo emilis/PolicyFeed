@@ -19,6 +19,7 @@
 
 var dates = require("ringo/utils/dates");
 
+
 /**
  *
  */
@@ -72,3 +73,5 @@ exports.formatFromString = function(str, format) {
         str = this.fromISOString(str);
     return dates.format(str, format);
 }
+
+

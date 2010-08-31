@@ -19,7 +19,8 @@
 
 // Used modules:
 var fs = require("fs");
-var Site = loadObject("Site");
+var gluestick = require("gluestick");
+var Site = gluestick.loadModule("Site");
 var ctlTemplate = require("ctl/Template");
 var Users = require("PolicyFeed/Users");
 
@@ -43,7 +44,7 @@ exports.isEmailBlocked = function(email) {
  */
 exports.showBlockForm = function(req) {
     if (!req.params.key)
-        return this.showError(404);
+        return Site.showError(404);
 
     return this.showContent("showBlockForm", {
                 user: Users.getByKey(req.params.key)
@@ -56,7 +57,7 @@ exports.showBlockForm = function(req) {
  */
 exports.submitBlockForm = function(req) {
     if (!req.params.key)
-        return this.showError(404);
+        return Site.showError(404);
     var user = Users.getByKey(req.params.key);
     user.blocked = true;
     Users.write(user.id, user);
@@ -80,7 +81,7 @@ exports.showBlockedOk = function(user) {
  */
 exports.showUnblockForm = function(req) {
      if (!req.params.key)
-        return this.showError(404);
+        return Site.showError(404);
 
     return this.showContent("showUnblockForm", {
                 user: Users.getByKey(req.params.key)
@@ -93,7 +94,7 @@ exports.showUnblockForm = function(req) {
  */
 exports.submitUnblockForm = function(req) {
     if (!req.params.key)
-        return this.showError(404);
+        return Site.showError(404);
 
     var user = Users.getByKey(req.params.key);
     user.blocked = false;
@@ -114,14 +115,6 @@ exports.showUnblockedOk = function(user) {
 
 
 //----------------------------------------------------------------------------
-
-
-/**
- * Show error page with (HTTP) error message.
- */
-exports.showError = function(msg) {
-    return Site.showError(msg);
-}
 
 
 /**

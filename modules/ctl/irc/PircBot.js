@@ -17,8 +17,7 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module.shared = true;
-
+// Requirements:
 importClass(org.jibble.pircbot.PircBot);
 
 if (!pb)

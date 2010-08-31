@@ -20,9 +20,10 @@
 
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
+var gluestick = require("gluestick");
 
 // --- Extend PolicyFeed/Parser : ---
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 
 // --- Parser config: ---

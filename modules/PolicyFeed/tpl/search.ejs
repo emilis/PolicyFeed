@@ -2,8 +2,11 @@
 
 var config = require("config");
 var dates = require("ringo/utils/dates");
+var PolicyFeed = require("PolicyFeed");
+var Calendar = require("PolicyFeed/Calendar");
 
-var site_files = config.FILES_URL + "/KaVeikiaValdzia";
+var BASE_URL = config.URLS.base;
+var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
 var query;
 if (query && query.entitize)
@@ -22,11 +25,9 @@ function isoToJsDate(str)
 
 
 
-returnVar("side", 
-    loadObject("PolicyFeed/Calendar").showBlock()
-    );
+returnVar("side", Calendar.showBlock() );
 
-print(require("PolicyFeed").showSearchBlock(query));
+print( PolicyFeed.showSearchBlock(query) );
 
 %>
 <div id="results"><div>
@@ -34,7 +35,7 @@ print(require("PolicyFeed").showSearchBlock(query));
 <thead><tr><th colspan="5"><%
 
     print('<span id="result-count">Rodoma <em><span id="results-shown">' + docs.length +'</span> iš <span id="results-total">' + numFound + '</span></em> rezultatų pagal užklausą <em>"' + query + '"</em></span>');
-    print('<a id="rss-search" href="' + config.WEB_URL + '/docs/rss/?q=' + query + '">');
+    print('<a id="rss-search" href="' + BASE_URL + '/docs/rss/?q=' + query + '">');
     print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite RSS pranešimus su "' + query  + '"</a>');
 
 %></th></tr></thead>
@@ -53,16 +54,16 @@ for each(var doc in docs)
     if (!doc.organization)
         doc.organization = "???";
 
-    url = config.WEB_URL + doc.id;
+    url = BASE_URL + doc.id;
     tr_id = doc.id.replace(/\//g, "-");
 
     doc.published = isoToJsDate(doc.published);
 
     print('<tr id="' + tr_id + '">');
     print('<td class="org" nowrap="nowrap" align="right">');
-        print('<a href="', config.WEB_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
+        print('<a href="', BASE_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
     print('<td class="type">');
-        print('<a href="', config.WEB_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
+        print('<a href="', BASE_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
 
     print('<a href="' + url + '" class="title">' + doc.title + '</a>');

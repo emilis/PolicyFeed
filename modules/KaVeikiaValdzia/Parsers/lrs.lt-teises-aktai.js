@@ -19,12 +19,13 @@
 
 
 // Requirements:
+var gluestick = require("gluestick");
 var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
 var UrlQueue = require("PolicyFeed/UrlQueue");
 
 
-exports.extendObject("PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Parser");
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai";
