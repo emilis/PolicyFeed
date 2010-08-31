@@ -21,11 +21,13 @@
  * A WebMapper module. Maps HTTP request parameters to appropriate module functions.
  */
 
+// Requirements:
 var config = require("config");
 var gluestick = require("gluestick");
 var arrays = require("ringo/utils/arrays");
 
 
+// Internal vars:
 var default_status = 200;
 var default_headers = {
     "Content-Type": "text/html; charset=UTF-8"
@@ -93,11 +95,26 @@ exports.mapRequest = function(req)
  *
  */
 exports.returnHtml = function(html) {
-    return this.returnResponse({
+    return {
         "status":   default_status,
         "headers":  default_headers,
         "body":     [ html ]
-    });
+    };
+}
+
+
+/**
+ *
+ */
+exports.returnJson = function(json) {
+    if (typeof(json) != "string")
+        json = JSON.stringify(json);
+
+    return {
+        status: 200,
+        headers: { "Content-Type": "application/x-javascript; charset=utf-8" },
+        body: [JSON.stringify(comment.toObject())]
+    };
 }
 
 
@@ -155,6 +172,9 @@ exports.redirect = function(call) {
 }
 
 
+/**
+ * Returns a response object with redirect status and header.
+ */
 exports.redirectToUrl = function(url) {
     return {
         "status":   301,

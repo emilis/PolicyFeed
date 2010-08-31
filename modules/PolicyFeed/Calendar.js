@@ -17,22 +17,23 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
+var gluestick = require("gluestick");
+var WebMapper = gluestick.loadModule("WebMapper");
 var fs = require("fs");
 var dates = require("ringo/utils/dates");
 var JsonStorage = require("ctl/JsonStorage");
 var ctlTemplate = require("ctl/Template");
+
 
 /**
  * Returns JSON web response for month days containing documents.
  */
 exports.getActiveDays = function(req)
 {
-    return {
-        status: 200,
-        headers: {
-            "Content-type": "application/x-javascript-data"
-        },
-        body: [JSON.stringify( this.getActiveMonthDays(req.params.year, req.params.month) )]};
+    return WebMapper.returnJson(
+        this.getActiveMonthDays(req.params.year, req.params.month)
+        );
 }
 
 

@@ -106,13 +106,10 @@ exports.loadSearchResults = function(req) {
     if (results && results.highlighting)
         highlighting = results.highlighting;
 
-    return {
-        status: 200,
-        headers: {
-            "Content-Type": "application/x-javascript; charset=UTF-8"
-        },
-        body: [ JSON.stringify({docs: docs, snippets: highlighting}) ]
-    };
+    return WebMapper.returnJson({
+            docs: docs,
+            snippets: highlighting
+            });
 }
 
 
@@ -246,15 +243,7 @@ exports.showDocumentFormat = function(req, id, format)
     if (!doc)
         return Site.showError(404);
     else if (format == "json")
-    {
-        return {
-            status: 200,
-            headers: {
-                "Content-Type": "application/x-javascript; charset=UTF-8"
-            },
-            body: [ JSON.stringify(doc) ]
-        };
-    }
+        return WebMapper.returnJson(doc);
     else
         return Site.showError(404);
 }
