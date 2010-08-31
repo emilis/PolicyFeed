@@ -25,7 +25,9 @@
 var config = require("config");
 var gluestick = require("gluestick");
 var arrays = require("ringo/utils/arrays");
+var urlencode = java.net.URLEncoder.encode;
 
+var WebMapper = gluestick.loadModule("WebMapper");
 
 // Internal vars:
 var default_status = 200;
@@ -39,7 +41,7 @@ var default_headers = {
  */
 exports._constructor = function(config) {
     module.config = config || {
-        'default_call': 'Site:showIndex',
+        'default_call': ['Site', 'showIndex'],
         'allowed': [
             'Site'
             ] 
@@ -48,11 +50,11 @@ exports._constructor = function(config) {
 
 
 /**
- *
+ * Default action from config.
  */
 exports.index = function(req)
 {
-    return this.mapRequest(req);
+    return WebMapper.mapRequest(req);
 }
 
 
@@ -63,29 +65,35 @@ exports.index = function(req)
 exports.mapRequest = function(req)
 {
     var p = req.params || {};
-
-    var obj_name = "";
+    var mod_name = "";
     var action = "";
 
-    if (typeof(p.call) == 'string' && p.call.indexOf(":") > 0)
-        [obj_name, action] = p.call.split(':');
-    else if (typeof(p.object) == 'string' && typeof(p.action) == 'string')
-        [obj_name, action] = [p.object, p.action];
-    else
-        [obj_name, action] = module.config.default_call.split(':');
+    // Find out which module and function to call:
+    if (typeof(p.call) == 'string' && p.call.indexOf(".") > 0) {
+        p.call = p.call.split(".");
+        action = p.call.pop();
+        mod_name = p.call.join(".");
+    } else if (typeof(p.module) == 'string' && typeof(p.action) == 'string') {
+        [mod_name, action] = [p.module, p.action];
+    } else {
+        [mod_name, action] = module.config.default_call;
+    }
 
-    if (!isCallAllowed(obj_name, action))
-        [obj_name, action] = ["Site", "showError"];
+    // Check if web clients are allowed to call this function:
+    if (!isCallAllowed(mod_name, action))
+        [mod_name, action] = ["Site", "showError"];
 
-    var body = gluestick.loadModule(obj_name)[action](req);
+    // Get result from module function:
+    var result = gluestick.loadModule(mod_name)[action](req);
 
-    if (typeof(body) != "string") {
-        return this.returnResponse(body);
+    // Return result:
+    if (typeof(result) != "string") {
+        return this.returnResponse(result);
     } else {
         return this.returnResponse({
             "status":   default_status,
             "headers":  default_headers,
-            "body":     [ body ]
+            "body":     [ result ]
         });
     }
 }
@@ -160,13 +168,19 @@ function isCallAllowed(obj_name, action)
 /**
  *  Returns a response object with redirect status and header.
  */
-exports.redirect = function(call) {
+exports.redirect = function(module_name, method, params) {
+
+    var url = config.URLS.base + "/?call=" + module_name + "." + method;
+
+    if (params) {
+        for (var key in params) {
+            url += "&" + urlencode(key) + "=" + urlencode(params[key]);
+        }
+    }
 
     return {
         'status':   301,
-        'headers':  {
-            Location: config.URLS.base + "/?call=" + call
-        }
+        'headers':  { Location: url }
         'body':     []
     };
 }
@@ -178,9 +192,7 @@ exports.redirect = function(call) {
 exports.redirectToUrl = function(url) {
     return {
         "status":   301,
-        "headers":  {
-            Location: url
-        }
+        "headers":  { Location: url }
         "body":     []
     };
 }
