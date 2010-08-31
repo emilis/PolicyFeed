@@ -24,10 +24,14 @@ var Site = gluestick.loadModule("Site");
 var ctlTemplate = require("ctl/Template");
 var Users = require("PolicyFeed/Users");
 
+
+// Extend module:
+gluestick.extendModule(exports, "ctl/Controller");
+
 /**
- * Directory where module template files are.
+ * Directory with template files.
  */
-var tpl_dir = fs.directory(module.path) + "/" + fs.base(module.id) + "/tpl/";
+exports.tpl_dir = this.getTplDir(module);
 
 
 /**
@@ -44,9 +48,9 @@ exports.isEmailBlocked = function(email) {
  */
 exports.showBlockForm = function(req) {
     if (!req.params.key)
-        return Site.showError(404);
+        return this.showError(404);
 
-    return this.showContent("showBlockForm", {
+    return this.returnHtml("showBlockForm", {
                 user: Users.getByKey(req.params.key)
                 });
 }
@@ -57,21 +61,22 @@ exports.showBlockForm = function(req) {
  */
 exports.submitBlockForm = function(req) {
     if (!req.params.key)
-        return Site.showError(404);
+        return this.showError(404);
     var user = Users.getByKey(req.params.key);
     user.blocked = true;
     Users.write(user.id, user);
 
-    return this.showBlockedOk(user);
+    return this.WebMapper.redirect(module.id, "showBlockedOk", user);
 }
 
 
 /**
  *
  */
-exports.showBlockedOk = function(user) {
-    return this.showContent("showBlockedOk", {
-            user: user
+exports.showBlockedOk = function(req) {
+
+    return this.returnHtml("showBlockedOk", {
+            user: req.params
             });
 }
 
@@ -80,12 +85,12 @@ exports.showBlockedOk = function(user) {
  *
  */
 exports.showUnblockForm = function(req) {
-     if (!req.params.key)
+    if (!req.params.key)
         return Site.showError(404);
 
-    return this.showContent("showUnblockForm", {
-                user: Users.getByKey(req.params.key)
-                });
+    return this.returnHtml("showUnblockForm", {
+            user: Users.getByKey(req.params.key)
+            });
 }
 
 
@@ -100,29 +105,17 @@ exports.submitUnblockForm = function(req) {
     user.blocked = false;
     user.save();
 
-    return this.showUnblockedOk(user);
+    return this.WebMapper.redirect(module.id, "showUnblockedOk", user);
 }
 
 
 /**
  *
  */
-exports.showUnblockedOk = function(user) {
-    return this.showContent("showUnblockedOk", {
-                user: user
+exports.showUnblockedOk = function(req) {
+    return this.returnHtml("showUnblockedOk", {
+                user: req.params
                 });
 }
 
 
-//----------------------------------------------------------------------------
-
-
-/**
- * Show page inside website template.
- */
-exports.showContent = function(tpl_name, vars) {
-    return Site.showContent(
-            ctlTemplate.fetch(
-                tpl_dir + tpl_name + ".ejs",
-                vars));
-}

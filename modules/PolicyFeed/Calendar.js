@@ -19,11 +19,16 @@
 
 // Requirements:
 var gluestick = require("gluestick");
-var WebMapper = gluestick.loadModule("WebMapper");
-var fs = require("fs");
 var dates = require("ringo/utils/dates");
 var JsonStorage = require("ctl/JsonStorage");
-var ctlTemplate = require("ctl/Template");
+
+// Extend module:
+gluestick.extendModule(exports, "ctl/Controller");
+
+/**
+ * Directory with template files.
+ */
+exports.tpl_dir = this.getTplDir(module);
 
 
 /**
@@ -31,7 +36,7 @@ var ctlTemplate = require("ctl/Template");
  */
 exports.getActiveDays = function(req)
 {
-    return WebMapper.returnJson(
+    return this.WebMapper.returnJson(
         this.getActiveMonthDays(req.params.year, req.params.month)
         );
 }
@@ -40,14 +45,11 @@ exports.getActiveDays = function(req)
 /**
  * Calendar block.
  */
-exports.showBlock = function(day)
-{
-    var tpl_file = fs.directory(module.path) + "/Calendar/tpl/showBlock.ejs";
-
+exports.showBlock = function(day) {
     if (!day)
         day = dates.format(new Date(), "yyyy-MM");
 
-    return ctlTemplate.fetch(tpl_file, {
+    return this.showHtml("showBlock", {
         day: day,
         days: this.getActiveMonthDays(day.substr(0, 4), day.substr(5, 2))
         });

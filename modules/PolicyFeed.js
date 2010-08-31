@@ -17,56 +17,59 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
+var gluestick = require("gluestick");
 var fs = require("fs");
 var mail = require("ringo/mail");
 var JsonStorage = require("ctl/JsonStorage");
 var ctlDate = require("ctl/Date");
 var SolrClient = require("PolicyFeed/SolrClient");
-var ctlTemplate = require("ctl/Template");
-var ctlRequest = require("ctl/Request");
-var gluestick = require("gluestick");
 
-var Site = gluestick.loadModule("Site");
-var WebMapper = gluestick.loadModule("WebMapper");
+
+// Extend module:
+gluestick.extendModule(exports, "ctl/Controller");
+
+/**
+ * Directory with template files.
+ */
+exports.tpl_dir = this.getTplDir(module);
 
 
 /**
- *
+ * Prints request params to output.
  */
-exports.showDocumentList = function(req)
-{
-    print("PolicyFeed.showDocumentList", ctlRequest.getRemoteAddr(req));
-
-    var cache_path = "/cache/index";
-    if (false) //JsonStorage.exists(cache_path))
-        var result = JsonStorage.read(cache_path);
+function log_request(method, req, params) {
+    if (params)
+        print(module.id, method, params, this.ctlRequest.getRemoteAddr(req));
     else
-    {
-        var {numFound, docs} = SolrClient.getLatestDocs();
-
-        var result = WebMapper.returnHtml(
-            this.showContent("showDocumentList", {
-                "mode": "list",
-                "docs": docs,
-                "numFound": numFound
-                }));
-
-        //JsonStorage.write(cache_path, result);
-    }
-
-    return result;
+        print(module.id, method, this.ctlRequest.getRemoteAddr(req));
 }
 
 
 /**
  *
  */
-exports.search = function(req)
-{
+exports.showDocumentList = function(req) {
+    log_request("showDocumentList", req);
+
+    var {numFound, docs} = SolrClient.getLatestDocs();
+
+    return this.returnHtml("showDocumentList", {
+            "mode": "list",
+            "docs": docs,
+            "numFound": numFound
+            });
+}
+
+
+/**
+ *
+ */
+exports.search = function(req) {
     if (req.params.format && req.params.format == "json")
         return this.loadSearchResults(req);
 
-    print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
+    log_request("search", req, req.params.q);
 
     var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true});
     var docs = [];
@@ -80,13 +83,12 @@ exports.search = function(req)
     if (results && results.highlighting)
         highlighting = results.highlighting;
     
-    return WebMapper.returnHtml(
-        this.showContent("search", {
+    return this.returnHtml("search", {
             "query": req.params.q,
             "docs": docs,
             "highlighting": highlighting,
             "numFound": numFound
-            }));
+            });
 }
 
 
@@ -94,7 +96,7 @@ exports.search = function(req)
  *
  */
 exports.loadSearchResults = function(req) {
-    print("PolicyFeed.search", req.params.q, ctlRequest.getRemoteAddr(req));
+    log_request("search", req, req.params.q);
 
     var results = SolrClient.search(req.params.q.trim(), {limit: 20, highlight: true, offset: req.params.offset});
     var docs = [];
@@ -106,7 +108,7 @@ exports.loadSearchResults = function(req) {
     if (results && results.highlighting)
         highlighting = results.highlighting;
 
-    return WebMapper.returnJson({
+    return this.WebMapper.returnJson({
             docs: docs,
             snippets: highlighting
             });
@@ -117,8 +119,8 @@ exports.loadSearchResults = function(req) {
  *
  */
 exports.showRss = function(req) {
-    
-    print("PolicyFeed.showRss", req.params.q, ctlRequest.getRemoteAddr(req));
+
+    log_request("showRss", req, req.params.q);
 
     var search_options =  {limit: 20, fields: ["id","published","type","org","title","html"]};
     var query = "*:*";
@@ -138,114 +140,99 @@ exports.showRss = function(req) {
         docs[i].html = doc.html;
     }
 
-    return {
-        status: 200,
-        headers: {
-            "Content-Type": "application/xml"
-        },
+    return this.WebMapper.returnResponse({
+        headers: { "Content-Type": "application/xml" },
         body: [ this.showHtml("showRss", {"docs":docs}) ]
-    };
+    });
 }
 
 
 /**
  *
  */
-exports.showDay = function(req, day)
-{
-    print("PolicyFeed.showDay", day, ctlRequest.getRemoteAddr(req));
+exports.showDay = function(req, day) {
+    log_request("showDay", req, day);
+
     day = day.replace(/\//g, "-");
 
     var {docs, numFound} = SolrClient.searchByDay(day).response;
 
-    return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
+    return this.returnHtml("showDocumentList", {
             "day": day,
             "docs": docs,
             "numFound": numFound
-            }));
+            });
 }
 
 
 /**
  *
  */
-exports.showMonth = function(req, month)
-{
-    print("PolicyFeed.showMonth", month, ctlRequest.getRemoteAddr(req));
+exports.showMonth = function(req, month) {
+    log_request("showMonth", req, month);
+    
     month = month.replace("/", "-");
 
     var {docs, numFound} = SolrClient.searchByMonth(month).response;
 
-    return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
+    return this.returnHtml("showDocumentList", {
             "mode": "search",
             //"query": "Publikuoti:" + month,
             "docs": docs,
             "numFound": numFound
-            }));
+            });
 }
 
 
 /**
  *
  */
-exports.showYear = function(req, year)
-{
-    print("PolicyFeed.showYear", year, ctlRequest.getRemoteAddr(req));
+exports.showYear = function(req, year) {
+    log_request("showYear", req, year);
 
     var {docs, numFound} = SolrClient.searchByYear(year).response;
 
-    return WebMapper.returnHtml(
-        this.showContent("showDocumentList", {
+    return this.returnHtml("showDocumentList", {
             "mode": "search",
             //"query": "Publikuoti:" + year,
             "docs": docs,
             "numFound": numFound
-            }));
+            });
 }
 
 /**
  *
  */
-exports.showDocument = function(req, id)
-{
-    print("PolicyFeed.showDocument", id, ctlRequest.getRemoteAddr(req));
+exports.showDocument = function(req, id) {
+    log_request("showDocument", req, id);
 
     var doc = JsonStorage.read(id);
     if (!doc)
-        return Site.showError(404);
+        return this.showError(404);
 
     if (doc.published.match(/\.\d+Z$/))
         doc.published = ctlDate.fromUTCString(doc.published);
 
-    return {
-        status: 200,
-        headers: {
-            "Content-Type": "text/html; charset=utf-8"
-        },
-        body: [
-            this.showContent("showDocument", {
-                "doc": doc
-                }) ]};
+    return this.returnHtml("showDocument", {
+            doc: doc
+            });
 }
 
 
 /**
  *
  */
-exports.showDocumentFormat = function(req, id, format)
-{
-    print("PolicyFeed.showDocumentFormat", id, format, ctlRequest.getRemoteAddr(req));
+exports.showDocumentFormat = function(req, id, format) {
+    log_request("showDocumentFormat", req, [id, format]);
 
     var doc = JsonStorage.read(id);
     
     if (!doc)
-        return Site.showError(404);
+        return this.showError(404);
     else if (format == "json")
-        return WebMapper.returnJson(doc);
+        return this.WebMapper.returnJson(doc);
     else
-        return Site.showError(404);
+        return this.showError(404);
 }
 
 
@@ -253,7 +240,7 @@ exports.showDocumentFormat = function(req, id, format)
  *
  */
 exports.shareByEmail = function(req, id) {
-    print("PolicyFeed.shareByEmail", id, req.params.email);
+    log_request("shareByEmail", req, [id, req.params.email]);
 
     var doc = JsonStorage.read(id);
     var email = req.params.email;
@@ -264,13 +251,7 @@ exports.shareByEmail = function(req, id) {
         html: this.showHtml("shareByEmail", { doc: doc })
         });
 
-    return {
-        status: 200,
-        headers: {
-            "Content-Type": "text/plain"
-        },
-        body: [ "OK" ]
-    };
+    return this.WebMapper.returnJson({message: "OK"});
 }
 
 //----------------------------------------------------------------------------
@@ -281,22 +262,5 @@ exports.shareByEmail = function(req, id) {
  */
 exports.showSearchBlock = function(query) {
     return this.showHtml("showSearchBlock", { query: query });
-}
-
-/**
- *
- */
-exports.showContent = function(tpl, content) {
-    var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-    return Site.showContent( ctlTemplate.fetchObject(tpl_file, content) );
-}
-
-
-/**
- *
- */
-exports.showHtml = function(tpl, content) {
-    var tpl_file = fs.directory(module.path) + "/PolicyFeed/tpl/" + tpl + ".ejs";
-    return ctlTemplate.fetch(tpl_file, content)
 }
 
