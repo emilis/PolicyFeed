@@ -125,8 +125,8 @@ exports.gluestick = {
 // --- Module config: ---
 
 exports["PolicyFeed/Crawler"] = {
-    parser_dir: exports.DIRS.modules + "/KaVeikiaValdzia/Parsers",
-    parser_prefix: "KaVeikiaValdzia/Parsers/"
+    parser_dir: exports.DIRS.modules + "/KaVeikiaValdzia/parsers",
+    parser_prefix: "KaVeikiaValdzia/parsers/"
 };
 
 exports["PolicyFeed/UrlErrors"] = {
