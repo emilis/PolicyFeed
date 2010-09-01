@@ -22,6 +22,7 @@
 */
 
 // Requirements:
+var config = require("config");
 var gluestick = require("gluestick");
 var fs = require("fs");
 
@@ -45,8 +46,12 @@ exports.tpl_dir = false;
  * @type String
  */
 exports.getTplDir = function(mod) {
-    return fs.directory(mod.path) + "/" + fs.base(mod.id) + "/tpl";
-   
+    if (mod.config && mod.config.tpl_dir)
+        return mod.config.tpl_dir;
+    else if (config[mod.id] && config[mod.id].tpl_dir)
+        return config[mod.id].tpl_dir;
+    else
+        return fs.directory(mod.path) + "/" + fs.base(mod.id) + "/tpl";
 }
 
 
