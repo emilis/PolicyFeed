@@ -175,7 +175,10 @@ exports.redirect = function(module_name, method, params) {
 
     if (params) {
         for (var key in params) {
-            url += "&" + urlencode(key) + "=" + urlencode(params[key]);
+            url += "&" + urlencode(key) + "=";
+            if (params[key] && typeof(params[key] == "string")) {
+                url += urlencode(params[key]);
+            }
         }
     }
 
