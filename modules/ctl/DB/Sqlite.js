@@ -20,8 +20,8 @@
 /**
  * Initialization: registers sqlite driver with java.sql.DriverManager.
  */
-if (!registered)
-{
+if (!registered) {
+
     // Register Sqlite driver:
     var sqlite_driver = new org.sqlite.JDBC() 
     var driver_manager = java.sql.DriverManager
@@ -45,14 +45,13 @@ exports.last_connection = false;
  *
  * @param Object config DB configuration options (filename, [useUnicode, characterEncoding, start_query]).
  */
-exports._constructor = function(config)
-{
-    print("Sqlite._constructor", uneval(config));
+exports._constructor = function(config) {
+    print(module.id, "_constructor", uneval(config));
 
     this.config = config;
     this.last_connection = false;
 
-    print(this.connect());
+    this.connect();
 }
 
 /**
@@ -60,13 +59,12 @@ exports._constructor = function(config)
  *
  * @return java.sql.Connection
  */
-exports.connect = function($filename)
-{
-    if (!$filename || $filename == undefined)
-    {
-        if (this.last_connection && this.last_connection.isValid(0))
+exports.connect = function($filename) {
+
+    if (!$filename || $filename == undefined) {
+        if (this.last_connection && this.last_connection.isValid(0)) {
             return this.last_connection;
-        
+        }
         $filename = this.config.filename;
     }
 
@@ -74,10 +72,9 @@ exports.connect = function($filename)
     var url = "jdbc:sqlite:" + $filename;
 
     this.last_connection = driver_manager.getConnection(url);
-    print(this.last_connection, url);
+    print(module.id, this.last_connection, url);
 
-    if (this.config.start_query != undefined)
-    {
+    if (this.config.start_query != undefined) {
         var stmt = this.last_connection.createStatement();
         stmt.execute(this.config.start_query);
         stmt.close();
@@ -93,10 +90,8 @@ exports.connect = function($filename)
  * @param optional java.sql.Connection Connection to close. Uses last_connection if not specified.
  * @return void
  */
-exports.close = function(conn)
-{
+exports.close = function(conn) {
     conn = this.getConnection(conn);
-
     return conn.close();
 }
 
@@ -106,12 +101,10 @@ exports.close = function(conn)
  *
  * @param optional java.sql.Connection Connection object.
  */
-exports.getConnection = function(conn)
-{
-    if (conn == undefined)
-    {
+exports.getConnection = function(conn) {
+
+    if (conn == undefined) {
         conn = this.last_connection;
-        //if (!conn.isValid(0) || conn.isClosed())
         if (conn.isClosed())
             conn = this.connect();
     }
@@ -127,29 +120,25 @@ exports.getConnection = function(conn)
  * @param optional java.sql.Connection
  * @return mixed java.sql.ResultSet or int updated row count or false.
  */
-exports.query = function(sql, conn)
-{
+exports.query = function(sql, conn) {
+
     conn = this.getConnection(conn);
-    print(sql, conn);
+    print(module.id, conn, "query", sql);
 
     var stmt = conn.createStatement();
 
-    if (stmt.execute(sql)) //, java.sql.Statement.RETURN_GENERATED_KEYS))
-    {
+    if (stmt.execute(sql)) {
         var rs = stmt.getResultSet();
         return rs;
-    }
-    else
-    {
+    } else {
         var result = stmt.getUpdateCount();
-        if (result > -1)
-        {
+        if (result > -1) {
             var rowid = this.get_one("select last_insert_rowid()");
             if (rowid)
                 result = rowid;
-        }
-        else
+        } else {
             result = false;
+        }
 
         stmt.close();
         return result;
@@ -164,33 +153,32 @@ exports.query = function(sql, conn)
  * @param Array params Parameters for the SQL query.
  * @return mixed java.sql.ResultSet or int updated row count or false.
  */
-exports.prepared_query = function(sql, params, conn)
-{
+exports.prepared_query = function(sql, params, conn) {
+
     conn = this.getConnection(conn);
+    print(module.id, conn, "prepared_query", sql, params.length);
 
     var pStmt = conn.prepareStatement(sql) //, java.sql.Statement.RETURN_GENERATED_KEYS);
 
-    for (var i=0; i<params.length; i++)
-    {
-        if (params[i] === null || params[i] === false)
+    for (var i=0; i<params.length; i++) {
+        if (params[i] === null || params[i] === false) {
             pStmt.setNull(i+1, java.sql.Types.VARCHAR);
-        else
+        } else {
             pStmt.setString(i+1, params[i]);
+        }
     }
 
-    if (pStmt.execute())
+    if (pStmt.execute()) {
         return pStmt.getResultSet();
-    else
-    {
+    } else {
         var result = pStmt.getUpdateCount();
-        if (result > -1)
-        {
+        if (result > -1) {
             var rowid = this.get_one("select last_insert_rowid()");
             if (rowid)
                 result = rowid;
-        }
-        else
+        } else {
             result = false;
+        }
 
         pStmt.close();
         return result;
@@ -204,14 +192,20 @@ exports.prepared_query = function(sql, params, conn)
  * @param java.sql.ResultSet
  * @return Object
  */
-exports.get_row = function(rs)
-{
+exports.get_row = function(rs) {
+
+    if (typeof(rs) == "string")
+        rs = this.query(rs);
+    if (!rs)
+        return false;
+    if (rs.isClosed())
+        return [];
+
     var row = {};
     var rs_meta = rs.getMetaData();
     var column_count = rs_meta.getColumnCount();
 
-    for (var i=1;i<=column_count; i++)
-    {
+    for (var i=1;i<=column_count; i++) {
         row[rs_meta.getColumnLabel(i)] = this.get_column_value(rs, i, rs_meta); //new java.lang.String(rs.getBytes(i), "UTF-8");
     }
 
@@ -225,8 +219,8 @@ exports.get_row = function(rs)
  * @param java.sql.ResultSet
  * @return Array
  */
-exports.get_all = function(rs)
-{
+exports.get_all = function(rs) {
+
     if (typeof(rs) == "string")
         rs = this.query(rs);
     if (!rs)
@@ -243,11 +237,11 @@ exports.get_all = function(rs)
     for (var ci=1; ci<=column_count; ci++)
         column_names[ci] = rs_meta.getColumnLabel(ci);
 
-    while (rs.next())
-    {
+    while (rs.next()) {
         var row = {};
-        for (var ci=1; ci<=column_count; ci++)
+        for (var ci=1; ci<=column_count; ci++) {
             row[column_names[ci]] = this.get_column_value(rs, ci, rs_meta);
+        }
         all.push(row);
     }
 
@@ -258,14 +252,30 @@ exports.get_all = function(rs)
 
 
 /**
+ * Returns an iterator over all rows in a resultset.
+ * @param {String|java.sql.ResultSet} rs Query or ResultSet.
+ * @return Iterator.
+ * @type Iterator
+ */
+exports.get_iterator = function(rs) {
+
+    // Sqlite JDBC documentation suggests closing resultsets as fast as possible.
+    // Therefore this is just a wrapper around get_all().
+    for each (var row in this.get_all(rs)) {
+        yield row;
+    }
+}
+
+
+/**
  * Returns an array of all values in one resultset column.
  * 
  * @param java.sql.ResultSet
  * @param int
  * @return Array
  */
-exports.get_col = function(rs, ci)
-{
+exports.get_col = function(rs, ci) {
+
     if (typeof(rs) == "string")
         rs = this.query(rs);
     if (!rs)
@@ -282,8 +292,7 @@ exports.get_col = function(rs, ci)
     if (ci > rs_meta.getColumnCount())
         return [];
     
-    while (rs.next())
-    {
+    while (rs.next()) {
         all.push( this.get_column_value(rs, ci) );
     }
 
@@ -299,8 +308,8 @@ exports.get_col = function(rs, ci)
  * @param java.sql.ResultSet
  * @return String
  */
-exports.get_one = function(rs)
-{
+exports.get_one = function(rs) {
+
     if (typeof(rs) == "string")
         rs = this.query(rs);
     if (!rs)
@@ -308,6 +317,7 @@ exports.get_one = function(rs)
 
     if (rs.isClosed())
         var result = false;
+    
     if (!rs.isFirst() && !(rs.isBeforeFirst() && rs.next()))
         var result = false;
     else
@@ -326,17 +336,15 @@ exports.get_one = function(rs)
  * @param optional java.sql.ResultSetMetaData
  * @return mixed
  */
-exports.get_column_value = function(rs, column, meta)
-{
-    if (!meta)
-        meta = rs.getMetaData();
+exports.get_column_value = function(rs, column, meta) {
+    
+    meta = meta || rs.getMetaData();
 
     var type = meta.getColumnType(column);
     var result = null;
     
     // Note: Types variable declared at the beginning of this module.
-    switch (type)
-    {
+    switch (type) {
         case Types.NULL:
             return null;
             break;
@@ -359,10 +367,11 @@ exports.get_column_value = function(rs, column, meta)
         case Types.VARBINARY:
         case Types.LONGVARBINARY:
             result = rs.getBytes(column);
-            if (rs.wasNull())
+            if (rs.wasNull()) {
                 return "";
-            else
+            } else {
                 return "" + new String(new java.lang.String(result, "UTF-8"));
+            }
             break;
 
         case Types.BOOLEAN:
