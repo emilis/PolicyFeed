@@ -23,10 +23,10 @@ exports.urls = [
     [ /docs\/?$/,               "PolicyFeed", "showDocumentList" ],
 
     // static pages:
-    [ /pages\/(.+)/,            "KaVeikiaValdzia/Site", "showPage" ],
+    [ /pages\/(.+)/,    createRequestHandler("Site", "showPage") ],
 
     // Default mapping by request parameters. See: ctl/WebMapper.mapRequest().
-    [ /.*/, 'ctl/WebMapper'] 
+    [ /.*/,             createRequestHandler("WebMapper", "mapRequest") ] 
 ];
 
 /*/ Left over from RingoJS demoapp config.
@@ -82,11 +82,13 @@ exports.gluestick = {
     interfaces: {
         DB: {
             module: "ctl/DB/Sqlite",
+            clone: true,
             config: {
                 filename: exports.DATA_DIR + "/default.sqlite3"
             }},
         DB_urls: {
             module: "ctl/DB/Sqlite",
+            clone: true,
             config: {
                 filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
             }},
@@ -102,12 +104,12 @@ exports.gluestick = {
         WebMapper: {
             module: "ctl/WebMapper",
             config: {
-                default_call: "Site:showIndex",
+                default_call: ["Site", "showIndex"],
                 allowed: [
                     "Site",
                     "PolicyFeed",
                     "PolicyFeed/Calendar",
-                    "PolicyFeed/Comments"
+                    //"PolicyFeed/Comments"
                 ]
             }}
     }
@@ -127,3 +129,24 @@ exports["PolicyFeed/UrlErrors"] = {
     subject: "PolicyFeed/UrlErrors status"
 };
 
+
+
+//----------------------------------------------------------------------------
+
+
+function createRequestHandler(mod_name, method) {
+    var module = false;
+
+    var first_time = function () {
+        module = require("gluestick").loadModule(mod_name);
+        handler = next_times;
+        return handler.apply(this, arguments);
+    }
+    
+    var next_times = function() {
+        return module[method].apply(module, arguments);
+    }
+    
+    var handler = first_time;
+    return handler;
+}

@@ -18,8 +18,8 @@
 */
 
 var fs = require("fs");
-var PolicyFeed = require("PolicyFeed");
 
+__defineGetter__("PolicyFeed", function() { return this._PolicyFeed || (this._PolicyFeed = require("PolicyFeed")) });
 
 var ctlTemplate = require("ctl/Template");
 var ctlRequest = require("ctl/Request");
@@ -27,6 +27,7 @@ var WebMapper = require("ctl/WebMapper");
 
 // These get used a lot:
 exports.dirname = fs.directory(module.path) + "/Site";
+
 
 
 /**

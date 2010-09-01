@@ -40,6 +40,7 @@ for (var name in interfaces) {
     if (typeof(interfaces[name]) == "string") {
         interfaces[name] = {
             module: interfaces[name],
+            clone: false,
             config: {},
             configured: false
         };
@@ -87,7 +88,7 @@ exports.getModuleConfig = function(name, new_config) {
  *
  */
 exports.extendModule = function(child, with_parent) {
-    return objects.clone(with_parent, child, true);
+    return objects.clone(require(with_parent), child, true);
 }
 
 
@@ -120,14 +121,17 @@ exports.loadModule = function(name, config) {
 
     if (config) {
         config = this.getModuleConfig(name, config);
-        name = (interfaces[name]) ? interfaces[name].module || name;
+        name = (interfaces[name]) ? interfaces[name].module : name;
         return this.constructModuleClone(name, config);
     } else {
         if (interfaces[name]) {
             var iface = interfaces[name];
             if (!iface.obj) {
                 // Cache loaded module object in corresponding config variable:
-                iface.obj = this.constructModuleClone(iface.module, this.getModuleConfig(name));
+                if (iface.clone)
+                    iface.obj = this.constructModuleClone(iface.module, this.getModuleConfig(name));
+                else
+                    iface.obj = this.constructModule(iface.module, this.getModuleConfig(name));
             }
             return iface.obj;
         } else {
