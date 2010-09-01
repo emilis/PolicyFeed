@@ -158,7 +158,6 @@ exports.showDay = function(req, day) {
     var {docs, numFound} = SolrClient.searchByDay(day).response;
 
     return this.returnHtml("showDocumentList", {
-            "day": day,
             "docs": docs,
             "numFound": numFound
             });
@@ -177,7 +176,6 @@ exports.showMonth = function(req, month) {
 
     return this.returnHtml("showDocumentList", {
             "mode": "search",
-            //"query": "Publikuoti:" + month,
             "docs": docs,
             "numFound": numFound
             });
@@ -194,7 +192,6 @@ exports.showYear = function(req, year) {
 
     return this.returnHtml("showDocumentList", {
             "mode": "search",
-            //"query": "Publikuoti:" + year,
             "docs": docs,
             "numFound": numFound
             });

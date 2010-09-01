@@ -1,10 +1,14 @@
 <%
 
-var config = require("config");
+// Requirements:
 var ctlDate = require("ctl/Date");
 
+// Constants:
 var BASE_URL = config.URLS.base;
 var site_files = config.URLS.files + "/KaVeikiaValdzia";
+
+// Input vars:
+var {doc} = vars;
 
 if (doc.meta)
 {
@@ -16,17 +20,16 @@ if (doc.meta)
 if (!doc.org)
     doc.org = "";
 
-returnVar("title", doc.title);
+exports.title = doc.title;
 
 // breadcrumbs:
 //*
-var breadcrumbs = [
+exports.breadcrumbs = [
     [ doc._id.substr(0, 10), doc._id.substr(6, 4) ],
     [ doc._id.substr(0, 13), doc._id.substr(11, 2) ],
     [ doc._id.substr(0, 16), doc._id.substr(14, 2) ]
     ];
 
-returnVar("breadcrumbs", breadcrumbs);
 //*/
 
 // --- Side --- --- ----------------------------------------------------------

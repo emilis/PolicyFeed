@@ -6,10 +6,7 @@ var BASE_URL = config.URLS.base;
 var FILES_URL = config.URLS.files;
 var site_files = FILES_URL + "/KaVeikiaValdzia";
 
-var title;
-var side;
-var html;
-var breadcrumbs;
+var {title, side, links, content, breadcrumbs} = vars;
 
 var salt = dates.format(new Date(), "yyyyMMdd");
 
@@ -69,14 +66,8 @@ function javascript()
             </ul>
 
         </div>
-        <div id="main"><%
-
-            print(html);
-
-        %></div>
-        <div id="left">
-            <%= side %>
-            <%= links %>
+        <div id="main"><%= content %></div>
+        <div id="left"><%= side, links %>
         </div>
     </body>
 </html>

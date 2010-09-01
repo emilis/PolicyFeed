@@ -1,15 +1,18 @@
 <%
 
+// Requirements:
 var config = require("config");
 var dates = require("ringo/utils/dates");
 var strings = require("ringo/utils/strings");
 var PolicyFeed = require("PolicyFeed");
 var Calendar = require("PolicyFeed/Calendar");
 
+// Constants:
 var BASE_URL = config.URLS.base;
 var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
-var query;
+// Input vars:
+var {query, docs, numFound, highlighting} = vars;
 query = strings.entitize(query);
 
 
@@ -25,7 +28,7 @@ function isoToJsDate(str)
 
 
 
-returnVar("side", Calendar.showBlock() );
+exports.side = Calendar.showBlock();
 
 print( PolicyFeed.showSearchBlock(query) );
 

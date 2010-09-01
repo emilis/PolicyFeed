@@ -1,9 +1,10 @@
 <%
 
+// Requirements:
 var strings = require("ringo/utils/strings");
-var config = require("config");
 
-var query;
+// Input vars:
+var {query} = vars;
 
 %><form id="search" action="<%= config.URLS.base %>/docs/search/">
     <input id="q" name="q" value="<%= query %>"><input id="search-submit" type="submit" value="Ieškoti">

@@ -1,18 +1,18 @@
 <%
 
-var config = require("config");
+// Requirements:
 var dates = require("ringo/utils/dates");
+var PolicyFeed = require("PolicyFeed");
 var Calendar = require("PolicyFeed/Calendar");
 
+// Constants:
 var BASE_URL = config.URLS.base;
 var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
-var query;
-var day;
+// Input vars:
+var {mode, query, docs, numFound} = vars;
 
-returnVar("side", 
-    Calendar.showBlock(day)
-    );
+exports.side = Calendar.showBlock(day)
 
 var wdays = [
     "sekmadienis",
@@ -35,7 +35,7 @@ function isoToJsDate(str)
 }
 
 
-print(require("PolicyFeed").showSearchBlock(query));
+print(PolicyFeed.showSearchBlock(query));
 
 %>
 <div id="doc-list">

@@ -1,4 +1,9 @@
-<h1>Atsisakyti pranešimų iš KąVeikiaValdžia.lt:</h1>
+<%
+
+// Input vars:
+var {user} = vars;
+
+%><h1>Atsisakyti pranešimų iš KąVeikiaValdžia.lt:</h1>
 <p><em>Jūs paspaudėte nuorodą laiške siųstame į <%= user.email %>.<br>Ar norėtumėte, kad nebesiųstume jums laiškų šiuo adresu?</em></p>
 
 <form method="post" action="">
