@@ -31,7 +31,7 @@ var WAITNETWORK = 60*1000;
 
 
 // Internal vars:
-var UrlQueue;
+var Queue;
 var Crawler;
 
 
@@ -40,7 +40,7 @@ var Crawler;
  */
 exports.init = function(crawler, url_queue) {
     Crawler = crawler;
-    UrlQueue = url_queue;
+    Queue = url_queue;
 }
 
 
@@ -74,10 +74,10 @@ var runThread = function(id) {
     return function() {
         try {
             // wait for url:
-            var url = UrlQueue.getUrl(id);
+            var url = Queue.getUrl(id);
             while (!url) {
                 sleep(WAITNEWURL);
-                url = UrlQueue.getUrl(id);
+                url = Queue.getUrl(id);
             }
         } catch (e) {
             print(module.id + ".runThread:getUrl-Error", id, e, "\n", e.stack);
@@ -86,13 +86,13 @@ var runThread = function(id) {
         // process url:
         try {
             Crawler.processUrl( url, htmlunit.getPage(url.url, id) );
-            UrlQueue.doneUrl(id);
+            Queue.doneUrl(id);
         } catch (e) {
             if (e.message.indexOf("java.net.UnknownHostException:") == 0) {
                 // Add url back to queue and hope the network problems will resolve:
-                UrlQueue.rescheduleUrl(id, WAITNETWORK);
+                Queue.rescheduleUrl(id, WAITNETWORK);
             } else {
-                UrlQueue.failedUrl(id, url, e);
+                Queue.failedUrl(id, url, e);
                 print(module.id + ".runThread:processUrl-Error", id, e, "\n", e.stack);
             }
         } finally {
@@ -111,7 +111,7 @@ exports.getPage = function(url, id) {
 
     // get page
     spawn(function () {
-        while (!UrlQueue.requestDomain(url.domain))
+        while (!Queue.requestDomain(url.domain))
             sleep(WAITDOMAIN);
 
         try {

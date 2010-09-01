@@ -22,7 +22,7 @@ var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
 
 // Extends:
-gluestick.extendModule(exports, "PolicyFeed/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/w5_sale.ses_pos";

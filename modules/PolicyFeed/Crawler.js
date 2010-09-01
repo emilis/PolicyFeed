@@ -26,15 +26,15 @@ var htmlunit = require("htmlunit");
 var ctlDate = require("ctl/Date");
 var Events = gluestick.loadModule("Events");
 
-var UrlQueue = require("PolicyFeed/UrlQueue");
-var UrlList = require("PolicyFeed/UrlList");
-var BrowserController = require("PolicyFeed/BrowserController");
+var Queue = require("PolicyFeed/Crawler/Queue");
+var Urls = require("PolicyFeed/Crawler/Urls");
+var Browser = require("PolicyFeed/Crawler/Browser");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
 
 var filters = {
-    "default": require("PolicyFeed/filters/default"),
-    abiword: require("PolicyFeed/filters/abiword"),
+    "default": require("PolicyFeed/Crawler/filters/default"),
+    abiword: require("PolicyFeed/Crawler/filters/abiword"),
 };
 
 
@@ -77,10 +77,10 @@ exports.getDomains = function() {
         } else {
             if (parser.feed_url instanceof Array) {
                 for each (var url in parser.feed_url) {
-                    domains[UrlQueue.getDomainFromUrl(url)] = {};
+                    domains[Queue.getDomainFromUrl(url)] = {};
                 }
             } else {
-                domains[UrlQueue.getDomainFromUrl(parser.feed_url)] = {};
+                domains[Queue.getDomainFromUrl(parser.feed_url)] = {};
             }
         }
     }
@@ -102,10 +102,10 @@ exports.init = function(options) {
         this.parsers[name].Crawler = this;
     }
 
-    UrlQueue.init({ domainList: this.getDomains() });
+    Queue.init({ domainList: this.getDomains() });
 
-    BrowserController.init(this, UrlQueue);
-    BrowserController.start();
+    Browser.init(this, Queue);
+    Browser.start();
 }
 
 /**
@@ -118,8 +118,8 @@ exports.checkUpdates = function() {
             urls = [urls];
 
         for each (var url in urls) {
-            if (!UrlQueue.isUrlScheduled(url)) {
-                UrlQueue.scheduleUrl({
+            if (!Queue.isUrlScheduled(url)) {
+                Queue.scheduleUrl({
                     url: url,
                     parser: name,
                     method: "checkFeed"
@@ -156,13 +156,13 @@ exports.checkFeed = function(parser_name, url, page) {
 
     // Remove existing urls:
     urls = urls.filter(function (item) {
-        if (UrlList.exists(item.url))
+        if (Urls.exists(item.url))
             return false;
         else
             return true;
         });
 
-    // Save url to originals, add to UrlList and UrlQueue:
+    // Save url to originals, add to Urls and Queue:
     urls.map(function (item) {
         // create originals:
         var id = "/originals/" + ctlDate.formatFromString(item.published, "yyyy/MM/dd/");
@@ -171,9 +171,9 @@ exports.checkFeed = function(parser_name, url, page) {
         print("adding page:", id, item.published, item.url, item.title);
 
         JsonStorage.write(id, item);
-        UrlList.addUrl(item.url, id);
+        Urls.addUrl(item.url, id);
 
-        UrlQueue.addUrl({
+        Queue.addUrl({
             url: item.url,
             parser: parser_name,
             method: "parsePage",
@@ -182,7 +182,7 @@ exports.checkFeed = function(parser_name, url, page) {
     });
 
     // schedule next check:
-    UrlQueue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
+    Queue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
 }
 
 
@@ -230,7 +230,7 @@ exports.reindexDoc = function(doc_id) {
     url.method = "parsePage";
     url.original_id = doc._id.replace("docs", "originals");
 
-    return UrlQueue.addUrl(url);
+    return Queue.addUrl(url);
 }
 
 
@@ -238,7 +238,7 @@ exports.reindexDoc = function(doc_id) {
  *
  */
 exports.reindexUrl = function(url) {
-    return this.reindexDoc( UrlList.getDocId(url) );
+    return this.reindexDoc( Urls.getDocId(url) );
 }
 
 

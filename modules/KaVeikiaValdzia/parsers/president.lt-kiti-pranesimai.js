@@ -24,8 +24,8 @@ var dates = require("ringo/utils/dates");
 var ctlDate = require("ctl/Date");
 var gluestick = require("gluestick");
 
-// --- Extend PolicyFeed/Parser : ---
-gluestick.extendModule(exports, "PolicyFeed/Parser");
+// --- Extend Policyfeed/Crawler/Parser : ---
+gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 
 // --- Parser config: ---

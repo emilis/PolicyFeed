@@ -22,10 +22,10 @@
 var gluestick = require("gluestick");
 var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
-var UrlQueue = require("PolicyFeed/UrlQueue");
+var Queue = require("PolicyFeed/Crawler/Queue");
 
 
-gluestick.extendModule(exports, "PolicyFeed/Parser");
+gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai";
@@ -176,7 +176,7 @@ exports.extractPageData = function(original, page) {
 
     // Schedule "nėra teksto" docs for re-check after 5 minutes:
     if (doc.html.match("nėra teksto HTML formatu")) {
-        UrlQueue.scheduleUrl({
+        Queue.scheduleUrl({
             url: doc.url,
             domain: "www.lrs.lt",
             parser: this.name,

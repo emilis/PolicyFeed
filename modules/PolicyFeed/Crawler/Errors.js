@@ -29,7 +29,7 @@ var db = gluestick.loadModule("DB_urls");
 
 var MSG_TO = "policyfeed-errors@mailinator.com";
 var MSG_FROM = false;
-var MSG_SUBJECT = "PolicyFeed/UrlErrors status";
+var MSG_SUBJECT = module.id + " status";
 
 if (config[module.id]) {
     var c = config[module.id];

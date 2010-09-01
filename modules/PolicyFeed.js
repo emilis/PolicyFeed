@@ -23,7 +23,7 @@ var fs = require("fs");
 var mail = require("ringo/mail");
 var JsonStorage = require("ctl/JsonStorage");
 var ctlDate = require("ctl/Date");
-var SolrClient = require("PolicyFeed/SolrClient");
+var SolrClient = require("PolicyFeed/Solr/Client");
 
 
 // Extend module:

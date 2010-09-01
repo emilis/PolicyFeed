@@ -8,7 +8,7 @@ require("packages").loadPackages(getRepository( require("config").DIRS.packages)
 
 // Add triggers for JsonStorage:
 var JsonStorage = require("ctl/JsonStorage");
-var SolrClient = require("PolicyFeed/SolrClient");
+var SolrClient = require("PolicyFeed/Solr/Client");
 JsonStorage.addTrigger("after-write", "/docs/", SolrClient.onItemChange);
 JsonStorage.addTrigger("after-remove", "/docs/", SolrClient.onItemChange);
 

@@ -72,7 +72,7 @@ exports.itemToXml = function(item) {
  *
  */
 exports.indexItem = function(item) {
-    Events.create("PolicyFeed/SolrClient.indexItem-debug", item._id);
+    Events.create(module.id + ".indexItem-debug", item._id);
     try {
         var req = {
             method: "POST",

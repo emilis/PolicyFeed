@@ -18,7 +18,7 @@
 */
 
 var arrays = require("ringo/utils/arrays");
-var UrlErrors = require("PolicyFeed/UrlErrors");
+var Errors = require("PolicyFeed/Crawler/Errors");
 var JsonStorage = require("ctl/JsonStorage");
 
 
@@ -305,7 +305,7 @@ exports.getUrl = function(pid) {
  *
  */
 exports.failedUrl = function(pid, url, err) {
-    UrlErrors.addUrl(url, err);
+    Errors.addUrl(url, err);
     unlockPid(pid);
 }
 

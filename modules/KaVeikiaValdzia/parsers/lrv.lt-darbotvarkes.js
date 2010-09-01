@@ -23,9 +23,9 @@ var htmlunit = require("htmlunit");
 var gluestick = require("gluestick");
 var Events = gluestick.loadModule("Events");
 
-// --- Extend PolicyFeed/Parser: ---
+// --- Extend Policyfeed/Crawler/Parser: ---
 
-gluestick.extendModule(exports, "PolicyFeed/Parser");
+gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 // --- Parser config: ---
 exports.feed_url = [

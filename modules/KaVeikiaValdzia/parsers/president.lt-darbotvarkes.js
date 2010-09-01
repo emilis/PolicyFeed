@@ -22,8 +22,8 @@
 var htmlunit = require("htmlunit");
 var gluestick = require("gluestick");
 
-// --- Extend PolicyFeed/Parser : ---
-gluestick.extendModule(exports, "PolicyFeed/Parser");
+// --- Extend Policyfeed/Crawler/Parser : ---
+gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 
 // --- Parser config: ---
