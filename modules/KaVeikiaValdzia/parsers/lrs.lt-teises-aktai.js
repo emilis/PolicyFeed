@@ -25,7 +25,7 @@ var ringo_dates = require("ringo/utils/dates");
 var Queue = require("PolicyFeed/Crawler/Queue");
 
 // Extends:
-gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai";

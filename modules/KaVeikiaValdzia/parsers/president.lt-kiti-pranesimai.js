@@ -25,7 +25,7 @@ var htmlunit = require("htmlunit");
 var ringo_dates = require("ringo/utils/dates");
 
 // Extend:
-gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
+gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
 
 
 // Parser config:
