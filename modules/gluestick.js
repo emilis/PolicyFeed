@@ -79,6 +79,7 @@ exports.getModuleConfig = function(name, new_config) {
     if (interfaces[name]) {
         return objects.clone(loadInterfaceConfig(name), new_config);
     } else {
+        var mod_config = config[name] || {};
         return objects.clone(mod_config, new_config);
     }
 }
