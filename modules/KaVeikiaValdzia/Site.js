@@ -21,7 +21,7 @@ var fs = require("fs");
 
 __defineGetter__("PolicyFeed", function() { return this._PolicyFeed || (this._PolicyFeed = require("PolicyFeed")) });
 
-var ctlTemplate = require("ctl/Template");
+var ctlTemplate = require("ctl/Template/Cached");
 var ctlRequest = require("ctl/Request");
 var WebMapper = require("ctl/WebMapper");
 

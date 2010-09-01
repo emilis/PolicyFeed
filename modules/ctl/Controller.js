@@ -28,7 +28,7 @@ var fs = require("fs");
 // Used modules:
 exports.Site = gluestick.loadModule("Site");
 exports.WebMapper = gluestick.loadModule("WebMapper");
-exports.ctlTemplate = require("ctl/Template");
+exports.ctlTemplate = require("ctl/Template/Cached");
 exports.ctlRequest = require("ctl/Request");
 
 
