@@ -76,7 +76,7 @@ exports.extractFeedItems = function (page) {
             var d = new Date();
 
             if (ringo_dates.format(published, "HH:mm:ss") == "00:00:00") {
-                if (ringo_dates.format(published, "yyyy-MM-dd") == dates.format(d, "yyyy-MM-dd")) {
+                if (ringo_dates.format(published, "yyyy-MM-dd") == ringo_dates.format(d, "yyyy-MM-dd")) {
                     published.setHours(d.getHours());
                     published.setMinutes(d.getMinutes());
                     published.setSeconds(d.getSeconds());

@@ -17,14 +17,14 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var dates = require("ringo/utils/dates");
-
+// Requirements:
+var ringo_dates = require("ringo/utils/dates");
 var term = require("ringo/term");
 
 exports.printEvent = function(name, data)
 {
     data = uneval(data).substr(0,256);
-    var time = dates.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+    var time = ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss");
 
     var prefix = "";
     if (name.match(/-error/))
