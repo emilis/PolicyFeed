@@ -17,84 +17,23 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var config = require("config");
+// Requirements:
 var gluestick = require("gluestick");
+var ringo_objects = require("ringo/utils/objects");
+var ringo_strings = require("ringo/utils/strings");
 
-var DB = gluestick.loadModule("DB_users");
+// Extends:
+gluestick.extendModule(exports, "ctl/Storage/DbTable");
 
-
-/**
- *
- */
-exports.exists = function(id) {
-    return this.read(id);
-}
+// Configuration for ctl/DB/Table:
+exports.connect("DB_users", "users");
 
 
 /**
  *
  */
 exports.emailExists = function(email) {
-    return this.select({email: email}).length;
-}
-
-
-/**
- *
- */
-exports.read = function(id) {
-    return this.select_one({id: id});
-}
-
-
-/**
- *
- */
-exports.select = function(filter, sort) {
-    var sql = "select * from users where ";
-    var values = [];
-    var sep = "";
-    for (var field in filter) {
-
-        if (filter[field] instanceof Array) {
-            sql += sep + field + " IN ('" + filter[field].join("','") + "')";
-        } else {
-            sql += sep + field + "=?";
-            values.push(filter[field]);
-        }
-        
-        sep = " AND ";
-    }
-
-    if (sort) {
-        sep = "";
-        sql += " ORDER BY ";
-        for (var field in sort) {
-            sql += sep + field + " " + sort[field];
-            sep = ",";
-        }
-    }
-
-    var result = [];
-    var rs = DB.prepared_query(sql, values);
-    print(rs, sql, values);
-    if (rs) {
-        result = DB.get_all(rs) || [];
-        rs.getStatement().close();
-    }
-    return result;
-}
-
-
-/**
- *
- */
-exports.select_one = function(filter, sort) {
-    var rows = this.select(filter, sort);
-    if (rows)
-        return rows[0];
-    else
-        return rows;
+    return this.list({email: email}).length;
 }
 
 
@@ -102,48 +41,26 @@ exports.select_one = function(filter, sort) {
  *
  */
 exports.getByEmail = function(email) {
-    return this.select_one({email: email});
+    return this.read({email: email});
 }
 
 /**
  *
  */
 exports.getByKey = function(key) {
-    return this.select_one({key: key});
+    return this.read({key: key});
 }
 
 
 /**
  *
  */
-exports.write = function(id, data) {
-    var fields = [];
-    var values = [];
-    for (var key in data) {
-        fields.push(key);
-        values.push(data[key]);
+var parent_create = ringo_objects.clone(exports.create);
+exports.create = function(id, data) {
+    if (!data.key) {
+        data.key = ringo_strings.random(40);
     }
-
-    if (!this.exists(id)) {
-        if (!data.key) {
-            fields.push("key");
-            values.push(String.random(40));
-        }
-        var sql = "INSERT INTO users (`" + fields.join("`,`") + "`) VALUES(" + "?,".repeat(values.length - 1) + "?)";
-    } else {
-        values.push(id);
-        var sql = "UPDATE users SET `" + fields.join('`=?, ') + "`=? WHERE id=?";
-    }
-
-    var rs = DB.prepared_query(sql, values);
-    if (rs) {
-        if (rs.getStatement) {
-            rs.getStatement().close();
-            return true;
-        } else {
-            return rs;
-        }
-    }
+    return parent_create(id, data);
 }
 
 
