@@ -84,13 +84,13 @@ exports.gluestick = {
             module: "ctl/DB/Sqlite",
             clone: true,
             config: {
-                filename: exports.DATA_DIR + "/default.sqlite3"
+                filename: exports.DIRS.data + "/default.sqlite3"
             }},
         DB_urls: {
             module: "ctl/DB/Sqlite",
             clone: true,
             config: {
-                filename: exports.DATA_DIR + "/policyfeed_urls.sqlite3"
+                filename: exports.DIRS.data + "/policyfeed_urls.sqlite3"
             }},
         Events: {
             module: "ctl/Events",
@@ -119,7 +119,7 @@ exports.gluestick = {
 // --- Module config: ---
 
 exports["PolicyFeed/Crawler"] = {
-    parser_dir: exports.MODULES_DIR + "/KaVeikiaValdzia/Parsers",
+    parser_dir: exports.DIRS.modules + "/KaVeikiaValdzia/Parsers",
     parser_prefix: "KaVeikiaValdzia/Parsers/"
 };
 
@@ -134,19 +134,11 @@ exports["PolicyFeed/UrlErrors"] = {
 //----------------------------------------------------------------------------
 
 
-function createRequestHandler(mod_name, method) {
+function createRequestHandler(mod_name, func_name) {
     var module = false;
-
-    var first_time = function () {
-        module = require("gluestick").loadModule(mod_name);
-        handler = next_times;
-        return handler.apply(this, arguments);
+    return function() {
+        if (!module)
+            module = require("gluestick").loadModule(mod_name);
+        return module[func_name].apply(module, arguments);
     }
-    
-    var next_times = function() {
-        return module[method].apply(module, arguments);
-    }
-    
-    var handler = first_time;
-    return handler;
 }
