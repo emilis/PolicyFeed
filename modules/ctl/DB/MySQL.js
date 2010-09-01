@@ -267,6 +267,42 @@ exports.get_all = function(rs)
 
 
 /**
+ * Returns an iterator over all rows in a resultset.
+ * @param {String|java.sql.ResultSet} rs Query or ResultSet.
+ * @return Iterator.
+ * @type Iterator
+ */
+exports.get_iterator = function(rs) {
+
+    if (typeof(rs) == "string")
+        rs = this.query(rs);
+    if (!rs || !rs.first())
+        throw StopIteration;
+
+    try {
+        var rs_meta = rs.getMetaData();
+        var column_count = rs_meta.getColumnCount();
+        
+        var column_names = [];
+        for (var ci=1; ci<=column_count; ci++)
+            column_names[ci] = rs_meta.getColumnLabel(ci);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            var row = {};
+            for (var ci=1; ci<=column_count; ci++) {
+                row[column_names[ci]] = this.get_column_value(rs, ci, rs_meta);
+            }
+            yield row;
+        }
+    } finally {
+       rs.getStatement().close();
+    }
+}
+
+
+
+/**
  * Returns an array of all values in one resultset column.
  * 
  * @param java.sql.ResultSet
