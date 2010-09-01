@@ -115,7 +115,8 @@ exports.gluestick = {
                     "Site",
                     "PolicyFeed",
                     "PolicyFeed/Calendar",
-                    //"PolicyFeed/Comments"
+                    //"PolicyFeed/Comments",
+                    "PolicyFeed/Users/Preferences"
                 ]
             }}
     }

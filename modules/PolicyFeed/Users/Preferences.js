@@ -35,8 +35,7 @@ exports.tpl_dir = exports.getTplDir(module);
  * Checks if user does not want to receive emails from our site.
  */
 exports.isEmailBlocked = function(email) {
-    var user = Users.getByEmail(email);
-    return user.blocked;
+    return Users.getByEmail(email).blocked;
 }
 
 
@@ -63,7 +62,7 @@ exports.submitBlockForm = function(req) {
     user.blocked = true;
     Users.write(user.id, user);
 
-    return this.WebMapper.redirect(module.id, "showBlockedOk", user);
+    return this.WebMapper.redirect(module.id, "showBlockedOk", {key: user.key});
 }
 
 
@@ -72,8 +71,11 @@ exports.submitBlockForm = function(req) {
  */
 exports.showBlockedOk = function(req) {
 
+    if (!req.params.key)
+        return this.showError(404);
+
     return this.returnHtml("showBlockedOk", {
-            user: req.params
+            user: Users.getByKey(req.params.key)
             });
 }
 
@@ -110,9 +112,12 @@ exports.submitUnblockForm = function(req) {
  *
  */
 exports.showUnblockedOk = function(req) {
+    if (!req.params.key)
+        return this.showError(404);
+
     return this.returnHtml("showUnblockedOk", {
-                user: req.params
-                });
+            user: Users.getByKey(req.params.key) 
+            });
 }
 
 
