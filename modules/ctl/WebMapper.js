@@ -27,8 +27,6 @@ var gluestick = require("gluestick");
 var arrays = require("ringo/utils/arrays");
 var urlencode = java.net.URLEncoder.encode;
 
-var WebMapper = gluestick.loadModule("WebMapper");
-
 // Internal vars:
 var default_status = 200;
 var default_headers = {
@@ -54,7 +52,10 @@ exports._constructor = function(config) {
  */
 exports.index = function(req)
 {
-    return WebMapper.mapRequest(req);
+    if (module.config)
+        return this.mapRequest(req);
+    else
+        return gluestick.loadModule("WebMapper").mapRequest(req);
 }
 
 
@@ -180,7 +181,7 @@ exports.redirect = function(module_name, method, params) {
 
     return {
         'status':   301,
-        'headers':  { Location: url }
+        'headers':  { Location: url },
         'body':     []
     };
 }
@@ -192,7 +193,7 @@ exports.redirect = function(module_name, method, params) {
 exports.redirectToUrl = function(url) {
     return {
         "status":   301,
-        "headers":  { Location: url }
+        "headers":  { Location: url },
         "body":     []
     };
 }

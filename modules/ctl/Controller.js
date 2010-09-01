@@ -28,7 +28,7 @@ var fs = require("fs");
 // Used modules:
 exports.Site = gluestick.loadModule("Site");
 exports.WebMapper = gluestick.loadModule("WebMapper");
-exports.ctlTemplate = require("ctlTemplate");
+exports.ctlTemplate = require("ctl/Template");
 exports.ctlRequest = require("ctl/Request");
 
 
@@ -72,7 +72,7 @@ exports.showContent = function(tpl_name, content) {
  */
 exports.showHtml = function(tpl_name, content) {
     var tpl_file = this.tpl_dir + "/" + tpl_name + ".ejs";
-    return ctlTemplate.fetch(tpl_file, content)
+    return this.ctlTemplate.fetch(tpl_file, content)
 }
 
 

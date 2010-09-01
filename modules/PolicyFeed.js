@@ -32,7 +32,7 @@ gluestick.extendModule(exports, "ctl/Controller");
 /**
  * Directory with template files.
  */
-exports.tpl_dir = this.getTplDir(module);
+exports.tpl_dir = exports.getTplDir(module);
 
 
 /**
@@ -40,9 +40,9 @@ exports.tpl_dir = this.getTplDir(module);
  */
 function log_request(method, req, params) {
     if (params)
-        print(module.id, method, params, this.ctlRequest.getRemoteAddr(req));
+        print(module.id, method, params, exports.ctlRequest.getRemoteAddr(req));
     else
-        print(module.id, method, this.ctlRequest.getRemoteAddr(req));
+        print(module.id, method, exports.ctlRequest.getRemoteAddr(req));
 }
 
 

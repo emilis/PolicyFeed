@@ -28,7 +28,7 @@ gluestick.extendModule(exports, "ctl/Controller");
 /**
  * Directory with template files.
  */
-exports.tpl_dir = this.getTplDir(module);
+exports.tpl_dir = exports.getTplDir(module);
 
 
 /**

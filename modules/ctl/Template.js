@@ -94,8 +94,10 @@ exports.fetch = function(tpl_file_name, vars)
 /**
  * 
  */
-exports.fetchObject = function(tpl_file_name, vars, output_var_name)
-{
+exports.fetchObject = function(tpl_file_name, vars, output_var_name) {
+
+    vars = vars || {};
+
     // Read template file contents:
     if (!fs.exists(tpl_file_name))
         return '<p class="error">ctl/Template.js: template file "' + tpl_file_name + '" not found.</p>';
