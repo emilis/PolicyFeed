@@ -1,6 +1,6 @@
 <%
 
-var dates = require("ringo/utils/dates");
+var ringo_dates = require("ringo/utils/dates");
 
 var BASE_URL = config.URLS.base;
 var FILES_URL = config.URLS.files;
@@ -8,7 +8,7 @@ var site_files = FILES_URL + "/KaVeikiaValdzia";
 
 var {title, side, links, content, breadcrumbs} = vars;
 
-var salt = dates.format(new Date(), "yyyyMMdd");
+var salt = ringo_dates.format(new Date(), "yyyyMMdd");
 
 
 function css()

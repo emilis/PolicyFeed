@@ -17,8 +17,9 @@
     along with Gluestick framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
 var config = require("config");
-var objects = require("ringo/utils/objects");
+var ringo_objects = require("ringo/utils/objects");
 
 
 /**
@@ -61,7 +62,7 @@ var loadInterfaceConfig = function(name) {
     if (!iface.configured) {
         iface.config = iface.config || {};
         var mod_config = config[iface.module] || {};
-        iface.config = objects.clone(mod_config, iface.config);
+        iface.config = ringo_objects.clone(mod_config, iface.config);
         iface.configured = true;
     }
 
@@ -77,10 +78,10 @@ exports.getModuleConfig = function(name, new_config) {
     var new_config = new_config || {};
 
     if (interfaces[name]) {
-        return objects.clone(loadInterfaceConfig(name), new_config);
+        return ringo_objects.clone(loadInterfaceConfig(name), new_config);
     } else {
         var mod_config = config[name] || {};
-        return objects.clone(mod_config, new_config);
+        return ringo_objects.clone(mod_config, new_config);
     }
 }
 
@@ -89,7 +90,7 @@ exports.getModuleConfig = function(name, new_config) {
  *
  */
 exports.extendModule = function(child, with_parent) {
-    return objects.clone(require(with_parent), child, true);
+    return ringo_objects.clone(require(with_parent), child, true);
 }
 
 
@@ -108,7 +109,7 @@ exports.constructModule = function(module_name, config) {
  *
  */
 exports.constructModuleClone = function(module_name, config) {
-    var mod = objects.clone(require(module_name), false, true);
+    var mod = ringo_objects.clone(require(module_name), false, true);
     if (mod._constructor)
         mod._constructor(config);
     return mod;
@@ -152,7 +153,7 @@ exports.loadModule = function(name, config) {
  *
  */
 exports.cloneModule = function(name, config) {
-    var obj = objects.clone(this.loadModule(name), false, true);
+    var obj = ringo_objects.clone(this.loadModule(name), false, true);
     if (config) {
         config = this.getModuleConfig(name, config);
     }

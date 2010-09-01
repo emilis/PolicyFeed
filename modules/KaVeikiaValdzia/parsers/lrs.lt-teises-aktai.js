@@ -20,11 +20,11 @@
 
 // Requirements:
 var gluestick = require("gluestick");
-var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
+var ringo_dates = require("ringo/utils/dates");
 var Queue = require("PolicyFeed/Crawler/Queue");
 
-
+// Extends:
 gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 // Config:
@@ -91,7 +91,7 @@ exports.parseFeedItem = function(item) {
 
         // Fix 00:00 time for "published" field:
         var published = item.getFirstByXPath("pubDate").asText();
-        published = published.replace(/\./g, "-").replace(/ 00:00/, dates.format(new Date(), " HH:mm:ss"));
+        published = published.replace(/\./g, "-").replace(/ 00:00/, ringo_dates.format(new Date(), " HH:mm:ss"));
 
         // Result object:
         var result =  {

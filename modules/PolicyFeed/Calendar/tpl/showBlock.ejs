@@ -1,9 +1,9 @@
 <%
 
 // Requirements:
-var dates = require("ringo/utils/dates");
+var ringo_dates = require("ringo/utils/dates");
 
-
+// Input vars:
 var {day, days} = vars;
 
 
@@ -43,14 +43,14 @@ function showCalendar(selected, active_days)
     
     i = 1;
     d = makeDate(year, month, i);
-    var today = dates.format(new Date(), "yyyy/MM/dd");
+    var today = ringo_dates.format(new Date(), "yyyy/MM/dd");
 
     while (d.getDate() == i)
     {
         if (d.getDay() == 1 && i > 1)
             html += '<tr>';
 
-        var d_path = dates.format(d, "yyyy/MM/dd");
+        var d_path = ringo_dates.format(d, "yyyy/MM/dd");
         var classes = [];
 
         // add classes to cell:

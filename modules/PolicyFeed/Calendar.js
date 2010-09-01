@@ -19,11 +19,12 @@
 
 // Requirements:
 var gluestick = require("gluestick");
-var dates = require("ringo/utils/dates");
 var JsonStorage = require("ctl/JsonStorage");
+var ringo_dates = require("ringo/utils/dates");
 
 // Extend module:
 gluestick.extendModule(exports, "ctl/Controller");
+
 
 /**
  * Directory with template files.
@@ -47,7 +48,7 @@ exports.getActiveDays = function(req)
  */
 exports.showBlock = function(day) {
     if (!day)
-        day = dates.format(new Date(), "yyyy-MM");
+        day = ringo_dates.format(new Date(), "yyyy-MM");
 
     return this.showHtml("showBlock", {
         day: day,

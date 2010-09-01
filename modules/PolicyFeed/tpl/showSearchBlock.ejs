@@ -1,7 +1,7 @@
 <%
 
 // Requirements:
-var strings = require("ringo/utils/strings");
+var ringo_strings = require("ringo/utils/strings");
 
 // Input vars:
 var {query} = vars;
@@ -12,7 +12,7 @@ var {query} = vars;
 
     var suggestions = ["Kubilius", '"žmogaus teisės"', "Šilutė", "žvejyba, žūklė, medžioklė"];
     suggestions = suggestions.map(function (item) {
-            return '<a href="' + config.URLS.base + '/docs/search/?q=' + strings.entitize(item) + '">' + item + '</a>';
+            return '<a href="' + config.URLS.base + '/docs/search/?q=' + ringo_strings.entitize(item) + '">' + item + '</a>';
             });
     print(suggestions.join(", "));
     

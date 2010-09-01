@@ -17,17 +17,16 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// --- Requirements: ---
-var dates = require("ringo/utils/dates");
-var htmlunit = require("htmlunit");
-var gluestick = require("gluestick");
+// Requirements:
 var Events = gluestick.loadModule("Events");
+var gluestick = require("gluestick");
+var htmlunit = require("htmlunit");
+var ringo_dates = require("ringo/utils/dates");
 
-// --- Extend Policyfeed/Crawler/Parser: ---
-
+// Extend:
 gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
-// --- Parser config: ---
+// Parser config:
 exports.feed_url = [
     // reverse order (not to miss if something changes while scrapping):
     "http://www.lrv.lt/lt/veikla/darbotvarkes/?p=5",
@@ -111,7 +110,7 @@ exports.parseFeedItem = function()
         var result = {
             url: url,
             title: day + i_link.asText(),
-            published: dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+            published: ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
         };
 
         result.parser = name;

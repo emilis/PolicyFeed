@@ -20,13 +20,14 @@
 // Requirements:
 var config = require("config");
 var gluestick = require("gluestick");
-var strings = require("ringo/utils/strings");
-
-var scheduler = require("ringo/scheduler");
 var mail = require("ringo/mail");
+var ringo_strings = require("ringo/utils/strings");
+var scheduler = require("ringo/scheduler");
+
+// Database to use:
 var db = gluestick.loadModule("DB_urls");
 
-
+// Configuration:
 var MSG_TO = "policyfeed-errors@mailinator.com";
 var MSG_FROM = false;
 var MSG_SUBJECT = module.id + " status";
@@ -134,7 +135,7 @@ function textTable(fields, list) {
     for (var field in fields) {
         format = fields[field];
         if (format)
-            str += "| " + strings.pad(field.toString(), format[0], format[1], format[2]) + " ";
+            str += "| " + ringo_strings.pad(field.toString(), format[0], format[1], format[2]) + " ";
         else
             str += "| " + field + " ";
     }
@@ -145,7 +146,7 @@ function textTable(fields, list) {
             for (var field in fields) {
                 format = fields[field];
                 if (format)
-                    item_str += "| " + strings.pad(item[field].toString(), format[0], format[1], format[2]) + " ";
+                    item_str += "| " + ringo_strings.pad(item[field].toString(), format[0], format[1], format[2]) + " ";
                 else
                     item_str += "| " + item[field] + " ";
             }

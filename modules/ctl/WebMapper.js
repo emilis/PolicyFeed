@@ -22,9 +22,9 @@
  */
 
 // Requirements:
+var ringo_arrays = require("ringo/utils/arrays");
 var config = require("config");
 var gluestick = require("gluestick");
-var arrays = require("ringo/utils/arrays");
 var urlencode = java.net.URLEncoder.encode;
 
 // Internal vars:
@@ -153,13 +153,13 @@ exports.returnResponse = function(response) {
  */
 function isCallAllowed(obj_name, action)
 {
-    if (!arrays.contains(module.config.allowed, obj_name))
+    if (!ringo_arrays.contains(module.config.allowed, obj_name))
         return false;
     else
     {
         var obj = gluestick.loadModule(obj_name);
         if (typeof(obj.web_actions) == "object" && (obj.web_actions instanceof Array))
-            return arrays.contains(obj.web_actions, action);
+            return ringo_arrays.contains(obj.web_actions, action);
         else
             return true;
     }

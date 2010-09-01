@@ -1,9 +1,9 @@
 <%
 
 // Requirements:
-var dates = require("ringo/utils/dates");
-var PolicyFeed = require("PolicyFeed");
 var Calendar = require("PolicyFeed/Calendar");
+var PolicyFeed = require("PolicyFeed");
+var ringo_dates = require("ringo/utils/dates");
 
 // Constants:
 var BASE_URL = config.URLS.base;
@@ -60,7 +60,7 @@ for each(var doc in docs)
     doc.published = isoToJsDate(doc.published);
 
     count++;
-    dday = dates.format(doc.published, "yyyy-MM-dd");
+    dday = ringo_dates.format(doc.published, "yyyy-MM-dd");
     if (dday != day)
     {
         if (day)
@@ -84,7 +84,7 @@ for each(var doc in docs)
         print('<a href="', BASE_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
     print('<a href="' + url + '" class="title">' + doc.title + '</a></td>');
-    print('<td class="time">', dates.format(doc.published, "HH:mm"), "</td>");
+    print('<td class="time">', ringo_dates.format(doc.published, "HH:mm"), "</td>");
     print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>');
     print('</tr>');
 

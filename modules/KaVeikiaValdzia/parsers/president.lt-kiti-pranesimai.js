@@ -18,17 +18,17 @@
 */
 
 
-// --- Requirements: ---
-var htmlunit = require("htmlunit");
-var dates = require("ringo/utils/dates");
+// Requirements:
 var ctl_dates = require("ctl/utils/dates");
 var gluestick = require("gluestick");
+var htmlunit = require("htmlunit");
+var ringo_dates = require("ringo/utils/dates");
 
-// --- Extend Policyfeed/Crawler/Parser : ---
+// Extend:
 gluestick.extendModule(exports, "Policyfeed/Crawler/Parser");
 
 
-// --- Parser config: ---
+// Parser config:
 exports.feed_url = [
     "http://www.president.lt/lt/prezidento_veikla/sveikinimai.html",
     "http://www.president.lt/lt/prezidento_veikla/uzuojautos.html",
@@ -75,8 +75,8 @@ exports.extractFeedItems = function (page) {
             published = ctl_dates.fromISOString(published);
             var d = new Date();
 
-            if (dates.format(published, "HH:mm:ss") == "00:00:00") {
-                if (dates.format(published, "yyyy-MM-dd") == dates.format(d, "yyyy-MM-dd")) {
+            if (ringo_dates.format(published, "HH:mm:ss") == "00:00:00") {
+                if (ringo_dates.format(published, "yyyy-MM-dd") == dates.format(d, "yyyy-MM-dd")) {
                     published.setHours(d.getHours());
                     published.setMinutes(d.getMinutes());
                     published.setSeconds(d.getSeconds());

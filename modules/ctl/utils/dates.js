@@ -17,7 +17,8 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var dates = require("ringo/utils/dates");
+// Requirements:
+var ringo_dates = require("ringo/utils/dates");
 
 
 /**
@@ -71,7 +72,7 @@ exports.fromUTCString = function(str) {
 exports.formatFromString = function(str, format) {
     if (!(str instanceof Date))
         str = this.fromISOString(str);
-    return dates.format(str, format);
+    return ringo_dates.format(str, format);
 }
 
 

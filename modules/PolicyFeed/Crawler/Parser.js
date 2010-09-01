@@ -17,7 +17,9 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var dates = require("ringo/utils/dates");
+// Requirements:
+var ringo_dates = require("ringo/utils/dates");
+
 
 /**
  *
@@ -59,8 +61,8 @@ exports.extractFeedItems = function (page) {
                 summary:    item.getFirstByXPath("description").asText()
                 };
 
-            result.published = dates.format(new Date(result.published), "yyyy-MM-dd HH:mm:ss");
-            result.published = result.published.replace(/00:00:00/, dates.format(new Date(), "HH:mm:ss"));
+            result.published = ringo_dates.format(new Date(result.published), "yyyy-MM-dd HH:mm:ss");
+            result.published = result.published.replace(/00:00:00/, ringo_dates.format(new Date(), "HH:mm:ss"));
 
             result.parser = name;
             for (var k in doc_template)

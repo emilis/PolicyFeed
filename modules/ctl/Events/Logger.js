@@ -17,28 +17,31 @@
     along with Cheap Tricks Library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
 var config = require("config");
+var ringo_dates = require("ringo/utils/dates");
 var fs = require("fs");
-var dates = require("ringo/utils/dates");
 
+// Constants:
 var LOG_DIR = config.DIRS.data + "/log";
+
 
 /**
  *
  */
 exports.logEvent = function(name, data)
 {
-    var path = LOG_DIR + dates.format(new Date(), "/yyyy/MM");
+    var path = LOG_DIR + ringo_dates.format(new Date(), "/yyyy/MM");
     if (!fs.exists(path))
         fs.makeTree(path);
-    path += dates.format(new Date(), "/dd") + ".log";
+    path += ringo_dates.format(new Date(), "/dd") + ".log";
 
     var stream = fs.open(path, "a+");
 
     name = name.replace(/\n/g, '\\n');
     data = this.dataToString(data).replace(/\n/g, '\\n');    
 
-    stream.writeLine(dates.format(new Date(), "yyyy-MM-dd HH:mm:ss") + " " + name + " " + data);
+    stream.writeLine(ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss") + " " + name + " " + data);
     stream.flush();
     stream.close();
 }

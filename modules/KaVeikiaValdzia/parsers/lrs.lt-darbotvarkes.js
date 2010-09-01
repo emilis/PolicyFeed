@@ -17,9 +17,10 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
 var gluestick = require("gluestick");
-var dates = require("ringo/utils/dates");
 var htmlunit = require("htmlunit");
+var ringo_dates = require("ringo/utils/dates");
 
 // Extends:
 gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
@@ -56,7 +57,7 @@ exports.extractFeedItems = function(page) {
                 return {
                     url: item.getAttribute("href"),
                     title: item.asText(),
-                    published: dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+                    published: ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
                     summary: ""
                 };
             });

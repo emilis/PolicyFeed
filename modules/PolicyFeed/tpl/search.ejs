@@ -1,11 +1,11 @@
 <%
 
 // Requirements:
-var config = require("config");
-var dates = require("ringo/utils/dates");
-var strings = require("ringo/utils/strings");
-var PolicyFeed = require("PolicyFeed");
 var Calendar = require("PolicyFeed/Calendar");
+var config = require("config");
+var PolicyFeed = require("PolicyFeed");
+var ringo_dates = require("ringo/utils/dates");
+var ringo_strings = require("ringo/utils/strings");
 
 // Constants:
 var BASE_URL = config.URLS.base;
@@ -13,7 +13,7 @@ var site_files = config.URLS.files + "/KaVeikiaValdzia";
 
 // Input vars:
 var {query, docs, numFound, highlighting} = vars;
-query = strings.entitize(query);
+query = ringo_strings.entitize(query);
 
 
 /**
@@ -74,7 +74,7 @@ for each(var doc in docs)
         print('<p>', highlighting[doc.id].html.join("</p><p>") , '</p>');
     print('</td>');
     
-    print('<td class="time" nowrap="nowrap">', dates.format(doc.published, "yyyy-MM-dd"), "</td>");
+    print('<td class="time" nowrap="nowrap">', ringo_dates.format(doc.published, "yyyy-MM-dd"), "</td>");
     print('<td class="expand"><a href="' + url + '" onClick="PolicyFeed.expandDocument(this);return false;">išskleisti</a></td>');
     print('</tr>');
 }
