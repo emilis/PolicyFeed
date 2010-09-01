@@ -28,19 +28,11 @@ var scheduler = require("ringo/scheduler");
 var db = gluestick.loadModule("DB_urls");
 
 // Configuration:
-var MSG_TO = "policyfeed-errors@mailinator.com";
-var MSG_FROM = false;
-var MSG_SUBJECT = module.id + " status";
-
-if (config[module.id]) {
-    var c = config[module.id];
-    if (c.to)
-        MSG_TO = c.to;
-    if (c.from)
-        MSG_FROM = c.from;
-    if (c.subject)
-        MSG_SUBJECT = c.subject;
-}
+module.config = config[module.id] || {
+    to: "policyfeed-errors@mailinator.com",
+    from: false,
+    subject: module.id + " status"
+};
 
 
 /**
@@ -239,9 +231,15 @@ exports.notify = function() {
  *
  */
 exports.sendMessage = function(text) {
-    var message = {to: MSG_TO, subject: MSG_SUBJECT, text: text};
-    if (MSG_FROM)
-        message.from = MSG_FROM;
+    var message = {
+        to: module.config.to,
+        subject: module.config.subject,
+        text: text
+    };
+
+    if (module.config.from)
+        message.from = module.config.from;
+
     mail.send(message);
 }
 
