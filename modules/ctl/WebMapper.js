@@ -122,7 +122,7 @@ exports.returnJson = function(json) {
     return {
         status: 200,
         headers: { "Content-Type": "application/x-javascript; charset=utf-8" },
-        body: [JSON.stringify(comment.toObject())]
+        body: [json]
     };
 }
 
