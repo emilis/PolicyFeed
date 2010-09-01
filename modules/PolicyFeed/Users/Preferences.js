@@ -17,11 +17,8 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Used modules:
-var fs = require("fs");
+// Requirements:
 var gluestick = require("gluestick");
-var Site = gluestick.loadModule("Site");
-var ctlTemplate = require("ctl/Template");
 var Users = require("PolicyFeed/Users");
 
 
@@ -86,7 +83,7 @@ exports.showBlockedOk = function(req) {
  */
 exports.showUnblockForm = function(req) {
     if (!req.params.key)
-        return Site.showError(404);
+        return this.showError(404);
 
     return this.returnHtml("showUnblockForm", {
             user: Users.getByKey(req.params.key)
@@ -99,7 +96,7 @@ exports.showUnblockForm = function(req) {
  */
 exports.submitUnblockForm = function(req) {
     if (!req.params.key)
-        return Site.showError(404);
+        return this.showError(404);
 
     var user = Users.getByKey(req.params.key);
     user.blocked = false;
