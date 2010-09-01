@@ -104,7 +104,7 @@ exports.parseFeedItem = function()
         if (lt_months[month])
             month = lt_months[month];
         else
-            Events.create("KaVeikiaValdzia/Parsers/LRV_darbotvarkes.parseFeedItem:warning", ["Unknown month", month]);
+            Events.create(module.id + ".parseFeedItem:warning", ["Unknown month", month]);
 
         day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
 
