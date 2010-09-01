@@ -6,6 +6,10 @@
     </description>
 
     <property name="data" location="data" />
+    <property name="lib" location="lib" />
+    <property name="config" location="config" />
+    <property name="modules" location="modules" />
+    <property name="test" location="test" />
     <property name="uploads" location="static/uploads" />
     <property name="search.log" location="${data}/log/solr" />
     <property name="pf.src" location="src/policyfeed" />
@@ -38,6 +42,16 @@
             <arg value="-p" />
         </exec>
     </target>
+
+    <target name="test" description="Test JavaScript modules (this should be done after full install).">
+        <java jar="${lib}/run.jar" fork="true">
+            <sysproperty key="ringo.classpath" value="./**" />
+            <arg value="-D ringo.home='${lib}/ringo.jar'" />
+            <arg value="-e &quot;require.paths.push('${config}','${modules}')&quot;" />
+            <arg value="${test}/all.js" />
+        </java>
+    </target>
+ 
 
     <target name="wipe" description="Return to the pre-installed state. WARNING: files created after install will be lost.">
         <input message="All new data is going to be deleted. Continue? (y/n)" addproperty="do.delete" />
