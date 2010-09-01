@@ -59,10 +59,6 @@ exports.dataToString = function(data)
         return data.toJson();
 
     try {
-        return JSON.stringify(data);
-    } catch (err) {}
-
-    try {
         return uneval(data);
     } catch (err) {}
 
