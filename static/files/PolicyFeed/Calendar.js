@@ -17,11 +17,14 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 var PolicyFeedCalendar = {};
 
-PolicyFeedCalendar.nextMonth = function(selected)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.nextMonth = function(selected) {
+
     var d = this.getCurrent();
     var month = d.getMonth();
     if (month < 11)
@@ -35,8 +38,12 @@ PolicyFeedCalendar.nextMonth = function(selected)
     this.getActiveDays(d, selected);
 }
 
-PolicyFeedCalendar.prevMonth = function(selected)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.prevMonth = function(selected) {
+
     var d = this.getCurrent();
     var month = d.getMonth();
     if (month > 0)
@@ -49,47 +56,57 @@ PolicyFeedCalendar.prevMonth = function(selected)
 
     this.getActiveDays(d, selected);
 }
+
+
 /*
-PolicyFeedCalendar.nextYear = function()
-{
+PolicyFeedCalendar.nextYear = function() {
     var d = this.getCurrent();
     d.setFullYear(d.getFullYear() + 1);
     this.getActiveDays(d);
 }
 
-PolicyFeedCalendar.prevYear = function()
-{
+PolicyFeedCalendar.prevYear = function() {
     var d = this.getCurrent();
     d.setFullYear(d.getFullYear() - 1);
     this.getActiveDays(d);
 }
 */
 
+
 /**
  * Returns Date object for the 1st day of month in calendar table head.
  */
-PolicyFeedCalendar.getCurrent = function()
-{
+PolicyFeedCalendar.getCurrent = function() {
+
     var title = $("#calendar .title").text();
     var ym = title.split("-");
 
     return new Date(ym[0], ym[1] - 1, 1);
 }
 
-PolicyFeedCalendar.getActiveDays = function(d, selected)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.getActiveDays = function(d, selected) {
 
     jQuery.getJSON(WEB_URL + "/",
             {
-                call: "PolicyFeed/Calendar:getActiveDays",
+                call: "PolicyFeed/Calendar.getActiveDays",
                 year: d.getFullYear(),
                 month: d.getMonth() + 1
                 },
-            function(data, status) { PolicyFeedCalendar.show(d, selected, data) } );
+            function(data, status) {
+                PolicyFeedCalendar.show(d, selected, data)
+                });
 }
 
-PolicyFeedCalendar.show = function(d, selected, active_days)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.show = function(d, selected, active_days) {
+
     // set calendar title:
     $("#calendar thead th.title").text(d.getFullYear() + "-" + this.getMonthStr(d));
 
@@ -164,8 +181,11 @@ PolicyFeedCalendar.show = function(d, selected, active_days)
     $("#calendar tbody").html(html);
 }
 
-PolicyFeedCalendar.getMonthStr = function(d)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.getMonthStr = function(d) {
     var month = d.getMonth() + 1;
     if (month < 10)
         return "0" + month;
@@ -173,8 +193,11 @@ PolicyFeedCalendar.getMonthStr = function(d)
         return "" + month;
 }
 
-PolicyFeedCalendar.getDateStr = function(d)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.getDateStr = function(d) {
     var dd = d.getDate();
     if (dd < 10)
         return "0" + dd;
@@ -182,8 +205,11 @@ PolicyFeedCalendar.getDateStr = function(d)
         return "" + dd;
 }
 
-PolicyFeedCalendar.getDatePath= function(d)
-{
+
+/**
+ *
+ */
+PolicyFeedCalendar.getDatePath= function(d) {
     return d.getFullYear() + '/' + this.getMonthStr(d) + '/' + this.getDateStr(d);
 }
 

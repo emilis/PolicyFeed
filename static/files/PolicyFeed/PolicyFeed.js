@@ -17,11 +17,16 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 var PolicyFeed = {};
 
+
+/**
+ *
+ */
 PolicyFeed.expandDocument = function(link) {
+
     var tr = link.parentNode.parentNode;
+
     if (!tr.expanded) {
         var url = link.href + ".json";
         jQuery.getJSON(url, {}, PolicyFeed.doExpandDocument(tr.id));
@@ -36,6 +41,10 @@ PolicyFeed.expandDocument = function(link) {
     }
 }
 
+
+/**
+ *
+ */
 PolicyFeed.doExpandDocument = function(tr_id) {
     return function(data, status) {
         var tr = document.getElementById(tr_id);
@@ -51,7 +60,11 @@ PolicyFeed.doExpandDocument = function(tr_id) {
 }
 
 
+/**
+ *
+ */
 PolicyFeed.collapseDocument = function(id) {
+
     var tr = document.getElementById(id);
     tr.expanded = "hidden";
     jQuery(tr).removeClass("expanded");
@@ -59,7 +72,11 @@ PolicyFeed.collapseDocument = function(id) {
 }
 
 
+/**
+ *
+ */
 PolicyFeed.loadSearchResults = function(link) {
+    
     var q = document.getElementById("q").value;
 
     var offset = parseInt(document.getElementById("results-shown").innerHTML, 10);
@@ -78,6 +95,7 @@ PolicyFeed.loadSearchResults = function(link) {
  * Converts an ISO string back to Date object.
  */
 function utcToLocalDate(str) {
+
     var arr = str.replace(/[-T:.Z]/g, "-").split("-");
     for (var i in arr) {
         arr[i] = parseInt(arr[i], 10);
@@ -101,7 +119,9 @@ function utcToLocalDate(str) {
  *
  */
 PolicyFeed.doLoadSearchResults = function(data, status) {
+
     var html = "";
+
     for (var i in data.docs) {
         var doc = data.docs[i];
         html += '<tr id="' + doc.id.replace(/\//g, "-") + '" class="added">';
