@@ -19,8 +19,8 @@
 
 var config = require("config");
 var fs = require("fs");
-var ctlDate = require("ctl/Date");
-var ctlString = require("ctl/String");
+var ctl_dates = require("ctl/utils/dates");
+var ctl_strings = require("ctl/utils/strings");
 
 var SEARCH_DIR = config.DIRS.root + "/search";
 
@@ -82,7 +82,7 @@ exports.queryDocument = function(doc, queries) {
 
     // Add document fields:
     mi.addField("id", doc.id, this.Analyzer);
-    mi.addField("published", ctlDate.formatFromString(doc.published, Date.ISOFORMAT), this.Analyzer);
+    mi.addField("published", ctl_dates.formatFromString(doc.published, Date.ISOFORMAT), this.Analyzer);
     mi.addField("type", doc.type, this.Analyzer);
     mi.addField("org", doc.org, this.Analyzer);
     mi.addField("organization", doc.organization, this.Analyzer);
@@ -116,7 +116,7 @@ exports.tokenizeText = function(text) {
  */
 exports.tokenizeHtml = function(html) {
     return this.tokenizeText(
-            ctlString.jreg_replace("<[^>]+>", " ", html));
+            ctl_strings.jreg_replace("<[^>]+>", " ", html));
 }
 
 /**

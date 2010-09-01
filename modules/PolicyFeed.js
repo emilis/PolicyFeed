@@ -22,7 +22,7 @@ var gluestick = require("gluestick");
 var fs = require("fs");
 var mail = require("ringo/mail");
 var JsonStorage = require("ctl/JsonStorage");
-var ctlDate = require("ctl/Date");
+var ctl_dates = require("ctl/utils/dates");
 var SolrClient = require("PolicyFeed/Solr/Client");
 
 
@@ -208,7 +208,7 @@ exports.showDocument = function(req, id) {
         return this.showError(404);
 
     if (doc.published.match(/\.\d+Z$/))
-        doc.published = ctlDate.fromUTCString(doc.published);
+        doc.published = ctl_dates.fromUTCString(doc.published);
 
     return this.returnHtml("showDocument", {
             doc: doc

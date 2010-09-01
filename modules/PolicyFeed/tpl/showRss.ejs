@@ -1,7 +1,7 @@
 <%
 
 // Requirements:
-var ctlDate = require("ctl/Date");
+var ctl_dates = require("ctl/utils/dates");
 
 // Input vars:
 var {docs} = vars;
@@ -20,7 +20,7 @@ for each (var doc in docs) {
         print('  <title><![CDATA[' + doc.org + '» ' + doc.type + '» ' + doc.title + ']]></title>\n');
         print('  <link>http://kaveikiavaldzia.lt' + doc.id + '</link>\n');
         print('  <guid>http://kaveikiavaldzia.lt' + doc.id + '</guid>\n');
-        print('  <pubDate>' + ctlDate.fromUTCString(doc.published).toString() + '</pubDate>\n');
+        print('  <pubDate>' + ctl_dates.fromUTCString(doc.published).toString() + '</pubDate>\n');
         print('  <description><![CDATA[' + doc.html + ']]></description>');
     print('</item>\n');
 }

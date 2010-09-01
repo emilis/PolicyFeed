@@ -21,7 +21,7 @@
 // --- Requirements: ---
 var htmlunit = require("htmlunit");
 var dates = require("ringo/utils/dates");
-var ctlDate = require("ctl/Date");
+var ctl_dates = require("ctl/utils/dates");
 var gluestick = require("gluestick");
 
 // --- Extend Policyfeed/Crawler/Parser : ---
@@ -72,7 +72,7 @@ exports.extractFeedItems = function (page) {
                 };
 
             // get published value:
-            published = ctlDate.fromISOString(published);
+            published = ctl_dates.fromISOString(published);
             var d = new Date();
 
             if (dates.format(published, "HH:mm:ss") == "00:00:00") {

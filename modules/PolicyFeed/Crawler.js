@@ -23,7 +23,7 @@ var config = require("config");
 var gluestick = require("gluestick");
 var fs = require("fs");
 var htmlunit = require("htmlunit");
-var ctlDate = require("ctl/Date");
+var ctl_dates = require("ctl/utils/dates");
 var Events = gluestick.loadModule("Events");
 
 var Queue = require("PolicyFeed/Crawler/Queue");
@@ -165,7 +165,7 @@ exports.checkFeed = function(parser_name, url, page) {
     // Save url to originals, add to Urls and Queue:
     urls.map(function (item) {
         // create originals:
-        var id = "/originals/" + ctlDate.formatFromString(item.published, "yyyy/MM/dd/");
+        var id = "/originals/" + ctl_dates.formatFromString(item.published, "yyyy/MM/dd/");
         id += Sequence.next();
 
         print("adding page:", id, item.published, item.url, item.title);

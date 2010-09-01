@@ -1,7 +1,7 @@
 <%
 
 // Requirements:
-var ctlDate = require("ctl/Date");
+var ctl_dates = require("ctl/utils/dates");
 
 // Constants:
 var BASE_URL = config.URLS.base;
@@ -74,7 +74,7 @@ function obj_key_value(obj) {
     obj_key_value({
         "Įstaiga": doc.organization,
         "Tipas": doc.type,
-        "Publikuotas": ctlDate.formatFromString(doc.published, "yyyy-MM-dd HH:mm")
+        "Publikuotas": ctl_dates.formatFromString(doc.published, "yyyy-MM-dd HH:mm")
         });
 
 %></tbody></table>
