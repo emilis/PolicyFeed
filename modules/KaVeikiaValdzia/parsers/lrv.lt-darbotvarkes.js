@@ -18,8 +18,8 @@
 */
 
 // Requirements:
-var Events = gluestick.loadModule("Events");
 var gluestick = require("gluestick");
+var Events = gluestick.loadModule("Events");
 var htmlunit = require("htmlunit");
 var ringo_dates = require("ringo/utils/dates");
 
