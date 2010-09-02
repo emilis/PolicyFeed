@@ -17,25 +17,26 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Requirements:
 var DomElement = com.gargoylesoftware.htmlunit.html.DomElement;
 
 var config = require("config");
-var gluestick = require("gluestick");
+var ctl_dates = require("ctl/utils/dates");
 var fs = require("fs");
 var htmlunit = require("htmlunit");
-var ctl_dates = require("ctl/utils/dates");
-var Events = gluestick.loadModule("Events");
-
-var Queue = require("PolicyFeed/Crawler/Queue");
-var Urls = require("PolicyFeed/Crawler/Urls");
-var Browser = require("PolicyFeed/Crawler/Browser");
 var JsonStorage = require("ctl/JsonStorage");
 var Sequence = require("ctl/SimpleSequence");
 
+var Queue = require(module.id + "/Queue");
+var Urls = require(module.id + "/Urls");
+var Browser = require(module.id + "/Browser");
+
 var filters = {
-    "default": require("PolicyFeed/Crawler/filters/default"),
-    abiword: require("PolicyFeed/Crawler/filters/abiword"),
+    "default": require(module.id + "/filters/default"),
+    abiword: require(module.id + "/filters/abiword"),
 };
+
+var log = require("ringo/logging").getLogger(module.id);
 
 
 
@@ -168,7 +169,7 @@ exports.checkFeed = function(parser_name, url, page) {
         var id = "/originals/" + ctl_dates.formatFromString(item.published, "yyyy/MM/dd/");
         id += Sequence.next();
 
-        print("adding page:", id, item.published, item.url, item.title);
+        log.info("adding page:", id, item.published, item.url, item.title);
 
         JsonStorage.write(id, item);
         Urls.addUrl(item.url, id);
@@ -318,7 +319,7 @@ exports.getFieldsFromDoc = function(file_name) {
 
     // Remove converted HTML to save disk space:
     //fs.remove(html_file_name);
-    Events.create("PolicyFeed/Crawler.getFieldsFromDoc-debug", ["html_file_name", html_file_name]);
+    log.debug("getFieldsFromDoc", "html_file_name", html_file_name);
 
     return fields;
 }

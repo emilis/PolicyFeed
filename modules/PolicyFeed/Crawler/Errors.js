@@ -27,6 +27,9 @@ var scheduler = require("ringo/scheduler");
 // Database to use:
 var db = gluestick.loadModule("DB_urls");
 
+
+var log = require("ringo/logging").getLogger(module.id);
+
 // Configuration:
 module.config = config[module.id] || {
     to: "policyfeed-errors@mailinator.com",
@@ -270,7 +273,7 @@ exports.schedule = function(delay) {
                     waiting = that.schedule(current_delay - 1);
                 }
             } catch (e) {
-                print(new Date().toISOString(), module.id + "(scheduled):Error:", e);
+                log.error("(scheduled)", e);
             }
         }, delays[current_delay]*60*1000);
 }
