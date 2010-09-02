@@ -6,6 +6,10 @@
     </description>
 
     <property name="data" location="data" />
+    <property name="lib" location="lib" />
+    <property name="config" location="config" />
+    <property name="modules" location="modules" />
+    <property name="test" location="test" />
     <property name="uploads" location="static/uploads" />
     <property name="search.log" location="${data}/log/solr" />
     <property name="pf.src" location="src/policyfeed" />
@@ -13,6 +17,10 @@
     <property name="search.ant" location="${search.src}/build.xml" />
     <property name="url.db" value="policyfeed_urls.sqlite3" />
     <property name="user.db" value="users.sqlite3" />
+
+    <property name="run.jar" location="${lib}/run.jar" />
+    <property name="run.ringo.home" value="-D ringo.home='${lib}/ringo.jar'" />
+    <property name="run.req.paths" value="-e require.paths.push('${config}', '${modules}')" />
 
   
     <target name="init" description="Create needed dirs and files.">
@@ -38,6 +46,16 @@
             <arg value="-p" />
         </exec>
     </target>
+
+    <target name="test" description="Test JavaScript modules (this should be done after full install).">
+        <java jar="${run.jar}" fork="true">
+            <sysproperty key="ringo.classpath" value="./**" />
+            <arg value="${run.ringo.home}" />
+            <arg value="${run.req.paths}" />
+            <arg value="${test}/all.js" />
+        </java>
+    </target>
+ 
 
     <target name="wipe" description="Return to the pre-installed state. WARNING: files created after install will be lost.">
         <input message="All new data is going to be deleted. Continue? (y/n)" addproperty="do.delete" />
