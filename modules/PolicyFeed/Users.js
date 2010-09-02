@@ -23,7 +23,7 @@ var ringo_objects = require("ringo/utils/objects");
 var ringo_strings = require("ringo/utils/strings");
 
 // Extends:
-gluestick.extendModule(exports, "ctl/Storage/DbTable");
+gluestick.extendModule(exports, "ctl/objectfs/DbTable");
 
 // Configuration for ctl/DB/Table:
 exports.connect("DB_users", "users");
