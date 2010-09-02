@@ -1,12 +1,12 @@
 
-var JsonStorage = require("ctl/JsonStorage");
+var jsonfs = require("ctl/objectfs/json");
 var assert = require("assert");
 
 exports.testPersistCreation = function() {
     var id = "/test";
     var data = { _id: id, title: "Test Data" };
 
-    JsonStorage.write(id, data);
+    jsonfs.write(id, data);
 
-    assert.deepEqual(JsonStorage.read(id), data);
+    assert.deepEqual(jsonfs.read(id), data);
 }

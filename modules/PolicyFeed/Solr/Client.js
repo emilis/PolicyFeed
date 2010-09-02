@@ -20,7 +20,7 @@
 // Requirements:
 var config = require("config");
 var httpclient = require("ringo/httpclient");
-var JsonStorage = require("ctl/JsonStorage");
+var jsonfs = require("ctl/objectfs/json");
 
 // Configuration:
 module.config = config[module.id] || {
@@ -118,7 +118,7 @@ exports.reindex = function(path) {
     if (path === undefined)
         path = "/docs";
 
-    var gen = JsonStorage.iterate(path);
+    var gen = jsonfs.iterate(path);
 
     for each (var doc in gen) {
         try {

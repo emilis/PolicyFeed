@@ -22,7 +22,7 @@
 
     This module stores anything you give it in json files.
 
-    Function names are copied from "fs" module, except for iterate() -- 
+    Function names are mostly copied from "fs" module, except for iterate() -- 
     it accepts options and returns a recursive generator.
 
     You can also add triggers to write/remove events.
@@ -41,7 +41,7 @@ var fs = require("fs");
  * Path where document data is stored.
  * todo: let configure this dir.
  */
-var path = config.DIRS.data + "/JsonStorage/";
+var path = config.DIRS.data + "/jsonfs/";
 
 
 /**
@@ -68,9 +68,9 @@ exports.fixId = function(id) {
 }
 
 /**
- * Converts JsonStorage path into a file system path.
+ * Converts jsonfs path into a file system path.
  *
- * @param String id Path in JsonStorage.
+ * @param String id Path in jsonfs.
  */
 exports.getFileName = function(id) {
     return path + id + ".json";
@@ -79,7 +79,7 @@ exports.getFileName = function(id) {
 /**
  * Checks if a data file exists for the given path.
  *
- * @param String id Path in JsonStorage.
+ * @param String id Path in jsonfs.
  */
 exports.exists = function(id) {
     return fs.exists(this.getFileName(id));
@@ -89,7 +89,7 @@ exports.exists = function(id) {
 /**
  * Returns data stored in the given path.
  *
- * @param String id Path in JsonStorage.
+ * @param String id Path in jsonfs.
  */
 exports.read = function(id) {
     id = this.fixId(id);
@@ -111,9 +111,9 @@ exports.read = function(id) {
 
 
 /**
- * Removes an object from the JsonStorage.
+ * Removes an object from the jsonfs.
  *
- * @param String id Object path in JsonStorage.
+ * @param String id Object path in jsonfs.
  * todo: add parameter for recursive removal.
  */
 exports.remove = function(id) {
@@ -132,7 +132,7 @@ exports.remove = function(id) {
 
 
 /**
- * Writes an object to the JsonStorage.
+ * Writes an object to the jsonfs.
  *
  * @param String id Path in which to store the data.
  * @param mixed data Data to write (anything that can be searialized into JSON).
@@ -159,7 +159,7 @@ exports.write = function(id, data) {
 
 
 /**
- * Copies the given JsonStorage path and its descendants to a new destination.
+ * Copies the given jsonfs path and its descendants to a new destination.
  */
 exports.copy = function(from, to) {
     from = path + this.fixId(from);;
@@ -177,7 +177,7 @@ exports.copy = function(from, to) {
 
 
 /**
- * Moves the given JsonStorage path and its descendants to a new destination.
+ * Moves the given jsonfs path and its descendants to a new destination.
  */
 exports.move = function(from, to) {
     from = path + this.fixId(from);
@@ -196,7 +196,7 @@ exports.move = function(from, to) {
 // --- Listing ---
 
 /**
- * Lists all directories and files in the given JsonStorage path.
+ * Lists all directories and files in the given jsonfs path.
  */
 exports.list = function(upath) {
     upath = path + this.fixId(upath);
@@ -269,7 +269,7 @@ var rev_iter = function(path) {
 /**
  * Creates a generator for walking the files in the directory tree.
  *
- * @param String upath Path inside JsonStorage.
+ * @param String upath Path inside jsonfs.
  * @param Object options
  * @return generator
  *

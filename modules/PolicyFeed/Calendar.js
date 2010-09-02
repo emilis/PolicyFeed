@@ -19,7 +19,7 @@
 
 // Requirements:
 var gluestick = require("gluestick");
-var JsonStorage = require("ctl/JsonStorage");
+var jsonfs = require("ctl/objectfs/json");
 var ringo_dates = require("ringo/utils/dates");
 
 // Extend module:
@@ -67,7 +67,7 @@ exports.getActiveMonthDays = function(year, month)
 
     var result = [];
     try {
-        result = JsonStorage.listDirectories("/docs/" + year + "/" + month);
+        result = jsonfs.listDirectories("/docs/" + year + "/" + month);
     } catch (e) {
         result = [];
     }

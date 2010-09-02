@@ -24,7 +24,7 @@ var config = require("config");
 var ctl_dates = require("ctl/utils/dates");
 var fs = require("fs");
 var htmlunit = require("htmlunit");
-var JsonStorage = require("ctl/JsonStorage");
+var jsonfs = require("ctl/objectfs/json");
 var Sequence = require("ctl/SimpleSequence");
 
 var Queue = require(module.id + "/Queue");
@@ -171,7 +171,7 @@ exports.checkFeed = function(parser_name, url, page) {
 
         log.info("adding page:", id, item.published, item.url, item.title);
 
-        JsonStorage.write(id, item);
+        jsonfs.write(id, item);
         Urls.addUrl(item.url, id);
 
         Queue.addUrl({
@@ -216,7 +216,7 @@ exports.parsePage = function(parser_name, url, page) {
                 );
         }
 
-        JsonStorage.write(doc._id, doc);
+        jsonfs.write(doc._id, doc);
     }
 }
 
@@ -225,7 +225,7 @@ exports.parsePage = function(parser_name, url, page) {
  *
  */
 exports.reindexDoc = function(doc_id) {
-    var doc = JsonStorage.read(doc_id);
+    var doc = jsonfs.read(doc_id);
 
     var url = { url: doc.url, parser: doc.parser };
     url.method = "parsePage";
@@ -247,7 +247,7 @@ exports.reindexUrl = function(url) {
  *
  */
 exports.saveOriginal = function(parser_name, url, page) {
-    var original = JsonStorage.read(url.original_id);
+    var original = jsonfs.read(url.original_id);
 
     var response = page.getWebResponse();
     original.content_type = response.getContentType();
@@ -271,7 +271,7 @@ exports.saveOriginal = function(parser_name, url, page) {
         throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
 
     // save original:
-    JsonStorage.write(original._id, original);
+    jsonfs.write(original._id, original);
 
     return original;
 }
