@@ -73,9 +73,9 @@ exports.mapRequest = function(req) {
 
     // Find out which module and function to call:
     if (typeof(p.call) == 'string' && p.call.indexOf(".") > 0) {
-        p.call = p.call.split(".");
-        action = p.call.pop();
-        mod_name = p.call.join(".");
+        var call = p.call.split(".");
+        action = call.pop();
+        mod_name = call.join(".");
     } else if (typeof(p.module) == 'string' && typeof(p.action) == 'string') {
         [mod_name, action] = [p.module, p.action];
     } else {
