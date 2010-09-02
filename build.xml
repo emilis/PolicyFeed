@@ -18,6 +18,10 @@
     <property name="url.db" value="policyfeed_urls.sqlite3" />
     <property name="user.db" value="users.sqlite3" />
 
+    <property name="run.jar" location="${lib}/run.jar" />
+    <property name="run.ringo.home" value="-D ringo.home='${lib}/ringo.jar'" />
+    <property name="run.req.paths" value="-e require.paths.push('${config}', '${modules}')" />
+
   
     <target name="init" description="Create needed dirs and files.">
         <mkdir dir="${data}"/>
@@ -44,10 +48,10 @@
     </target>
 
     <target name="test" description="Test JavaScript modules (this should be done after full install).">
-        <java jar="${lib}/run.jar" fork="true">
+        <java jar="${run.jar}" fork="true">
             <sysproperty key="ringo.classpath" value="./**" />
-            <arg value="-D ringo.home='${lib}/ringo.jar'" />
-            <arg value="-e &quot;require.paths.push('${config}','${modules}')&quot;" />
+            <arg value="${run.ringo.home}" />
+            <arg value="${run.req.paths}" />
             <arg value="${test}/all.js" />
         </java>
     </target>
