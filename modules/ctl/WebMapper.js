@@ -84,7 +84,7 @@ exports.mapRequest = function(req) {
 
     // Check if web clients are allowed to call this function:
     if (!isCallAllowed(mod_name, action)) {
-        log.warn("mapRequest", "404 - Page not found");
+        log.warn("mapRequest", "404", req.method, req.path, uneval(req.params));
         var result = gluestick.loadModule("Site").showError(404);
     } else {
         // Get result from module function:
