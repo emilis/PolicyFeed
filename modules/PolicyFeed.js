@@ -18,11 +18,11 @@
 */
 
 // Requirements:
-var gluestick = require("gluestick");
-var fs = require("fs");
-var mail = require("ringo/mail");
-var JsonStorage = require("ctl/JsonStorage");
 var ctl_dates = require("ctl/utils/dates");
+var fs = require("fs");
+var gluestick = require("gluestick");
+var JsonStorage = require("ctl/JsonStorage");
+var mail = require("ringo/mail");
 var SolrClient = require("PolicyFeed/Solr/Client");
 
 
@@ -35,14 +35,17 @@ gluestick.extendModule(exports, "ctl/Controller");
 exports.tpl_dir = exports.getTplDir(module);
 
 
+var log = require("ringo/logging").getLogger(module.id);
+
+
 /**
  * Prints request params to output.
  */
 function log_request(method, req, params) {
     if (params)
-        print(module.id, method, params, exports.ctlRequest.getRemoteAddr(req));
+        log.info(method, params, exports.ctlRequest.getRemoteAddr(req));
     else
-        print(module.id, method, exports.ctlRequest.getRemoteAddr(req));
+        log.info(method, exports.ctlRequest.getRemoteAddr(req));
 }
 
 

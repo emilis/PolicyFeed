@@ -18,23 +18,23 @@
 */
 
 var fs = require("fs");
-
-__defineGetter__("PolicyFeed", function() { return this._PolicyFeed || (this._PolicyFeed = require("PolicyFeed")) });
-
 var ctlTemplate = require("ctl/Template/Cached");
 var ctlRequest = require("ctl/Request");
 var WebMapper = require("ctl/WebMapper");
+
+__defineGetter__("PolicyFeed", function() { return this._PolicyFeed || (this._PolicyFeed = require("PolicyFeed")) });
+
 
 // These get used a lot:
 exports.dirname = fs.directory(module.path) + "/Site";
 
 
+var log = require("ringo/logging").getLogger(module.id);
 
 /**
  * Home page of the website.
  */
-exports.showIndex = function(req)
-{
+exports.showIndex = function(req) {
     return PolicyFeed.showDocumentList(req);
 }
 
@@ -42,8 +42,7 @@ exports.showIndex = function(req)
 /**
  * Main template for the website.
  */
-exports.showContent = function(content)
-{
+exports.showContent = function(content) {
     if (typeof(content) == 'string')
         content = { html: content };
 
@@ -57,8 +56,7 @@ exports.showContent = function(content)
 /**
  * Error page for the website.
  */
-exports.showError = function(msg)
-{
+exports.showError = function(msg) {
     if (typeof(msg) == 'undefined')
         msg = 404;
 
@@ -78,9 +76,8 @@ exports.showError = function(msg)
 /**
  * Static pages for the website.
  */
-exports.showPage = function(req, name)
-{
-    print("Site.showPage", name, ctlRequest.getRemoteAddr(req));
+exports.showPage = function(req, name) {
+    log.info("showPage", name, ctlRequest.getRemoteAddr(req));
 
     var file_name = this.dirname + "/pages/" + name + ".ejs";
 
@@ -98,8 +95,7 @@ exports.showPage = function(req, name)
 /**
  * HTML blocks for the website.
  */
-exports.showBlock = function(name)
-{
+exports.showBlock = function(name) {
     return ctlTemplate.fetch( this.dirname + "/blocks/" + name + ".ejs" );
 }
 

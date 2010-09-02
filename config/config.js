@@ -102,7 +102,6 @@ exports.gluestick = {
             module: "ctl/Events",
             config: {
                 callbacks: [
-                    [ /./,                      "ctl/Events/Logger:logEvent" ],
                     [ /(debug|error|warning)/,  "ctl/Events/ShellWriter:printEvent" ]
                 ]
             }},
@@ -129,7 +128,7 @@ exports["PolicyFeed/Crawler"] = {
     parser_prefix: "KaVeikiaValdzia/parsers/"
 };
 
-exports["PolicyFeed/UrlErrors"] = {
+exports["PolicyFeed/Crawler/Errors"] = {
     to: "policyfeed-errors@mailinator.com",
     from: "policyfeed@localhost",
     subject: "PolicyFeed/UrlErrors status"
