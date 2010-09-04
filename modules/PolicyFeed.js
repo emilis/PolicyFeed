@@ -18,11 +18,11 @@
 */
 
 // Requirements:
-var gluestick = require("gluestick");
-var fs = require("fs");
-var mail = require("ringo/mail");
-var JsonStorage = require("ctl/JsonStorage");
 var ctl_dates = require("ctl/utils/dates");
+var fs = require("fs");
+var gluestick = require("gluestick");
+var jsonfs = require("ctl/objectfs/json");
+var mail = require("ringo/mail");
 var SolrClient = require("PolicyFeed/Solr/Client");
 
 
@@ -35,14 +35,17 @@ gluestick.extendModule(exports, "ctl/Controller");
 exports.tpl_dir = exports.getTplDir(module);
 
 
+var log = require("ringo/logging").getLogger(module.id);
+
+
 /**
  * Prints request params to output.
  */
 function log_request(method, req, params) {
     if (params)
-        print(module.id, method, params, exports.ctlRequest.getRemoteAddr(req));
+        log.info(method, params, exports.ctlRequest.getRemoteAddr(req));
     else
-        print(module.id, method, exports.ctlRequest.getRemoteAddr(req));
+        log.info(method, exports.ctlRequest.getRemoteAddr(req));
 }
 
 
@@ -136,7 +139,7 @@ exports.showRss = function(req) {
     }
 
     for (var i in docs) {
-        var doc = JsonStorage.read(docs[i].id);
+        var doc = jsonfs.read(docs[i].id);
         docs[i].html = doc.html;
     }
 
@@ -203,7 +206,7 @@ exports.showYear = function(req, year) {
 exports.showDocument = function(req, id) {
     log_request("showDocument", req, id);
 
-    var doc = JsonStorage.read(id);
+    var doc = jsonfs.read(id);
     if (!doc)
         return this.showError(404);
 
@@ -222,7 +225,7 @@ exports.showDocument = function(req, id) {
 exports.showDocumentFormat = function(req, id, format) {
     log_request("showDocumentFormat", req, [id, format]);
 
-    var doc = JsonStorage.read(id);
+    var doc = jsonfs.read(id);
     
     if (!doc)
         return this.showError(404);
@@ -239,7 +242,7 @@ exports.showDocumentFormat = function(req, id, format) {
 exports.shareByEmail = function(req, id) {
     log_request("shareByEmail", req, [id, req.params.email]);
 
-    var doc = JsonStorage.read(id);
+    var doc = jsonfs.read(id);
     var email = req.params.email;
 
     mail.send({

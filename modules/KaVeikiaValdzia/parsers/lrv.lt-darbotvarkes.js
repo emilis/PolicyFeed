@@ -19,9 +19,10 @@
 
 // Requirements:
 var gluestick = require("gluestick");
-var Events = gluestick.loadModule("Events");
 var htmlunit = require("htmlunit");
 var ringo_dates = require("ringo/utils/dates");
+
+var log = require("ringo/logging").getLogger(module.id);
 
 // Extend:
 gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
@@ -103,7 +104,7 @@ exports.parseFeedItem = function()
         if (lt_months[month])
             month = lt_months[month];
         else
-            Events.create(module.id + ".parseFeedItem:warning", ["Unknown month", month]);
+            log.warn("parseFeedItem", "Unknown month", month);
 
         day = "" + year + "-" + month + "-" + day.split(" ")[0] + " (" + wday + ") " ;
 

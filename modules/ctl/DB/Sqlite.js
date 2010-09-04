@@ -35,6 +35,9 @@ if (!registered) {
 }
 
 
+var log = require("ringo/logging").getLogger(module.id);
+
+
 exports.config = {};
 exports.last_connection = false;
 
@@ -46,7 +49,7 @@ exports.last_connection = false;
  * @param Object config DB configuration options (filename, [useUnicode, characterEncoding, start_query]).
  */
 exports._constructor = function(config) {
-    print(module.id, "_constructor", uneval(config));
+    log.info("_constructor()", uneval(config));
 
     this.config = config;
     this.last_connection = false;
@@ -72,7 +75,7 @@ exports.connect = function($filename) {
     var url = "jdbc:sqlite:" + $filename;
 
     this.last_connection = driver_manager.getConnection(url);
-    print(module.id, this.last_connection, url);
+    log.info("connect()", this.last_connection, url);
 
     if (this.config.start_query != undefined) {
         var stmt = this.last_connection.createStatement();
@@ -123,7 +126,7 @@ exports.getConnection = function(conn) {
 exports.query = function(sql, conn) {
 
     conn = this.getConnection(conn);
-    print(module.id, conn, "query", sql);
+    log.debug(conn, "query()", sql);
 
     var stmt = conn.createStatement();
 
@@ -156,7 +159,7 @@ exports.query = function(sql, conn) {
 exports.prepared_query = function(sql, params, conn) {
 
     conn = this.getConnection(conn);
-    print(module.id, conn, "prepared_query", sql, params.length);
+    log.debug(conn, "prepared_query()", sql, params.length);
 
     var pStmt = conn.prepareStatement(sql) //, java.sql.Statement.RETURN_GENERATED_KEYS);
 
@@ -406,6 +409,7 @@ exports.get_column_value = function(rs, column, meta) {
             break;
 
         default:
+            log.debug("get_column_value()", "Unknown type", type);
             result = rs.getBinaryStream(column);
             return rs.wasNull() ? null : result;
     }

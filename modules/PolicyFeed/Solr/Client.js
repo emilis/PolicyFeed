@@ -17,15 +17,22 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var update_url = "http://localhost:8081/solr/update";
-var search_url = 'http://localhost:8081/solr/select/?start=0&rows=100&sort=published+desc&fl=id,published,type,org,organization,title&wt=json&q=';
-
-
+// Requirements:
+var config = require("config");
 var httpclient = require("ringo/httpclient");
-var JsonStorage = require("ctl/JsonStorage");
-var gluestick = require("gluestick")
-var Events = gluestick.loadModule("Events");
+var jsonfs = require("ctl/objectfs/json");
 
+// Configuration:
+module.config = config[module.id] || {
+    base_url: "http://localhost:8081/solr"
+};
+
+
+var update_url = module.config.base_url + "/update";
+var search_url = module.config.base_url + '/select/?start=0&rows=100&sort=published+desc&fl=id,published,type,org,organization,title&wt=json&q=';
+
+
+var log = require("ringo/logging").getLogger(module.id);
 
 /**
  *
@@ -72,14 +79,14 @@ exports.itemToXml = function(item) {
  *
  */
 exports.indexItem = function(item) {
-    Events.create(module.id + ".indexItem-debug", item._id);
+    log.debug("indexItem", item._id);
     try {
         var req = {
             method: "POST",
             url: update_url,
             contentType: "text/xml; charset=utf-8",
             data: '<add>' + this.itemToXml(item) + "</add>",
-            error: function(e) { print(e, e.stack); throw e; }
+            error: function(e) { log.error("indexItem", e, e.stack); throw e; }
             };
     } catch (e) {
         throw Error("Failed to create request for item " + item._id + ". Error: " + e.message);   
@@ -111,15 +118,15 @@ exports.reindex = function(path) {
     if (path === undefined)
         path = "/docs";
 
-    var gen = JsonStorage.iterate(path);
+    var gen = jsonfs.iterate(path);
 
     for each (var doc in gen) {
         try {
             var e = this.indexItem(doc);
             if (e.content != '<result status="0"></result>')
-                print(doc._id, e.content);
+                log.warn("reindex", doc._id, e.content);
         } catch (e) {
-            print(e.message);
+            log.error("reindex", e.message);
         }
     }
 }
@@ -140,7 +147,7 @@ exports.onItemChange = function(action, _id, item) {
                 break;
             }
         } catch(e) {
-            print(e, e.stack);
+            log.error("onItemChange", e, e.stack);
         }
     }
 }

@@ -21,17 +21,23 @@
 var config = require("config");
 var gluestick = require("gluestick");
 var mail = require("ringo/mail");
+var ringo_objects = require("ringo/utils/objects");
 var ringo_strings = require("ringo/utils/strings");
 var scheduler = require("ringo/scheduler");
 
 // Database to use:
 var db = gluestick.loadModule("DB_urls");
 
+
+var log = require("ringo/logging").getLogger(module.id);
+
 // Configuration:
 module.config = config[module.id] || {
-    to: "policyfeed-errors@mailinator.com",
-    from: false,
-    subject: module.id + " status"
+    message: {
+        to: "policyfeed-errors@mailinator.com",
+        from: false,
+        subject: module.id + " status"
+    }
 };
 
 
@@ -231,14 +237,9 @@ exports.notify = function() {
  *
  */
 exports.sendMessage = function(text) {
-    var message = {
-        to: module.config.to,
-        subject: module.config.subject,
-        text: text
-    };
 
-    if (module.config.from)
-        message.from = module.config.from;
+    var message = ringo_objects.clone(module.config.message);
+    message.text = text;
 
     mail.send(message);
 }
@@ -270,7 +271,7 @@ exports.schedule = function(delay) {
                     waiting = that.schedule(current_delay - 1);
                 }
             } catch (e) {
-                print(new Date().toISOString(), module.id + "(scheduled):Error:", e);
+                log.error("(scheduled)", e);
             }
         }, delays[current_delay]*60*1000);
 }

@@ -28,9 +28,7 @@ importClass(com.gargoylesoftware.htmlunit.WebClient,
         com.gargoylesoftware.htmlunit.util.NameValuePair
         );
 
-var gluestick = require("gluestick");
-var Events = gluestick.loadModule("Events");
-
+var log = require("ringo/logging").getLogger(module.id);
 
 var web_client = new WebClient(BrowserVersion.FIREFOX_3);
 web_client.setActiveXNative(false);
@@ -50,8 +48,7 @@ web_client.openWindow(WebClient.URL_ABOUT_BLANK, "do_not_use_this");
 /**
  * @return com.gargoylesoftware.htmlunit.WebClient
  */
-exports.getWebClient = function()
-{
+exports.getWebClient = function() {
     return web_client;
 }
 
@@ -59,25 +56,21 @@ exports.getWebClient = function()
 /**
  * @return com.gargoylesoftware.htmlunit.WebWindow
  */
-exports.getWindow = function(name)
-{
-    if (!name)
-        name = "default";
+exports.getWindow = function(name) {
+
+    name = name || "default";
 
     try {
         return web_client.getWebWindowByName(name);
-    }
-    catch (err)
-    {
-        if (err.javaException instanceof com.gargoylesoftware.htmlunit.WebWindowNotFoundException)
-        {
+    } catch (err) {
+        if (err.javaException instanceof com.gargoylesoftware.htmlunit.WebWindowNotFoundException) {
             // We switch to a blank window to avoid HtmlUnit bug 2952333 (see comment above).
             web_client.setCurrentWindow( web_client.getWebWindowByName("do_not_use_this") );
 
             return web_client.openWindow(WebClient.URL_ABOUT_BLANK, name);
-        }
-        else
+        } else {
             throw err;
+        }
     }
 }
 
@@ -85,9 +78,8 @@ exports.getWindow = function(name)
 /**
  * @return com.gargoylesoftware.htmlunit.Page
  */
-exports.getPage = function(url, window_name)
-{
-    Events.create("htmlunit.getpage-debug", [window_name, url]);
+exports.getPage = function(url, window_name) {
+    log.debug("getPage", window_name, url);
 
     return web_client.getPage(
             this.getWindow(window_name),
@@ -99,9 +91,8 @@ exports.getPage = function(url, window_name)
 /**
  * @return com.gargoylesoftware.htmlunit.Page
  */
-exports.getPageFromHtml = function(str, url, window_name, charset)
-{
-    Events.create("htmlunit.getPageFromHtml-debug", [window_name, url, charset]);
+exports.getPageFromHtml = function(str, url, window_name, charset) {
+    log.debug("getPageFromHtml", window_name, url, charset);
 
     return web_client.loadWebResponseInto(
             this.getWebResponseFromString(str, charset, url),
@@ -114,11 +105,9 @@ exports.getPageFromHtml = function(str, url, window_name, charset)
 /**
  * Creates a WebResponse object from given string. Used instead of StringWebResponse, which ignores charset.
  */
-exports.getWebResponseFromString = function(str, charset, url)
-{
-    // Default charset:
-    if (!charset)
-        charset = "UTF-8";
+exports.getWebResponseFromString = function(str, charset, url) {
+
+    charset = charset || "UTF-8";
 
     var is = TextUtil.toInputStream(str, charset);
     var rh = new java.util.ArrayList();
@@ -126,11 +115,12 @@ exports.getWebResponseFromString = function(str, charset, url)
     var wrd = new WebResponseData(is, 200, "OK", rh);
 
     // Default value for url:
-    if (!url)
-        url = WebClient.URL_ABOUT_BLANK;
+    url = url || WebClient.URL_ABOUT_BLANK;
+
     // Set correct type for url:
-    if (typeof(url) != "object" || !(url instanceof java.net.URL))
+    if (typeof(url) != "object" || !(url instanceof java.net.URL)) {
         url = java.net.URL(url);
+    }
 
     var wrs = new WebRequestSettings(java.net.URL(url));
 
@@ -141,28 +131,17 @@ exports.getWebResponseFromString = function(str, charset, url)
 
 
 /**
- * INTERNAL API. SUBJECT TO CHANGE.
- */
-exports.getPageFromWebResponse = function(web_response, window_name)
-{
-    return web_client.loadWebResponseInto( web_response, this.getWindow(window_name) );
-}
-
-
-/**
  *
  */
-exports.setPageCharset = function(page, charset)
-{
-    if (!charset)
-        charset = "UTF-8";
+exports.setPageCharset = function(page, charset) {
+
+    charset = charset || "UTF-8";
 
     var meta_tags = page.getByXPath("//meta");
-    for (var i=0; i<meta_tags.size(); i++)
-    {
+    for (var i=0; i<meta_tags.size(); i++) {
         var tag = meta_tags.get(i);
-        if (tag.getAttribute("http-equiv").toLowerCase() == "content-type" || tag.getAttribute("name").toLowerCase() == "content-type")
-        {
+        if ((tag.getAttribute("http-equiv").toLowerCase() == "content-type")
+                || (tag.getAttribute("name").toLowerCase() == "content-type")) {
             tag.setAttribute("content", "text/html; charset=" + charset);
         }
     }
@@ -175,11 +154,13 @@ exports.setPageCharset = function(page, charset)
  *
  */
 exports.fixPageUrls = function(page) {
+
     var anchors = page.getAnchors().toArray();
 
     anchors.map(function (a) {
-            if (a.hasAttribute("href"))
+            if (a.hasAttribute("href")) {
                 a.setAttribute("href", page.getFullyQualifiedUrl(a.getAttribute("href")).toString());
+            }
         });
 
     var images = page.getByXPath("//img").toArray();

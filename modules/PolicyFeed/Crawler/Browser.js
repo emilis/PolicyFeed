@@ -21,6 +21,8 @@
 var htmlunit = require("htmlunit");
 var sleep = java.lang.Thread.sleep;
 
+var log = require("ringo/logging").getLogger(module.id);
+
 
 /**
  * Period to check for new urls when idle.
@@ -80,7 +82,7 @@ var runThread = function(id) {
                 url = Queue.getUrl(id);
             }
         } catch (e) {
-            print(module.id + ".runThread:getUrl-Error", id, e, "\n", e.stack);
+            log.error("runThread():getUrl", id, e, "\n", e.stack);
         }
 
         // process url:
@@ -93,7 +95,7 @@ var runThread = function(id) {
                 Queue.rescheduleUrl(id, WAITNETWORK);
             } else {
                 Queue.failedUrl(id, url, e);
-                print(module.id + ".runThread:processUrl-Error", id, e, "\n", e.stack);
+                log.error("runThread():processUrl", id, e, "\n", e.stack);
             }
         } finally {
             // spawn a new thread with the same id [and exit]

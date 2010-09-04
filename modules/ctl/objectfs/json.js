@@ -18,31 +18,32 @@
 */
 
 /*
-    Utility functions for strings.
- */
+    <sarcasm>Yet another no-sql database. Oh wow!</sarcasm>
 
+    This module stores anything you give it in json files.
 
-/**
- * Replaces pattern(s) in string using Java regular expressions.
- *
- * @param {String|Array} pattern
- * @param {String|Array} replacement
- * @param {String} string
- * @returns {String}
- */
-exports.jreg_replace = function(pattern, replacement, str) {
-    if (!(pattern instanceof Array))
-        pattern = [pattern];
-    if (!(replacement instanceof Array))
-        replacement = [replacement];
+    Function names are mostly copied from "fs" module, except for iterate() -- 
+    it accepts options and returns a recursive generator.
 
-    var p = "";
-    var last_replacement = "";
-    while (p = pattern.shift()) {
-        if (replacement.length)
-            last_replacement = replacement.shift();
-        str = java.util.regex.Pattern.compile(p).matcher(str).replaceAll(last_replacement);
-    }
+    You can also add triggers to write/remove events.
 
-    return str;
+    Pros:
+        - No external servers needed. Works with file system.
+
+    Cons:
+        - No methods for search within objects.
+*/
+
+// Extend ctl/objectfs/files:
+var parent = require("ctl/objectfs/files");
+for (var name in parent) {
+    exports[name] = parent[name];
 }
+
+// Configure this module:
+exports.setup(module.id, ".json");
+
+exports.serialize = JSON.stringify;
+exports.unserialize = JSON.parse;
+
+

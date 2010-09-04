@@ -102,7 +102,6 @@ exports.gluestick = {
             module: "ctl/Events",
             config: {
                 callbacks: [
-                    [ /./,                      "ctl/Events/Logger:logEvent" ],
                     [ /(debug|error|warning)/,  "ctl/Events/ShellWriter:printEvent" ]
                 ]
             }},
@@ -125,17 +124,37 @@ exports.gluestick = {
 
 // --- Module config: ---
 
+/**
+ * Crawler configuration.
+ * "Parsers" are modules that control what websites you index and how.
+ */
 exports["PolicyFeed/Crawler"] = {
     parser_dir: exports.DIRS.modules + "/KaVeikiaValdzia/parsers",
     parser_prefix: "KaVeikiaValdzia/parsers/"
 };
 
-exports["PolicyFeed/UrlErrors"] = {
-    to: "policyfeed-errors@mailinator.com",
-    from: "policyfeed@localhost",
-    subject: "PolicyFeed/UrlErrors status"
+/**
+ * Settings for reporting Crawler errors:
+ */
+exports["PolicyFeed/Crawler/Errors"] = {
+    message: {
+        to: "policyfeed-errors@mailinator.com",
+        from: "policyfeed@localhost",
+        subject: "PolicyFeed/UrlErrors status"
+
+        // if you want to use a gmail account for sending emails:
+        //
+        // host: "smtp.gmail.com",
+        // port: 587,
+        // encrypt: true,
+        // username: "user@example.org",
+        // password: "yourpassword"
+    }
 };
 
+exports["ctl/objectfs/json"] = {
+    file_dir: exports.DIRS.data + "/jsonfs"
+};
 
 
 //----------------------------------------------------------------------------
