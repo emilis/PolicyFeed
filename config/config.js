@@ -151,6 +151,10 @@ exports["PolicyFeed/Crawler/Errors"] = {
     }
 };
 
+exports["ctl/objectfs/json"] = {
+    file_dir: exports.DIRS.data + "/jsonfs"
+};
+
 
 //----------------------------------------------------------------------------
 
