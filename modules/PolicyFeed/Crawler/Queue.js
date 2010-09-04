@@ -19,7 +19,7 @@
 
 // Requirements:
 var Errors = require("PolicyFeed/Crawler/Errors");
-var JsonStorage = require("ctl/JsonStorage");
+var jsonfs = require("ctl/objectfs/json");
 var ringo_arrays = require("ringo/utils/arrays");
 
 
@@ -44,7 +44,7 @@ var fifo = [];
  * Saves fifo queue to disk.
  */
 Object.defineProperty(fifo, "save", {enumerable:false, value: function() {
-    JsonStorage.write(STORAGE_PATH + "fifo", this);
+    jsonfs.write(STORAGE_PATH + "fifo", this);
 }});
 
 /**
@@ -52,7 +52,7 @@ Object.defineProperty(fifo, "save", {enumerable:false, value: function() {
  */
 Object.defineProperty(fifo, "load", {enumerable:false, value: function() {
     this.length = 0;
-    var stored = JsonStorage.read(STORAGE_PATH + "fifo");
+    var stored = jsonfs.read(STORAGE_PATH + "fifo");
     if (stored && stored.length) {
         for each (var url in stored) {
             if (typeof(url) == "object")
@@ -72,7 +72,7 @@ var schedule = [];
  * Saves schedule queue to disk.
  */
 Object.defineProperty(schedule, "save", {enumerable:false, value: function() {
-    JsonStorage.write(STORAGE_PATH + "schedule", this);
+    jsonfs.write(STORAGE_PATH + "schedule", this);
 }});
 
 /**
@@ -80,7 +80,7 @@ Object.defineProperty(schedule, "save", {enumerable:false, value: function() {
  */
 Object.defineProperty(schedule, "load", {enumerable:false, value: function() {
     this.length = 0;
-    var stored = JsonStorage.read(STORAGE_PATH + "schedule");
+    var stored = jsonfs.read(STORAGE_PATH + "schedule");
     if (stored && stored.length) {
         for each (var url in stored) {
             if (typeof(url) == "object" && url) {
@@ -141,14 +141,14 @@ var unlockPid = function(pid) {
  * Saves locks to disk.
  */
 var saveLocks = function() {
-    JsonStorage.write(STORAGE_PATH + "locks", locks);
+    jsonfs.write(STORAGE_PATH + "locks", locks);
 }
 
 /**
  * Loads locks from disk.
  */
 var loadLocks = function() {
-    locks = JsonStorage.read(STORAGE_PATH + "locks") || {};
+    locks = jsonfs.read(STORAGE_PATH + "locks") || {};
     delete locks._id; // this would cause errors if left intact.
     for (var pid in locks)
         exports.rescheduleUrl(pid, 0);
