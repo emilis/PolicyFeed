@@ -157,10 +157,19 @@ exports._select_query = function(filter, options) {
 
     filter = filter || {};
     options = options || {};
-    var {sort, offset, limit} = options;
+    var {offset, limit, order, fields} = options;
 
 
-    var sql = "SELECT * FROM `" + this.TABLENAME + "` ";
+    var sql = "SELECT ";
+
+    if (!fields) {
+        sql += " * ";
+    } else {
+        sql += "`" + fields.join("`,`") + "`";
+    }
+    
+    
+    sql += " FROM `" + this.TABLENAME + "` ";
     var values = [];
 
     if (Object.keys(filter).length) {
@@ -183,15 +192,21 @@ exports._select_query = function(filter, options) {
         }
     }
 
-    if (sort) {
+    if (order) {
         sep = "";
         sql += " ORDER BY ";
-        for (var field in sort) {
-            sql += sep + field + " " + sort[field];
+        for (var field in order) {
+            if (order[field] == 1) {
+                sql += sep + "`" + field + "`" + " ASC";
+            } else if (order[field] == -1) {
+                sql += sep + "`" + field + "`" + " DESC";
+            }
             sep = ",";
         }
     }
 
+    if (offset && !limit)
+        limit = -1; // OFFSET does not work without limit
     if (limit)
         sql += " LIMIT " + limit;
     if (offset)
