@@ -333,6 +333,7 @@ div.day > div {
                     color: #666;
                     vertical-align: top;
                     padding: 8px 2px 4px 4px;
+                    width: 27px;
                 }
 
                 td.expand {
@@ -341,6 +342,7 @@ div.day > div {
                     text-align: right;
                     vertical-align: top;
                     padding: 7px 10px 4px 2px;
+                    width: 37px;
                 }
 
                     td.expand a {
