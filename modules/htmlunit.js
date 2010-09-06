@@ -159,14 +159,19 @@ exports.fixPageUrls = function(page) {
 
     anchors.map(function (a) {
             if (a.hasAttribute("href")) {
-                a.setAttribute("href", page.getFullyQualifiedUrl(a.getAttribute("href")).toString());
+                var href = a.getAttribute("href").toString();
+                if (href.indexOf("://") == -1) {
+                    a.setAttribute("href", page.getFullyQualifiedUrl(href));
+                }
             }
         });
 
     var images = page.getByXPath("//img").toArray();
 
     images.map(function (i) {
-            i.setAttribute("src", page.getFullyQualifiedUrl(i.getAttribute("src")).toString());
+            var src = i.getAttribute("src").toString();
+            if (src.indexOf("://") == -1)
+                i.setAttribute("src", page.getFullyQualifiedUrl(src));
         });
 }
 
