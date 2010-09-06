@@ -152,3 +152,36 @@ PolicyFeed.doLoadSearchResults = function(data, status) {
     document.getElementById("older-image").style.display = "none";
     document.getElementById("older-image-still").style.display = "";
 }
+
+
+/**
+ *
+ */
+PolicyFeed.shareByEmail = function(doc_id) {
+    var email = document.getElementById("share-email");
+    email.disabled = true;
+
+    jQuery.getJSON(WEB_URL + "/", {
+            call: "PolicyFeed.shareByEmail",
+            doc_id: doc_id,
+            email: email.value
+            },
+        PolicyFeed.showSharedStatus);
+}
+
+
+/**
+ *
+ */
+PolicyFeed.showSharedStatus = function(data, status) {
+    var email = document.getElementById("share-email");
+    email.disabled = false;
+    email.value = "";
+
+    var status = jQuery("#share-email-status");
+    //document.getElementById("share-email-status");
+    status.hide();
+    status.css("background-color", "yellow");
+    status.html(data.message);
+    status.fadeIn(2000); //, function() { jQuery(status).css("background-color", "white")});
+}

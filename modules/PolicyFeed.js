@@ -24,6 +24,7 @@ var gluestick = require("gluestick");
 var jsonfs = require("ctl/objectfs/json");
 var mail = require("ringo/mail");
 var SolrClient = require("PolicyFeed/Solr/Client");
+var Users = require("PolicyFeed/Users");
 
 
 // Extend module:
@@ -239,19 +240,34 @@ exports.showDocumentFormat = function(req, id, format) {
 /**
  *
  */
-exports.shareByEmail = function(req, id) {
-    log_request("shareByEmail", req, [id, req.params.email]);
+exports.shareByEmail = function(req) {
+    log_request("shareByEmail", req, [req.params.doc_id, req.params.email]);
 
-    var doc = jsonfs.read(id);
     var email = req.params.email;
+    var id = req.params.doc_id;
+    var user;
 
-    mail.send({
-        to: email,
-        subject: "Nuoroda iš KaVeikiaValdzia.lt: " + doc.title,
-        html: this.showHtml("shareByEmail", { doc: doc })
-        });
+    if (!(user = Users.read({email: email}))) {
+        var uid = Users.create({ email: email, blocked: false });
+        user = Users.read(uid);
+    }
 
-    return this.WebMapper.returnJson({message: "OK"});
+    if (user.blocked) {
+        return this.WebMapper.returnJson({ message: '<p class="error">Atsiprašome, bet <a href="mailto:' + email + '">' + email + '</a> savininkas nepageidauja gauti pranešimų iš mūsų svetainės.</p><p><em>Jei jūs esate šio el. pašto adreso savininkas ir norite pakeisti savo pasirinkimą, prašome <a href="mailto:emilis.d@gmail.com">parašyti mums</a>.' });
+    } else if (!jsonfs.exists(id)) {
+        log.error("shareByEmail", "The document does not exist:", id);
+        return this.WebMapper.returnJson({ message: '<p class="error">Atsiprašome, bet mūsų sistema nerado tokio dokumento. Administratoriai informuoti apie įvykį.</p>' });
+    } else {
+        var doc = jsonfs.read(id);
+
+        mail.send({
+            to: email,
+            subject: "Nuoroda iš KaVeikiaValdzia.lt: " + doc.title,
+            html: this.showHtml("shareByEmail", { doc: doc, key: user.key })
+            });
+
+        return this.WebMapper.returnJson({message: '<p class="ok">Pranešimas išsiųstas adresu <a href="mailto:' + email + '">' + email + '</a>.</p>'});
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -1,0 +1,21 @@
+<%
+
+// Input vars:
+var {user} = vars;
+
+%>
+<h1>Jūs esate atsisakę visų pranešimų iš KąVeikiaValdžia.lt</h1>
+
+<p><em>Jūs tikriausiai paspaudėte nuorodą laiške siųstame į <%= user.email %>. Šiuo metu mūsų duomenų bazėje yra pažymėta jog nepageidaujate gauti laiškų šiuo el. pašto adresu.</em></p>
+
+<form method="POST" action="<%= config.URLS.base %>/">
+<input type="hidden" name="call" value="PolicyFeed/Users/Preferences.submitUnblockForm">
+<input type="hidden" name="key" value="<%= user.key %>">
+<p>Jei pageidaujate vėl pradėti gauti laiškus, spauskite čia: <input type="submit" value="Noriu gauti laiškus iš KąVeikiaValdžia.lt"></p>
+</form>
+
+<p>Jei ir toliau nepageidaujate gauti laiškų iš mūsų svetainės, nieko daryti nereikia.</p>
+
+<p><small><em><a href="mailto:emilis.d@gmail.com">Susisiekti</a>.</em></small></p>
+
+<p><a href="<%= config.URLS.base %>/">Grįžti į pirmą puslapį</a></p>
