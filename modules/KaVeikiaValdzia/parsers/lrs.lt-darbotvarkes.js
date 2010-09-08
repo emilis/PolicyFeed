@@ -48,18 +48,24 @@ exports.extractFeedItems = function(page) {
     this.validateFeedPage(page);
 
     var path = '/html/body/div/table/tbody/tr[3]/td/table/tbody/tr/td/align/a';
-
     var items = page.getByXPath(path).toArray();
+
+    var name = this.name;
     if (items.length < 1)
         return [];
     else {
         return items.map(function(item) {
-                return {
+                var doc = {
                     url: item.getAttribute("href"),
                     title: item.asText(),
                     published: ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
                     summary: ""
                 };
+                for (var k in this.doc_template) {
+                    doc[k] = this.doc_template[k];
+                }
+                doc.parser = name;
+                return doc;
             });
     }
 }
