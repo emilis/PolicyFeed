@@ -28,7 +28,7 @@ gluestick.extendModule(exports, "ctl/objectfs/dbtable");
 exports.connect("DB_queries", "queries");
 
 // Get config for module:
-var module.config = config[module.id] || {
+module.config = config[module.id] || {
     handlers: []
 };
 
