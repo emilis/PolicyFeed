@@ -83,28 +83,36 @@ exports.gluestick = {
         DB: {
             module: "ctl/DB/Sqlite",
             clone: true,
-            config: {
-                filename: exports.DIRS.data + "/default.sqlite3"
-            }},
+            config: { filename: exports.DIRS.data + "/default.sqlite3" }
+        },
         DB_urls: {
             module: "ctl/DB/Sqlite",
             clone: true,
-            config: {
-                filename: exports.DIRS.data + "/policyfeed_urls.sqlite3"
-            }},
+            config: { filename: exports.DIRS.data + "/policyfeed_urls.sqlite3" }
+        },
         DB_users: {
             module: "ctl/DB/Sqlite",
             clone: true,
-            config: {
-                filename: exports.DIRS.data + "/users.sqlite3"
-            }},
+            config: { filename: exports.DIRS.data + "/users.sqlite3" }
+        },
+        DB_queries: {
+            module: "ctl/DB/Sqlite",
+            clone: true,
+            config: { filename: exports.DIRS.data + "/queries.sqlite3" }
+        },
+        DB_tags: {
+            module: "ctl/DB/Sqlite",
+            clone: true,
+            config: { filename: exports.DIRS.data + "/tags.sqlite3" }
+        },
         Events: {
             module: "ctl/Events",
             config: {
                 callbacks: [
                     [ /(debug|error|warning)/,  "ctl/Events/ShellWriter:printEvent" ]
                 ]
-            }},
+            }
+        },
         Site: "KaVeikiaValdzia/Site",
         WebMapper: {
             module: "ctl/WebMapper",
@@ -117,7 +125,8 @@ exports.gluestick = {
                     //"PolicyFeed/Comments",
                     "PolicyFeed/Users/Preferences"
                 ]
-            }}
+            }
+        }
     }
 };
 
@@ -150,6 +159,16 @@ exports["PolicyFeed/Crawler/Errors"] = {
         // username: "user@example.org",
         // password: "yourpassword"
     }
+};
+
+/**
+ *
+ */
+exports["PolicyFeed/Crawler/DocQueries"] = {
+    handlers: [
+        // "PoilcyFeed/Alerts",
+        "KaVeikiaValdzia/tags/organizations"
+    ]
 };
 
 exports["ctl/objectfs/json"] = {
