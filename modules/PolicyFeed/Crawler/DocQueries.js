@@ -20,6 +20,7 @@
 // Requirements:
 var config = require("config");
 var gluestick = require("gluestick");
+var SolrClient = require("PolicyFeed/Solr/Client");
 var SolrUtils = require("PolicyFeed/Solr/Utils");
 
 
@@ -82,17 +83,22 @@ exports.runQueries = function(evt, id, doc) {
 
     // Get queries:
     var list = this.list();
-
+    // Run queries and returns the matching query ids:
+    var list = list.map(function (q) {
+            q.query = SolrClient.compileQuery(q.query);
+            return q;
+        });
+    
     // Create query => id dictionary:
     var q;
-    var qdict;
-    while (q = list.pop()) {
+    var qdict = {};
+    for each (q in list) {
         qdict[q.query] = q.id;
     }
 
-    // Run queries and returns the matching query ids:
-    var qids = SolrUtils.queryDocument(doc,
-            list.map(function (q) { return q.query; })).map(function (query) {
+
+    var qids = list.map(function(q) { return q.query; });
+    qids = SolrUtils.queryDocument(doc, qids).map(function (query) {
                     return qdict[query];
                     });
 
