@@ -82,7 +82,7 @@ exports.removeQueries = function(qids) {
 exports.runQueries = function(evt, id, doc) {
 
     // Get queries:
-    var list = this.list();
+    var list = exports.list();
     // Run queries and returns the matching query ids:
     var list = list.map(function (q) {
             q.query = SolrClient.compileQuery(q.query);

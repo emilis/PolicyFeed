@@ -139,10 +139,10 @@ exports.onItemChange = function(action, _id, item) {
     if (_id.indexOf("/docs/") > -1) {
         try {
             switch (action) {
-                case "after-write":
+                case "afterWrite":
                     return exports.indexItem(item);
                 break;
-                case "after-remove":
+                case "afterRemove":
                     return exports.removeItem(_id);
                 break;
             }
