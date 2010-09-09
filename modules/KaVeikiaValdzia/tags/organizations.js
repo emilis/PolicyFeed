@@ -7,6 +7,9 @@ var DocQueries = require("PolicyFeed/Crawler/DocQueries");
 var gluestick = require("gluestick");
 var jsonfs = require("ctl/objectfs/json");
 
+// Constants:
+var update_url = 'https://spreadsheets.google.com/pub?key=0AsZzrrKkSKzMdC1oYnQtWGtGaFRXWnBwZFdVWjlJeXc&authkey=CIOU65QB&hl=en&single=true&gid=0&output=csv';
+
 
 // Extend and connect to db table:
 gluestick.extendModule(exports, "ctl/objectfs/dbtable");
@@ -45,17 +48,43 @@ exports.allowRemoveQueries = function(qids) {
             });
 }
 
+//----------------------------------------------------------------------------
+
+/**
+ *
+ */
+exports.serializeFields = function(data) {
+
+    data.active = data.active || false;
+    data.region = data.region || false;
+    data.queries = data.queries || false;
+    data.url = data.url || false;
+    data.name_forms = data.name_forms || false;
+
+    return this.createQueryField(data);
+}
+
+
+/**
+ *
+ */
+exports.unserializeFields = function(data) {
+    return data;
+}
+
 
 /**
  *
  */
 exports.createQueryField = function(data) {
     if (!data.query) {
-        data.query = 'org:"' + data.org + '","' + data.organization + '",';
+        data.query = 'org:"' + data.org + '","' + data.organization + '"';
         if (data.name_forms) {
-            data.query += '"' + data.name_forms + '",';
+            data.query += ',"' + data.name_forms + '"';
         }
-        data.query += data.queries;
+        if (data.queries) {
+            data.query += ',' + data.queries;
+        }
     }
     return data;
 }
@@ -65,9 +94,14 @@ exports.createQueryField = function(data) {
  *
  */
 exports._update_qids = function(oid, queries) {
-    var qids = DocQueries.addQueries(queries);
-
+    // remove old queries:
+    var rem_list = this.org2q.list({ oid: oid });
     this.org2q.remove({oid: oid});
+    var qids = rem_list.map(function(item) { return item.qid; });
+    DocQueries.removeQueries(qids);
+
+    // add new queries:
+    qids = DocQueries.addQueries(queries);
     for each (var qid in qids) {
         this.org2q.write(false, {oid: oid, qid:qid});
     }
@@ -79,7 +113,8 @@ exports._update_qids = function(oid, queries) {
  */
 exports.parent_create = exports.create;
 exports.create = function(id, data) {
-    data = this.createQueryField(data);
+
+    data = this.serializeFields(data);
     if (id = this.parent_create(id, data)) {
         this._update_qids(id, [data.query]);
         return id;
@@ -92,11 +127,81 @@ exports.create = function(id, data) {
 exports.parent_update = exports.update;
 exports.update = function(id, data) {
 
-    data = this.createQueryField(data);
+    data = this.serializeFields(data);
     if (this.parent_update(id, data)) {
-        this._update_qids(id, [data,query]);
+        this._update_qids(id, [data.query]);
         return true;
     }
+}
+
+
+/**
+ * Returns a dictionary of organizations indexed by organization.org field.
+ */
+exports.getOrgMap = function() {
+    var list = this.list();
+    var map = {};
+    var org;
+    while (org = list.pop()) {
+        map[org.org] = org;
+    }
+    return map;
+}
+
+
+//----------------------------------------------------------------------------
+
+/**
+ *
+ */
+exports.import = function(url) {
+    url = url || update_url;
+
+    var list = this.parseImportFile(url);
+
+    if (!this.checkImportList(list))
+        return false;
+
+    var orgmap = this.getOrgMap();
+
+    var created = [];
+    var updated = [];
+    for each (var neworg in list) {
+        if (!orgmap[neworg.org]) {
+            neworg.id = this.create(false, neworg);
+            created.push(neworg);
+        } else {
+            var oldorg = orgmap[neworg.org];
+
+            var is_updated = ["organization","active","region","queries","url","name_forms"].some(function(field) {
+                    return ((oldorg[field] || neworg[field]) && (oldorg[field] != neworg[field]));
+                });
+
+            if (is_updated) {
+                this.update(oldorg.id, neworg);
+                neworg.id = oldorg.id;
+                updated.push(neworg);
+            }
+            delete orgmap[neworg.org];
+        }
+    } // end for each()
+
+    print("=== Update status ==========");
+    print("--- Created: ---------------");
+    for each (var org in created) {
+        print(org.id, org.org, org.organization);
+    }
+    print("--- Updated: ---------------");
+    for each (var org in updated) {
+        print(org.id, org.org, org.organization);
+    }
+    print("--- Not found in update: ---");
+    for each (var org in orgmap) {
+        print(org.id, org.org, org.organization);
+    }
+    print("=== End of update ==========");
+
+    return true;
 }
 
 
@@ -167,34 +272,5 @@ exports.checkImportList = function(list) {
 
     return true;
 }
-
-
-//----------------------------------------------------------------------------
-
-
-exports.splitCSV = function(str, sep) {
-
-    str = str || "";
-    sep = sep || ",";
-    var foo = str.split(sep);
-    
-    for (var x = foo.length - 1; x >= 0; x--) {
-        var tl;
-        if (foo[x].replace(/"\s+$/, '"').charAt(foo[x].length - 1) == '"') {
-            tl = foo[x].replace(/^\s+"/, '"');
-            if (tl.length > 1 && tl[0] == '"') {
-                foo[x] = foo[x].replace(/^\s*"|"\s*$/g, '').replace(/""/g, '"');
-            } else if (x) {
-                foo.splice(x - 1, 2, [foo[x - 1], foo[x]].join(sep));
-            } else {
-                foo = foo.shift().split(sep).concat(foo);
-            }
-        } else {
-            foo[x].replace(/""/g, '"');
-        }
-    }
-    return foo;
-};
-
 
 
