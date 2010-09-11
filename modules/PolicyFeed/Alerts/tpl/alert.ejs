@@ -1,6 +1,6 @@
 <%
 
-var {id,alert,doc} = vars;
+var {id,email,doc} = vars;
 
 %><!DOCTYPE html>
 <html><head>
@@ -22,7 +22,7 @@ font-size: 11px;
 <%= doc.html %>
 <p>&nbsp;</p>
 
-<p style="padding: 10px; background-color: #e2e2e2;" class="small"><b><a href="http://kaveikiavaldzia.lt/?call=PolicyFeed/Alerts/Manager.unsubscribe&email=<%= alert.email %>">Atsisakyti pranešimų iš KąVeikiaValdžia.lt</a>.</b></p>
+<p style="padding: 10px; background-color: #e2e2e2;" class="small"><b><a href="http://kaveikiavaldzia.lt/?call=PolicyFeed/Alerts/Manager.showList&email=<%= email %>">Peržiūrėti (redaguoti) Jums siunčiamus pranešimus</a>.</b></p>
 <p style="padding: 10px; background-color: #f2f2f2;" class="small">Pasidalink šia naujiena: <a href="http://facebook.com/share.php?u=http://kaveikiavaldzia.lt<%= id %>">Facebook</a>
 | <a href="http://twitter.com/home?status=http://kaveikiavaldzia.lt<%= id %>">Twitter</a><br>
 <br>

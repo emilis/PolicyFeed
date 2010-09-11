@@ -22,6 +22,7 @@
 
 // Requirements:
 var ctlTemplate = require("ctl/Template/Cached");
+var DocQueries = require("PolicyFeed/Crawler/DocQueries");
 var gluestick = require("gluestick");
 var mail = require("ringo/mail");
 var ringo_arrays = require("ringo/utils/arrays");
@@ -57,14 +58,17 @@ exports.handleDocMatches = function(id, doc, matches) {
         return true;
     }
 
-    this.list({ id: ids}).map(function(alert) {
+    // get a list of emails:
+    var alerts = ringo_arrays.union(this.list({ id: ids}, {fields: ["email"]}));
+        
+    alerts.map(function(alert) {
             mail.send({
                 to: alert.email,
                 subject: doc.org + '» ' + doc.type + '» ' + doc.title,
                 html: ctlTemplate.fetch(alert_tpl, {
                     id: id,
                     doc: doc,
-                    alert: alert
+                    email: alert.email
                     })
                 });
             });
@@ -80,5 +84,63 @@ exports.allowRemoveQueries = function(qids) {
     return qids.filter(function (qid) {
             return (myqids.indexOf(qid) == -1);
             });
+}
+
+
+//----------------------------------------------------------------------------
+
+/**
+ *
+ */
+exports._update_qids = function(aid, queries) {
+    // remove old queries:
+    var rem_list = this.a2q.list({ aid: aid });
+    this.a2q.remove({aid: aid});
+    var qids = rem_list.map(function(item) { return item.qid; });
+    DocQueries.removeQueries(qids);
+
+    // add new queries:
+    qids = DocQueries.addQueries(queries);
+    for each (var qid in qids) {
+        this.a2q.write(false, {aid: aid, qid:qid});
+    }
+}
+
+
+/**
+ *
+ */
+exports.parent_create = exports.create;
+exports.create = function(id, data) {
+
+    if (id = this.parent_create(id, data)) {
+        this._update_qids(id, [data.query]);
+        return id;
+    }
+}
+
+/**
+ *
+ */
+exports.parent_update = exports.update;
+exports.update = function(id, data) {
+
+    if (this.parent_update(id, data)) {
+        this._update_qids(id, [data.query]);
+        return true;
+    }
+}
+
+
+/**
+ *
+ */
+exports.parent_remove = exports.remove;
+exports.remove = function(id) {
+    
+    if (this.parent_remove(id)) {
+        this._update_qids(id, []);
+        return true;
+    }
 }
 
