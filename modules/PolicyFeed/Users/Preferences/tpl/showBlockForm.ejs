@@ -3,7 +3,9 @@
 // Input vars:
 var {user} = vars;
 
-%><h1>Atsisakyti pranešimų iš KąVeikiaValdžia.lt:</h1>
+%>
+<div id="page"><div>
+<h1>Atsisakyti pranešimų iš KąVeikiaValdžia.lt:</h1>
 <p><em>Jūs paspaudėte nuorodą laiške siųstame į <%= user.email %>.<br>Ar norėtumėte, kad nebesiųstume jums laiškų šiuo adresu?</em></p>
 
 <form method="post" action="<%= config.URLS.base %>/">
@@ -15,3 +17,4 @@ var {user} = vars;
 <p><br><small><em>Jei vėliau norėsite užsisakyti naujienas jums reikės pranešti mums adresu <a href="mailto:emilis.d@gmail.com">emilis.d@gmail.com</a> iš šio savo el. pašto adreso.</em></small></p>
 
 <p><small><em><a href="mailto:emilis.d@gmail.com">Susisiekti</a>.</em></small></p>
+</div></div>
