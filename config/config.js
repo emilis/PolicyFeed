@@ -85,15 +85,10 @@ exports.gluestick = {
             clone: true,
             config: { filename: exports.DIRS.data + "/default.sqlite3" }
         },
-        DB_urls: {
+        DB_alerts: {
             module: "ctl/DB/Sqlite",
             clone: true,
-            config: { filename: exports.DIRS.data + "/policyfeed_urls.sqlite3" }
-        },
-        DB_users: {
-            module: "ctl/DB/Sqlite",
-            clone: true,
-            config: { filename: exports.DIRS.data + "/users.sqlite3" }
+            config: { filename: exports.DIRS.data + "/alerts.sqlite3" }
         },
         DB_queries: {
             module: "ctl/DB/Sqlite",
@@ -104,6 +99,16 @@ exports.gluestick = {
             module: "ctl/DB/Sqlite",
             clone: true,
             config: { filename: exports.DIRS.data + "/tags.sqlite3" }
+        },
+        DB_urls: {
+            module: "ctl/DB/Sqlite",
+            clone: true,
+            config: { filename: exports.DIRS.data + "/policyfeed_urls.sqlite3" }
+        },
+        DB_users: {
+            module: "ctl/DB/Sqlite",
+            clone: true,
+            config: { filename: exports.DIRS.data + "/users.sqlite3" }
         },
         Events: {
             module: "ctl/Events",
@@ -123,7 +128,8 @@ exports.gluestick = {
                     "PolicyFeed",
                     "PolicyFeed/Calendar",
                     //"PolicyFeed/Comments",
-                    "PolicyFeed/Users/Preferences"
+                    "PolicyFeed/Users/Preferences",
+                    "PolicyFeed/Alerts/Manager"
                 ]
             }
         }
@@ -143,12 +149,27 @@ exports["PolicyFeed/Crawler"] = {
 };
 
 /**
+ * Email sending configuration.
+ */
+exports["ringo/mail"] = {
+    template: {
+        to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
+        from: "policyfeed@localhost",
+        // If you use Gmail account to send email, this may be helpful:
+        //host: "smtp.gmail.com",
+        //port: 587,
+        //encrypt: true,
+        //username: "email@example.org",
+        //password: "example_password"
+    }
+};
+
+
+/**
  * Settings for reporting Crawler errors:
  */
 exports["PolicyFeed/Crawler/Errors"] = {
     message: {
-        to: "policyfeed-errors@mailinator.com",
-        from: "policyfeed@localhost",
         subject: "PolicyFeed/UrlErrors status"
 
         // if you want to use a gmail account for sending emails:
@@ -166,8 +187,9 @@ exports["PolicyFeed/Crawler/Errors"] = {
  */
 exports["PolicyFeed/Crawler/DocQueries"] = {
     handlers: [
-        // "PoilcyFeed/Alerts",
-        "KaVeikiaValdzia/tags/organizations"
+        "PolicyFeed/Alerts",
+        "KaVeikiaValdzia/tags/organizations",
+        "KaVeikiaValdzia/tags/people"
     ]
 };
 
