@@ -122,7 +122,20 @@ if (doc.tags) {
     if (doc.tags.organizations) {
         print('<p style="margin-left: 1em"><strong>Įstaigos:</strong></p><ul>');
         for each (var o in doc.tags.organizations) {
-            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(o.query), '">', o.organization, '</a></li>');
+            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(o.query), '">', o.organization, '</a>');
+            /*
+            if (o.url) {
+                print('&nbsp;[&nbsp;<a href="', o.url, '">puslapis</a>&nbsp;]');
+            }
+            */
+            print('</li>');
+        }
+        print('</ul>');
+    }
+    if (doc.tags.people) {
+        print('<p style="margin-left: 1em;"><strong>Politikai, tarnautojai, pareigūnai:</strong></p><ul>');
+        for each (var p in doc.tags.people) {
+            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(p.query), '" title="', p.title, '">', p.fname, " ", p.lname, '</a></li>');
         }
         print('</ul>');
     }
