@@ -236,10 +236,29 @@ exports.reindexDoc = function(doc_id) {
 
 
 /**
- *
+ * Reindex document or restart feed checks based on url.
  */
 exports.reindexUrl = function(url) {
-    return this.reindexDoc( Urls.getDocId(url) );
+    var id;
+    if (id = Urlw.getDocId(url)) {
+        return this.reindexDoc( id );
+    } else {
+        for each (var parser in this.parsers) {
+            var purl = parser.feed_url;
+            if (purl == url || ((purl instanceof Array) && purl.indexOf(url) != -1)) {
+                if (!Queue.isUrlScheduled(url)) {
+                    Queue.scheduleUrl({
+                        url: url,
+                        parser: parser.name,
+                        method: "checkFeed"
+                        }, 0);
+                }
+           }
+       }
+
+       // if url not found:
+       throw Error(module.id + ".reindexUrl: url not found in document or parser lists." );
+    }
 }
 
 
@@ -267,8 +286,13 @@ exports.saveOriginal = function(parser_name, url, page) {
         htmlunit.setPageCharset(page, "UTF-8");
         original.html = page.asXml();
     }
-    else
-        throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
+    else {
+        if (this.parsers[parser_name].parseNonHtml) {
+            original = this.parsers[parser_name].parseNonHtml(original, page);
+        } else {
+            throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
+        }
+    }
 
     // save original:
     jsonfs.write(original._id, original);
