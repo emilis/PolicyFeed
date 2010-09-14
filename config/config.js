@@ -151,17 +151,15 @@ exports["PolicyFeed/Crawler"] = {
 /**
  * Email sending configuration.
  */
-exports["ringo/mail"] = {
-    template: {
-        to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
-        from: "policyfeed@localhost",
-        // If you use Gmail account to send email, this may be helpful:
-        //host: "smtp.gmail.com",
-        //port: 587,
-        //encrypt: true,
-        //username: "email@example.org",
-        //password: "example_password"
-    }
+exports.mail = {
+    to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
+    from: "policyfeed@localhost",
+    // If you use Gmail account to send email, this may be helpful:
+    //host: "smtp.gmail.com",
+    //port: 587,
+    //encrypt: true,
+    //username: "email@example.org",
+    //password: "example_password"
 };
 
 
@@ -171,14 +169,6 @@ exports["ringo/mail"] = {
 exports["PolicyFeed/Crawler/Errors"] = {
     message: {
         subject: "PolicyFeed/UrlErrors status"
-
-        // if you want to use a gmail account for sending emails:
-        //
-        // host: "smtp.gmail.com",
-        // port: 587,
-        // encrypt: true,
-        // username: "user@example.org",
-        // password: "yourpassword"
     }
 };
 
