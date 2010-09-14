@@ -87,8 +87,12 @@ exports.parseFeedItem = function(item) {
         try {
             var tspan = content.getFirstByXPath('./span');
             var tlink = tspan.getFirstByXPath('./a');
-            var url = tlink.getHrefAttribute().toString();
             var title = tlink.asText();
+
+            // get url without empty parameters:
+            var url = tlink.getHrefAttribute().toString().split("?");
+            url[1] = url[1].split("&").filter(function(param) { return (param.slice(-1) != "=") });
+            url = url.join("?");
 
             tspan.remove();
         } catch(e) {
@@ -152,6 +156,8 @@ exports.parseFeedItem = function(item) {
             case "Išvados":
             case "Nutarimas":
             case "Komiteto išvada":
+            case "Sprendimas":
+            case "Dekretas":
                 type = "nutarimas";
             break;
             case "Lyginamasis variantas":
@@ -159,6 +165,7 @@ exports.parseFeedItem = function(item) {
             case "Aiškinamasis raštas":
             case "Lydraštis":
             case "Informacija":
+            case "Protokolas":
                 type = "kita";
             break;
             default:
@@ -271,7 +278,7 @@ exports.extractPageData = function(original, page) {
             last_hr);
 
     // Schedule "nėra teksto" docs for re-check after 5 minutes:
-    if (doc.html.match("nėra teksto HTML formatu")) {
+    if (doc.html.match(/nėra\steksto\sHTML\sformatu/i)) {
         Queue.scheduleUrl({
             url: doc.url,
             domain: "www.lrs.lt",
