@@ -240,7 +240,7 @@ exports.reindexDoc = function(doc_id) {
  */
 exports.reindexUrl = function(url) {
     var id;
-    if (id = Urlw.getDocId(url)) {
+    if (id = Urls.getDocId(url)) {
         return this.reindexDoc( id );
     } else {
         for each (var parser in this.parsers) {
@@ -253,6 +253,7 @@ exports.reindexUrl = function(url) {
                         method: "checkFeed"
                         }, 0);
                 }
+                return true;
            }
        }
 
