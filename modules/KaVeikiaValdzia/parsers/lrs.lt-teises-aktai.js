@@ -195,3 +195,14 @@ exports.extractPageData = function(original, page) {
 }
 
 
+/**
+ *
+ */
+exports.parseNonHtml = function(original, page) {
+    if (original.webResponse.contentType == "text/plain") {
+        Queue.scheduleUrl(original.url, new Date(new Date().getTime() + 3*60*1000));
+        throw Error(module.id + ".parseNonHtml: rescheduled page that is temporarily unavailable.");
+    } else {
+        throw Error(module.id + ".parseNonHtml: unknown page type.");
+    }
+}
