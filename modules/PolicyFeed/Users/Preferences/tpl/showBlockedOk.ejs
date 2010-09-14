@@ -1,0 +1,15 @@
+<%
+
+// Input vars:
+var {user} = vars;
+
+%>
+<div id="page"><div>
+<h1>Jūs atsisakėte pranešimų iš KąVeikiaValdžia.lt</h1>
+
+<p>Jei vėliau norėsite užsisakyti naujienas jums reikės pranešti mums adresu <a href="mailto:emilis.d@gmail.com">emilis.d@gmail.com</a> iš šio savo el. pašto adreso (<%= user.email %>).</p>
+
+<p><a href="<%= config.URLS.base %>/">Grįžti į pirmą puslapį</a></p>
+
+<p><small><em><a href="mailto:emilis.d@gmail.com">Susisiekti</a>.</em></small></p>
+</div></div>

@@ -185,8 +185,13 @@ div.day > div {
                 font-style: normal;
             }
 
+        #result-subscribe {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+
         #rss-search {
-            margin-left: 1em;
             padding-bottom: 1px;
             font-size: 13px;
             font-weight: bold;
@@ -333,6 +338,7 @@ div.day > div {
                     color: #666;
                     vertical-align: top;
                     padding: 8px 2px 4px 4px;
+                    width: 27px;
                 }
 
                 td.expand {
@@ -341,6 +347,7 @@ div.day > div {
                     text-align: right;
                     vertical-align: top;
                     padding: 7px 10px 4px 2px;
+                    width: 37px;
                 }
 
                     td.expand a {

@@ -75,19 +75,32 @@ Object.defineProperty(schedule, "save", {enumerable:false, value: function() {
     jsonfs.write(STORAGE_PATH + "schedule", this);
 }});
 
+
+/**
+ *
+ */
+Object.defineProperty(schedule, "hasUrl", {enumerable: false, value: function(the_url, time) {
+    for each (var url in this) {
+        if (url.url == the_url) {
+            if ((time === undefined) || (time > url.time))
+                return true;
+        }
+    }
+    return false;
+}});
+
 /**
  * Loads schedule queue from disk.
  */
 Object.defineProperty(schedule, "load", {enumerable:false, value: function() {
     this.length = 0;
-    var stored = jsonfs.read(STORAGE_PATH + "schedule");
-    if (stored && stored.length) {
-        for each (var url in stored) {
-            if (typeof(url) == "object" && url) {
-                if (url.time && !(url.time instanceof Date))
-                    url.time = new Date(url.time);
-                this.push(url);
+    var stored = jsonfs.read(STORAGE_PATH + "schedule") || [];
+    for each (var url in stored) {
+        if (typeof(url) == "object" && url && url.url && !this.hasUrl(url.url)) {
+            if (url.time && !(url.time instanceof Date)) {
+                url.time = new Date(url.time);
             }
+            this.push(url);
         }
     }
     this.sort(time_sort);
@@ -261,13 +274,7 @@ exports.scheduleUrl = function(url, time) {
  *
  */
 exports.isUrlScheduled = function(the_url, time) {
-    for each (var url in schedule) {
-        if (url.url == the_url) {
-            if ((time === undefined) || (time > url.time))
-                return true;
-        }
-    }
-    return false;
+    return schedule.hasUrl(the_url, time);
 }
 
 

@@ -1,0 +1,32 @@
+<%
+
+var {id,email,doc} = vars;
+
+%><!DOCTYPE html>
+<html><head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<style type="text/css">
+body {
+font-family: sans-serif;
+font-size: 13px;
+padding: 1.5em;
+}
+
+.small {
+font-size: 11px;
+}
+</style>
+</head><body>
+<h2><%= doc.title %></h2>
+<p><em>[ <%= doc.organization %> &raquo; <%= doc.type %> @ <%= doc.published %> ]</em></p>
+<%= doc.html %>
+<p>&nbsp;</p>
+
+<p style="padding: 10px; background-color: #e2e2e2;" class="small"><b><a href="http://kaveikiavaldzia.lt/?call=PolicyFeed/Alerts/Manager.showList&email=<%= email %>">Peržiūrėti (redaguoti) Jums siunčiamus pranešimus</a>.</b></p>
+<p style="padding: 10px; background-color: #f2f2f2;" class="small">Pasidalink šia naujiena: <a href="http://facebook.com/share.php?u=http://kaveikiavaldzia.lt<%= id %>">Facebook</a>
+| <a href="http://twitter.com/home?status=http://kaveikiavaldzia.lt<%= id %>">Twitter</a><br>
+<br>
+<b>Nuoroda:</b> <a href="http://kaveikiavaldzia.lt<%= id %>">http://kaveikiavaldzia.lt<%= id %></a><br>
+<b>Originalus dokumentas:</b> <a href="<%= doc.url %>"><%= doc.url %></a></p>
+<p class="small">KąVeikiaValdžia.lt: <a href="http://kaveikiavaldzia.lt/pages/apie">apie projektą</a>, <a href="http://kaveikiavaldzia.lt/">naujausi dokumentai</a>.</p>
+</body></html>

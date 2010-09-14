@@ -2,6 +2,7 @@
 
 // Requirements:
 var ctl_dates = require("ctl/utils/dates");
+var ringo_strings = require("ringo/utils/strings");
 
 // Constants:
 var BASE_URL = config.URLS.base;
@@ -116,6 +117,31 @@ if (doc.teises_aktas)
         print('<div><a href="', ta.susije, '">Susiję teisės aktai</a></div>');
 }
 
+if (doc.tags) {
+    print('<h4>Dokumente paminėti:</h4>');
+    if (doc.tags.organizations) {
+        print('<p style="margin-left: 1em"><strong>Įstaigos:</strong></p><ul>');
+        for each (var o in doc.tags.organizations) {
+            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(o.query), '">', o.organization, '</a>');
+            /*
+            if (o.url) {
+                print('&nbsp;[&nbsp;<a href="', o.url, '">puslapis</a>&nbsp;]');
+            }
+            */
+            print('</li>');
+        }
+        print('</ul>');
+    }
+    if (doc.tags.people) {
+        print('<p style="margin-left: 1em;"><strong>Politikai, tarnautojai, pareigūnai:</strong></p><ul>');
+        for each (var p in doc.tags.people) {
+            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(p.query), '" title="', p.title, '">', p.fname, " ", p.lname, '</a></li>');
+        }
+        print('</ul>');
+    }
+}
+
+
 
 %>
 </div>
@@ -130,6 +156,7 @@ if (doc.teises_aktas)
     <span>El. paštu:</span><br>
     <input id="share-email" name="email" class="email">
     <input id="share-email-button" type="button" class="button" name="share" value="Siųsti" onClick="PolicyFeed.shareByEmail('<%= doc._id %>');">
+    <span id="share-email-status"></span>
 </form>
 </fieldset>
 </div>

@@ -9,8 +9,11 @@ require("packages").loadPackages(getRepository( require("config").DIRS.packages)
 // Add triggers for jsonfs:
 var jsonfs = require("ctl/objectfs/json");
 var SolrClient = require("PolicyFeed/Solr/Client");
+var DocQueries = require("PolicyFeed/Crawler/DocQueries");
+
 jsonfs.addTrigger("afterWrite", "/docs/", SolrClient.onItemChange);
 jsonfs.addTrigger("afterRemove", "/docs/", SolrClient.onItemChange);
+jsonfs.addTrigger("afterCreate", "/docs/", DocQueries.runQueries);
 
 // Start Crawler:
 var Crawler = require("PolicyFeed/Crawler");

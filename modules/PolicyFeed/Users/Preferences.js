@@ -36,7 +36,7 @@ exports.tpl_dir = exports.getTplDir(module);
  */
 exports.isEmailBlocked = function(email) {
     var user = Users.getByEmail(email);
-    return user.blocked;
+    return user && user.blocked;
 }
 
 
@@ -47,8 +47,12 @@ exports.showBlockForm = function(req) {
     if (!req.params.key)
         return this.showError(404);
 
+    var user = Users.getByKey(req.params.key);
+    if (user.blocked)
+        return this.WebMapper.redirect(module.id, "showUnblockForm", { key: req.params.key });
+
     return this.returnHtml("showBlockForm", {
-                user: Users.getByKey(req.params.key)
+                user: user
                 });
 }
 
@@ -63,7 +67,7 @@ exports.submitBlockForm = function(req) {
     user.blocked = true;
     Users.write(user.id, user);
 
-    return this.WebMapper.redirect(module.id, "showBlockedOk", user);
+    return this.WebMapper.redirect(module.id, "showBlockedOk", {key: user.key});
 }
 
 
@@ -72,8 +76,11 @@ exports.submitBlockForm = function(req) {
  */
 exports.showBlockedOk = function(req) {
 
+    if (!req.params.key)
+        return this.showError(404);
+
     return this.returnHtml("showBlockedOk", {
-            user: req.params
+            user: Users.getByKey(req.params.key)
             });
 }
 
@@ -100,9 +107,9 @@ exports.submitUnblockForm = function(req) {
 
     var user = Users.getByKey(req.params.key);
     user.blocked = false;
-    user.save();
+    Users.update(user.id, user);
 
-    return this.WebMapper.redirect(module.id, "showUnblockedOk", user);
+    return this.WebMapper.redirect(module.id, "showUnblockedOk", { key: user.key });
 }
 
 
@@ -110,9 +117,12 @@ exports.submitUnblockForm = function(req) {
  *
  */
 exports.showUnblockedOk = function(req) {
+    if (!req.params.key)
+        return this.showError(404);
+
     return this.returnHtml("showUnblockedOk", {
-                user: req.params
-                });
+            user: Users.getByKey(req.params.key) 
+            });
 }
 
 

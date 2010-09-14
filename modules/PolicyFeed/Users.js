@@ -55,12 +55,12 @@ exports.getByKey = function(key) {
 /**
  *
  */
-var parent_create = ringo_objects.clone(exports.create);
+exports.parent_create = exports.create;
 exports.create = function(id, data) {
     if (!data.key) {
         data.key = ringo_strings.random(40);
     }
-    return parent_create(id, data);
+    return this.parent_create(id, data);
 }
 
 

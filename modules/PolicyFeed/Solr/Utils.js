@@ -82,7 +82,7 @@ exports.queryDocument = function(doc, queries) {
 
     // Add document fields:
     mi.addField("id", doc.id, this.Analyzer);
-    mi.addField("published", ctl_dates.formatFromString(doc.published, Date.ISOFORMAT), this.Analyzer);
+    mi.addField("published", ctl_dates.formatFromString(doc.published, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"), this.Analyzer);
     mi.addField("type", doc.type, this.Analyzer);
     mi.addField("org", doc.org, this.Analyzer);
     mi.addField("organization", doc.organization, this.Analyzer);

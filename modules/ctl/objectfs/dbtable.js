@@ -51,12 +51,18 @@ exports.connect = function(db, table) {
 
 
 /**
+ * Checks if a record exists in a database.
  *
+ * @param {Numer|String|Object} filter ID or filter.
+ * @returns {Boolean}
  */
-exports.exists = function(id) {
-    var sql = "select id from `" + this.TABLENAME + "` where id=?";
-    var result = this.DB.get_one(this.DB.prepared_query(sql, [id]));
-    return ( result === id );
+exports.exists = function(filter) {
+    if ((typeof(filter) != "object") || (filter instanceof String) || (filter instanceof Number)) {
+        filter = { id: filter };
+    }
+    var options = { fields: ["id"], limit: 1 };
+    var result = this.list(filter, options);
+    return new Boolean(result && result.length);
 }
 
 
@@ -129,7 +135,7 @@ exports.update = function(id, data) {
     }
 
     values.push(id);
-    var sql = "UPDATE users SET `" + fields.join('`=?, `') + "`=? WHERE id=?";
+    var sql = "UPDATE `" + this.TABLENAME + "` SET `" + fields.join('`=?, `') + "`=? WHERE id=?";
 
     var rs = this.DB.prepared_query(sql, values);
     if (rs.getStatement)

@@ -17,11 +17,13 @@
     <property name="search.ant" location="${search.src}/build.xml" />
     <property name="url.db" value="urls.sqlite3" />
     <property name="user.db" value="users.sqlite3" />
+    <property name="query.db" value="queries.sqlite3" />
+    <property name="tag.db" value="tags.sqlite3" />
+    <property name="alert.db" value="alerts.sqlite3" />
 
     <property name="run.jar" location="${lib}/run.jar" />
     <property name="run.ringo.home" value="-D ringo.home='${lib}/ringo.jar'" />
     <property name="run.req.paths" value="-e require.paths.push('${config}', '${modules}')" />
-
   
     <target name="init" description="Create needed dirs and files.">
         <mkdir dir="${data}"/>
@@ -31,6 +33,9 @@
         <chmod dir="${uploads}" type="both" perm="a+rw"/>
         <copy file="${pf.src}/${url.db}" tofile="${data}/${url.db}" />
         <copy file="${pf.src}/${user.db}" tofile="${data}/${user.db}" />
+        <copy file="${pf.src}/${query.db}" tofile="${data}/${query.db}" />
+        <copy file="${pf.src}/${tag.db}" tofile="${data}/${tag.db}" />
+        <copy file="${pf.src}/${alert.db}" tofile="${data}/${alert.db}" />
     </target>
 
     <target name="install-search" description="Build and install libs related to Solr search.">

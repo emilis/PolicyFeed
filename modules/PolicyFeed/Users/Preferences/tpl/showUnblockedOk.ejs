@@ -1,0 +1,18 @@
+<%
+
+// Input vars:
+var {user} = vars;
+
+%>
+<h1>Jūs vėl gausite pranešimus iš KąVeikiaValdžia.lt</h1>
+
+<p><em>Jūs nurodėte, jog neprieštaraujate gauti laiškus į <%= user.email %> iš KąVeikiaValdžia.lt.</em>
+
+<form method="post" action="<%= config.URLS.base %>/">
+<input type="hidden" name="call" value="PolicyFeed/Users/Preferences.showBlockForm">
+<input type="hidden" name="key" value="<%= user.key %>">
+<p>Jei persigalvojote spauskite čia: <input type="submit" value="Nepageidauju gauti pranešimų iš KąVeikiaValdžia.lt"></p>
+
+<p><a href="<%= config.URLS.base %>/">Grįžti į pirmą puslapį</a></p>
+
+<p><small><em><a href="mailto:emilis.d@gmail.com">Susisiekti</a>.</em></small></p>
