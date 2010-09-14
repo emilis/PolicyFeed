@@ -30,11 +30,62 @@ exports.connect("DB_urls", "failures");
 var log = require("ringo/logging").getLogger(module.id);
 
 
+/**
+ *
+ */
+exports.serializeFields = function(data) {
+    data.time = data.time || new Date().getTime();
+    if (data.time instanceof Date) {
+        data.time = data.time.getTime();
+    }
+    if (typeof(data.data) == "object") {
+        data.data = uneval(data.data);
+    }
+    return data;
+}
 
+
+/**
+ *
+ */
+exports.unserializeFields = function(data) {
+    try {
+        data.data = eval(data.data);
+    } catch (e) {
+        data.data = {};
+    }
+    data.time = new Date(data.time);
+    return data;
+}
+
+
+/**
+ *
+ */
 exports._parent_create = exports.create;
 exports.create = function(id, data) {
-    data.time = data.time || new Date().getTime();
     log.warn("create", uneval(data));
+    data = this.serializeFields(data);
     return this._parent_create(id, data);
 }
 
+
+/**
+ *
+ */
+exports._parent_update = exports.update;
+exports.update = function(id, data) {
+    data = this.serializeFields(data);
+    return this._parent_update(id, data);
+}
+
+
+/**
+ *
+ */
+exports._parent_list = exports.list;
+exports.list = function(filter, options) {
+    return this._parent_list(filter, options).map(function (item) {
+            return exports.unserializeFields(item);
+            });
+}
