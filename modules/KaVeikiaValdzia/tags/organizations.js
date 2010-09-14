@@ -167,6 +167,23 @@ exports.getOrgMap = function() {
 }
 
 
+/**
+ *
+ */
+exports.getNameMap = function() {
+    var list = this.list();
+    var map = {};
+    var org;
+    while (org = list.pop()) {
+        map[org.organization] = org;
+        if (org.name_forms) {
+            map[org.name_forms] = org;
+        }
+    }
+    return map;
+}
+
+
 //----------------------------------------------------------------------------
 
 /**
