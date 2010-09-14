@@ -1,0 +1,48 @@
+<%
+
+var urlencode = java.net.URLEncoder.encode;
+var ringo_strings = require("ringo/utils/strings");
+
+// Input variables:
+var {email, list, message} = vars;
+
+%>
+<div id="page"><div>
+<h1>Jūsų užsisakytos paieškos:</h1>
+<%
+
+if (message) {
+    print('<p class="info">', message, '</p>');
+}
+
+%>
+<table id="alerts" border="1" cellspacing="0" cellpadding="5"><thead><tr>
+        <th>laikas</th>
+        <th>paieška</th>
+        <th>&nbsp;</th>
+    </tr></thead>
+<tbody><%
+
+for each (var alert in list) {
+    print('<tr>');
+    print('<td nowrap="nowrap">', alert.time, '</td>');
+    print('<td><a href="', config.URLS.base, '/docs/search/?q=',
+            urlencode(alert.query), '">',
+            ringo_strings.entitize(alert.query),
+            '</a></td>');
+    print('<td><a href="', config.URLS.base, '/?call=PolicyFeed/Alerts/Manager.remove&id=', alert.id, '">atsisakyti</a></td>');
+    print('</tr>');
+}
+
+%></tbody><tfoot><tr><td>Pridėti naują:</td><td colspan="2">
+    <form method="post" action="<%= config.URLS.base %>/" onsubmit="PolicyFeed.AlertManager.addAlert(this, PolicyFeed.AlertManager.addedToList);return false">
+        <input type="hidden" name="call" value="PolicyFeed/Alerts/Manager.addAlert">
+        <input type="hidden" name="email" value="<%= email %>">
+        <textarea name="query" rows="3" cols="48"></textarea><br>
+        <input type="submit" value="Užsisakyti naujienas">
+    </form>
+</td></tr></tfoot></table><%
+
+%>
+<p><a href="<%= config.URLS.base %>/">Grįžti į pirmą puslapį</a></p>
+</div></div>

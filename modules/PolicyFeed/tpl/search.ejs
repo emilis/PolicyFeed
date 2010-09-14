@@ -35,13 +35,18 @@ print( PolicyFeed.showSearchBlock(query) );
 %>
 <div id="results"><div>
 <table id="results-table">
-<thead><tr><th colspan="5"><%
-
-    print('<span id="result-count">Rodoma <em><span id="results-shown">' + docs.length +'</span> iš <span id="results-total">' + numFound + '</span></em> rezultatų pagal užklausą <em>"' + query + '"</em></span>');
-    print('<a id="rss-search" href="' + BASE_URL + '/docs/rss/?q=' + query + '">');
-    print('<img src="' + site_files + '/rss.png" align="absmiddle"> Užsakykite RSS pranešimus su "' + query  + '"</a>');
-
-%></th></tr></thead>
+<thead><tr><th colspan="5"><span id="result-count">
+    Rodoma <em><span id="results-shown"><%= docs.length %></span> iš <span id="results-total"><%= numFound %></span></em> rezultatų pagal užklausą <em><%= query %></em>
+</span></th></tr><tr><th colspan="5" style="text-align: right; padding-top: 2px; background-color: #dbdbdb; border-left-width: 0px;" id="result-subscribe">
+    <form method="post" action="<%= BASE_URL %>/" onsubmit="PolicyFeed.AlertManager.addAlert(this, PolicyFeed.AlertManager.addedFromSearch);return false">
+        <input type="hidden" name="call" value="PolicyFeed/Alerts/Manager.addAlert">
+        <input type="hidden" name="query" value="<%= query %>">
+        <span id="result-subscribe">Gaukite pranešimus apie naujienas atitinkančias šią užklausą:<br>
+        <input name="email" value="Įveskite el. paštą" onfocus="this.value=''"><input type="submit" value="Užsisakykite pranešimus">
+            arba <a id="rss-search" href="<%= BASE_URL %>/docs/rss/?q=<%= query %>">
+            naudokitės RSS srautu <img src="<%= site_files %>/rss.png" align="absmiddle"></a></span>
+            </form>
+</th></tr></thead>
 <tbody>
 <%
 

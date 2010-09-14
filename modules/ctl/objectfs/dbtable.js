@@ -135,7 +135,7 @@ exports.update = function(id, data) {
     }
 
     values.push(id);
-    var sql = "UPDATE users SET `" + fields.join('`=?, `') + "`=? WHERE id=?";
+    var sql = "UPDATE `" + this.TABLENAME + "` SET `" + fields.join('`=?, `') + "`=? WHERE id=?";
 
     var rs = this.DB.prepared_query(sql, values);
     if (rs.getStatement)

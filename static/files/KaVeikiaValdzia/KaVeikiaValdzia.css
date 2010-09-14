@@ -185,8 +185,13 @@ div.day > div {
                 font-style: normal;
             }
 
+        #result-subscribe {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+
         #rss-search {
-            margin-left: 1em;
             padding-bottom: 1px;
             font-size: 13px;
             font-weight: bold;

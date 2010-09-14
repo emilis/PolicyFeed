@@ -90,9 +90,19 @@ var runThread = function(id) {
             Crawler.processUrl( url, htmlunit.getPage(url.url, id) );
             Queue.doneUrl(id);
         } catch (e) {
-            if (e.message.indexOf("java.net.UnknownHostException:") == 0) {
+            if ((e.message.indexOf("java.net.") == 0)
+                && (e.message.indexOf("java.net.MalformedURLException") == -1)
+                && (e.message.indexOf("java.net.URISyntaxException") == -1)) {
+                    
                 // Add url back to queue and hope the network problems will resolve:
-                Queue.rescheduleUrl(id, WAITNETWORK);
+                url.retries = url.retries || 0;
+                url.retries++;
+                if (url.retries > 10) {
+                    Queue.failedUrl(id, url, e);
+                    log.error("runThread():processUrl", id, e, "\n", e.stack);
+                } else { 
+                    Queue.rescheduleUrl(id, WAITNETWORK);
+                }
             } else {
                 Queue.failedUrl(id, url, e);
                 log.error("runThread():processUrl", id, e, "\n", e.stack);

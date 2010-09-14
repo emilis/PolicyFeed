@@ -139,10 +139,10 @@ exports.onItemChange = function(action, _id, item) {
     if (_id.indexOf("/docs/") > -1) {
         try {
             switch (action) {
-                case "after-write":
+                case "afterWrite":
                     return exports.indexItem(item);
                 break;
-                case "after-remove":
+                case "afterRemove":
                     return exports.removeItem(_id);
                 break;
             }
@@ -154,7 +154,8 @@ exports.onItemChange = function(action, _id, item) {
 
 
 /**
- *
+ * Parses query from format supported by PolicyFeed into Solr format.
+ * This means it replaces "," with " OR " where appropriate.
  */
 exports.compileQuery = function(q) {
     // special syntax for OR queries:
@@ -169,7 +170,7 @@ exports.compileQuery = function(q) {
         q = q.join('"');
     }
 
-    return encodeURIComponent(q);
+    return q;
 }
 
 
@@ -177,7 +178,7 @@ exports.compileQuery = function(q) {
  *
  */
 exports.search = function(query, options) {
-    query = this.compileQuery(query);
+    query = encodeURIComponent(this.compileQuery(query));
 
     options = options || {};
     var {highlight, fields, limit, offset} = options;
