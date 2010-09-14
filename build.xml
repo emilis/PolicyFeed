@@ -15,7 +15,7 @@
     <property name="pf.src" location="src/policyfeed" />
     <property name="search.src" location="src/search" />
     <property name="search.ant" location="${search.src}/build.xml" />
-    <property name="url.db" value="policyfeed_urls.sqlite3" />
+    <property name="url.db" value="urls.sqlite3" />
     <property name="user.db" value="users.sqlite3" />
 
     <property name="run.jar" location="${lib}/run.jar" />

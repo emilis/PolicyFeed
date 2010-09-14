@@ -90,7 +90,7 @@ exports.gluestick = {
             module: "ctl/DB/Sqlite",
             clone: true,
             config: {
-                filename: exports.DIRS.data + "/policyfeed_urls.sqlite3"
+                filename: exports.DIRS.data + "/urls.sqlite3"
             }},
         DB_users: {
             module: "ctl/DB/Sqlite",
