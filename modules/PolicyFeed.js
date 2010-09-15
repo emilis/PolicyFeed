@@ -248,7 +248,7 @@ exports.shareByEmail = function(req) {
     var user;
 
     if (!(user = Users.read({email: email}))) {
-        var uid = Users.create({ email: email, blocked: false });
+        var uid = Users.create(false, { email: email, blocked: false });
         user = Users.read(uid);
     }
 
