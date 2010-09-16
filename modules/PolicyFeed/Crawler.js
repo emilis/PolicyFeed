@@ -289,7 +289,7 @@ exports.saveOriginal = function(parser_name, url, page) {
     }
     else {
         if (this.parsers[parser_name].parseNonHtml) {
-            original = this.parsers[parser_name].parseNonHtml(original, page);
+            original = this.parsers[parser_name].parseNonHtml(original, page, url);
         } else {
             throw Error(module.id + ".saveOriginal: Unsupported page type.", url.original_id + " | " + url.url);
         }
