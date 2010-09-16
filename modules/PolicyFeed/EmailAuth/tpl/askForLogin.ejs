@@ -1,0 +1,15 @@
+<%
+
+var {id, action_title} = vars;
+
+%>Sveiki, 
+
+svetainėje KąVeikiaValdžia.lt jūs ar kitas asmuo panoro <%= action_title %>.
+
+Siekdami apsaugoti jūsų duomenis ir nustatymus mūsų svetainėje nuo pašalinės veiklos, prašome prisijungti, pasinaudojant šia nuoroda:
+
+<%= config.URLS.full %>/?call=PolicyFeed/EmailAuth.execute&action=<%= id %>
+
+
+Ši nuoroda veiks 24 valandas.
+
