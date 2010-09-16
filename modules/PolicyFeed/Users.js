@@ -55,6 +55,19 @@ exports.getByKey = function(key) {
 /**
  *
  */
+exports.getEmailByKey = function(key) {
+    var user = this.read({key:key});
+    if (user && user.email) {
+        return user.email;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ *
+ */
 exports.parent_create = exports.create;
 exports.create = function(id, data) {
     if (!data.key) {

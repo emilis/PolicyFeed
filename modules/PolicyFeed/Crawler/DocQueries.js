@@ -21,7 +21,7 @@
 var config = require("config");
 var gluestick = require("gluestick");
 var SolrClient = require("PolicyFeed/Solr/Client");
-var SolrUtils = require("PolicyFeed/Solr/Utils");
+var SolrUtils = false; // This dependency is heavy stuff, so it is loaded only when needed.
 
 
 // Extend and connect to db table:
@@ -80,6 +80,10 @@ exports.removeQueries = function(qids) {
  *
  */
 exports.runQueries = function(evt, id, doc) {
+
+    if (!SolrUtils) {
+        SolrUtils = require("PolicyFeed/Solr/Utils");
+    }
 
     // Get queries:
     var list = exports.list();

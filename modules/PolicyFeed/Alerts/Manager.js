@@ -17,10 +17,11 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+// Requirements:
 var Alerts = require("PolicyFeed/Alerts");
-var ringo_dates = require("ringo/utils/dates");
+var EmailAuth = require("PolicyFeed/EmailAuth");
 var gluestick = require("gluestick");
+var ringo_dates = require("ringo/utils/dates");
 
 gluestick.extendModule(exports, "ctl/Controller");
 
@@ -31,10 +32,15 @@ exports.tpl_dir = exports.getTplDir(module);
  *
  */
 exports.showList = function(req) {
-    var email = req.params.email;
 
+    var email = req.params.email;
     if (!email)
         return this.showError(404);
+
+    if (!EmailAuth.isLoggedIn(req, email)) {
+        EmailAuth.askForLogin(email, module.id, "showList", "peržiūrėti užsakytų pranešimų sąrašą.", {email: email});
+        return this.showContent("showList-preview");
+    }
 
     var list = Alerts.list({email: email}, { order: { time: 1 }});
 
@@ -50,7 +56,26 @@ exports.showList = function(req) {
  *
  */
 exports.addAlert = function(req) {
-    
+
+    var email = req.params.email;
+
+    if (!EmailAuth.isLoggedIn(req, email)) {
+        EmailAuth.askForLogin(
+            email,
+            module.id,
+            "addAlert",
+            "užsakyti pranešimus atitinkančius paiešką:\n\n    " + req.params.query + "\n\njūsų el. pašto adresu",
+            { email: email, query: req.params.query});
+
+        if (req.params.format == "json") {
+            return this.WebMapper.returnJson({ message: "Paprašysime jūsų patvirtinti šį užsakymą el. paštu." });
+        } else {
+            return this.showMessage("Prašome patvirtinti savo užsakymą.",
+                    "Išsiuntėme jums el. laišką, kuriame yra nuoroda, kurią paspaudę galėsite patvirtinti savo užsakymą."
+                    );
+        }
+    }
+
     var alert = {
         email: req.params.email,
         query: req.params.query,
@@ -60,11 +85,15 @@ exports.addAlert = function(req) {
     alert.id = Alerts.create(false, alert);
 
     if (req.params.format == "json") {
-        return this.WebMapper.returnJson(alert);
+        return this.WebMapper.returnJson({
+                message: "Pranešimai užsakyti.",
+                alert: alert
+                });
     } else {
         return this.WebMapper.redirect(module.id, "showList", {
-                email: alert.email
-            });
+                email: email,
+                message: "Pranešimai užsakyti."
+                });
     }
 }
 
@@ -81,10 +110,22 @@ exports.remove = function(req) {
 
     var alert = Alerts.read(id);
 
+    if (!EmailAuth.isLoggedIn(req, alert.email)) {
+        return this.showError(403);
+    }
+
     Alerts.remove(id);
 
     return this.WebMapper.redirect(module.id, "showList", {
         email: alert.email,
-        message: "Naujienų užsakymas ištrintas."
+        message: 'Pranešimų užsakymas panaikintas. Užklausa: <em>' + alert.query + '</em>.'
         });
+}
+
+
+/**
+ *
+ */
+exports.showMessage = function(title, body) {
+    return this.showContent("showMessage", { title: title, body: body });
 }

@@ -175,7 +175,7 @@ exports.extractPageData = function(original, page) {
             last_hr);
 
     // Schedule "nėra teksto" docs for re-check after 5 minutes:
-    if (doc.html.match("nėra teksto HTML formatu")) {
+    if (doc.html.match(/nėra\steksto\sHTML\sformatu/i)) {
         Queue.scheduleUrl({
             url: doc.url,
             domain: "www.lrs.lt",
@@ -198,9 +198,9 @@ exports.extractPageData = function(original, page) {
 /**
  *
  */
-exports.parseNonHtml = function(original, page) {
-    if (original.webResponse.contentType == "text/plain") {
-        Queue.scheduleUrl(original.url, new Date(new Date().getTime() + 3*60*1000));
+exports.parseNonHtml = function(original, page, url) {
+    if (page.webResponse.contentType == "text/plain") {
+        Queue.scheduleUrl(url, new Date(new Date().getTime() + 3*60*1000));
         throw Error(module.id + ".parseNonHtml: rescheduled page that is temporarily unavailable.");
     } else {
         throw Error(module.id + ".parseNonHtml: unknown page type.");

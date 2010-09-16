@@ -4,6 +4,7 @@
 var {user} = vars;
 
 %>
+<div id="page"><div>
 <h1>Jūs vėl gausite pranešimus iš KąVeikiaValdžia.lt</h1>
 
 <p><em>Jūs nurodėte, jog neprieštaraujate gauti laiškus į <%= user.email %> iš KąVeikiaValdžia.lt.</em>
@@ -15,4 +16,5 @@ var {user} = vars;
 
 <p><a href="<%= config.URLS.base %>/">Grįžti į pirmą puslapį</a></p>
 
-<p><small><em><a href="mailto:emilis.d@gmail.com">Susisiekti</a>.</em></small></p>
+<p><small><em><a href="mailto:<%= config.supportEmail %>">Susisiekti</a>.</em></small></p>
+</div></div>

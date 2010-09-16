@@ -8,11 +8,11 @@ var {email, list, message} = vars;
 
 %>
 <div id="page"><div>
-<h1>Jūsų užsisakytos paieškos:</h1>
+<h1>Jūsų užsakyti pranešimai adresu <%= email %>:</h1>
 <%
 
 if (message) {
-    print('<p class="info">', message, '</p>');
+    print('<p id="message" class="message">', message, '</p>');
 }
 
 %>

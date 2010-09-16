@@ -54,6 +54,10 @@ exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
 
 
+/**
+ * Email where your visitors should send their problems:
+ */
+exports.supportEmail = "policyfeed@mailinator.com";
 
 // --- Gluestick constants: ---
 
@@ -71,6 +75,7 @@ exports.DIRS = {
 var base_url = "";
 exports.URLS = {
     base:       base_url,
+    full:       "http://localhost:8080" + base_url,
     files:      base_url + "/static/files",
     uploads:    base_url + "/static/uploads"
 };
@@ -127,6 +132,7 @@ exports.gluestick = {
                     "Site",
                     "PolicyFeed",
                     "PolicyFeed/Calendar",
+                    "PolicyFeed/EmailAuth",
                     //"PolicyFeed/Comments",
                     "PolicyFeed/Users/Preferences",
                     "PolicyFeed/Alerts/Manager"
@@ -151,15 +157,17 @@ exports["PolicyFeed/Crawler"] = {
 /**
  * Email sending configuration.
  */
-exports.mail = {
-    to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
-    from: "policyfeed@localhost",
-    // If you use Gmail account to send email, this may be helpful:
-    //host: "smtp.gmail.com",
-    //port: 587,
-    //encrypt: true,
-    //username: "email@example.org",
-    //password: "example_password"
+exports["ringo/mail"] = {
+    template: {
+        to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
+        from: "policyfeed@localhost"
+        // If you use Gmail account to send email, this may be helpful:
+        //host: "smtp.gmail.com",
+        //port: 587,
+        //encrypt: true,
+        //username: "user@example.org",
+        //password: "example-password"
+    }
 };
 
 
@@ -168,7 +176,7 @@ exports.mail = {
  */
 exports["PolicyFeed/Crawler/Errors"] = {
     message: {
-        subject: "PolicyFeed/UrlErrors status"
+        subject: "PolicyFeed/Crawler/Errors report"
     }
 };
 

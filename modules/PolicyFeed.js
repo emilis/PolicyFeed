@@ -18,6 +18,7 @@
 */
 
 // Requirements:
+var config = require("config");
 var ctl_dates = require("ctl/utils/dates");
 var fs = require("fs");
 var gluestick = require("gluestick");
@@ -253,7 +254,7 @@ exports.shareByEmail = function(req) {
     }
 
     if (user.blocked) {
-        return this.WebMapper.returnJson({ message: '<p class="error">Atsiprašome, bet <a href="mailto:' + email + '">' + email + '</a> savininkas nepageidauja gauti pranešimų iš mūsų svetainės.</p><p><em>Jei jūs esate šio el. pašto adreso savininkas ir norite pakeisti savo pasirinkimą, prašome <a href="mailto:emilis.d@gmail.com">parašyti mums</a>.' });
+        return this.WebMapper.returnJson({ message: '<p class="error">Atsiprašome, bet <a href="mailto:' + email + '">' + email + '</a> savininkas nepageidauja gauti pranešimų iš mūsų svetainės.</p><p><em>Jei jūs esate šio el. pašto adreso savininkas ir norite pakeisti savo pasirinkimą, prašome <a href="mailto:' + config.supportEmail + '">parašyti mums</a>.' });
     } else if (!jsonfs.exists(id)) {
         log.error("shareByEmail", "The document does not exist:", id);
         return this.WebMapper.returnJson({ message: '<p class="error">Atsiprašome, bet mūsų sistema nerado tokio dokumento. Administratoriai informuoti apie įvykį.</p>' });

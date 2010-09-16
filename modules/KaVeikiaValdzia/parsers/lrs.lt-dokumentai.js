@@ -127,6 +127,11 @@ exports.parseFeedItem = function(item) {
                 case "Informaciniai pranešimai":
                     teises_aktas.informaciniai_pranesimai = line[1];
                 break;
+                case "Valstybės žinios":
+                case "Valstybės Žinios":
+                    teises_aktas.valstybes_zinios = line[1];
+                break;
+                // Don't forget to add a break statement to end your cases :-)
                 default:
 
                     if (line[0].slice(0, 10) == "Įsigaliojo") {
@@ -146,28 +151,38 @@ exports.parseFeedItem = function(item) {
             case "Darbotvarkė":
                 type = "darbotvarke";
             break;
+
+            case "Įstatymo projektas":
             case "Nutarimo projektas":
             case "Pasiūlymas":
-            case "Įstatymo projektas":
             case "Statuto projektas":
                 type = "projektas";
             break;
-            case "Teisės departamento išvada":
-            case "Išvados":
-            case "Nutarimas":
-            case "Komiteto išvada":
-            case "Sprendimas":
+
             case "Dekretas":
+            case "Išvados":
+            case "Komiteto išvada":
+            case "Nutarimas":
+            case "Pagrindinio komiteto išvada":
+            case "Potvarkis":
+            case "Sprendimas":
+            case "Sutartis":
+            case "Teisės departamento išvada":
                 type = "nutarimas";
             break;
-            case "Lyginamasis variantas":
-            case "Stenograma":
+
             case "Aiškinamasis raštas":
-            case "Lydraštis":
             case "Informacija":
+            case "Informacinis pranešimas":
+            case "Komiteto posėdžio protokolo išrašas":
+            case "Lydraštis":
+            case "Lyginamasis variantas":
+            case "Priedas":
             case "Protokolas":
+            case "Stenograma":
                 type = "kita";
             break;
+
             default:
                 Failures.create(false, { parser: name, url: url, data: {
                         error: "Unrecognized document type",
@@ -298,3 +313,14 @@ exports.extractPageData = function(original, page) {
 }
 
 
+/**
+ *
+ */
+exports.parseNonHtml = function(original, page, url) {
+    if (page.webResponse.contentType == "text/plain") {
+        Queue.scheduleUrl(url, new Date(new Date().getTime() + 3*60*1000));
+        throw Error(module.id + ".parseNonHtml: rescheduled page that is temporarily unavailable.");
+    } else {
+        throw Error(module.id + ".parseNonHtml: unknown page type.");
+    }
+}

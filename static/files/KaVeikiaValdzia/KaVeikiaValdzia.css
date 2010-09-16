@@ -21,6 +21,20 @@ a > img {
 }
 
 
+img.example {
+    border: 1px solid #e5e5e5;
+    padding: 4px;
+    background-color: #efefef;
+}
+
+p.message {
+    border: 1px solid #dddcbd;
+    background-color: #fffedf;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
 /* --- Rounded double borders: --- */
 #page,
 #document,
@@ -190,6 +204,12 @@ div.day > div {
             font-weight: bold;
             color: #333;
         }
+
+            #subscribe-message {
+                margin: 5px 0 0 0;
+                padding: 2px;
+                text-align: center;
+            }
 
         #rss-search {
             padding-bottom: 1px;
