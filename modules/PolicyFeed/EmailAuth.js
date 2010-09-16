@@ -90,6 +90,10 @@ exports.execute = function(req) {
 
     try {
         var user = Users.getByEmail(action.email);
+        if (!user) {
+            user = Users.create(false, { email: action.email });
+            user = Users.read(user);
+        }
         req.session.data.user = user;
         return this.WebMapper.redirect(action.module, action.action, action.params);
         //return require(action.module)[action.action](action.params);
