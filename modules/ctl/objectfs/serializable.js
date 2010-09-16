@@ -45,7 +45,7 @@ exports.upgradeExports = function(obj) {
     }
 
     obj.list = function(filter, options) {
-        return this._serializable_parent_list(filter, options).map(function (item) { return this.serialize(item) });
+        return this._serializable_parent_list(filter, options).map(this.unserialize);
     }
 
     if (obj.iterate) {
