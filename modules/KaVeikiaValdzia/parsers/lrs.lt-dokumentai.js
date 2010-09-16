@@ -155,6 +155,7 @@ exports.parseFeedItem = function(item) {
             case "Įstatymo projektas":
             case "Nutarimo projektas":
             case "Pasiūlymas":
+            case "Rezoliucijos projektas":
             case "Statuto projektas":
                 type = "projektas";
             break;
