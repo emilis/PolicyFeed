@@ -100,6 +100,9 @@ exports.write = function(id, data) {
  */
 exports.create = function(id, data) {
 
+    if (id && !data.id)
+        data.id = id;
+
     var fields = [];
     var values = [];
     for (var key in data) {
@@ -107,8 +110,6 @@ exports.create = function(id, data) {
         values.push(data[key]);
     }
 
-    if (id && !data.id)
-        data.id = id;
 
     var sql = "INSERT INTO `"
         + this.TABLENAME
@@ -148,8 +149,16 @@ exports.update = function(id, data) {
  *
  */
 exports.remove = function(id) {
-    var sql = "delete from `" + this.TABLENAME + "` where id=?";
-    var rs = this.DB.prepared_query(sql, [id]);
+
+    if ((typeof(id) != "object") || (id instanceof String) || (id instanceof Array)) {
+        id = {id: id};
+    }
+    
+    var sql = "delete from `" + this.TABLENAME + "` ";
+    var {where, values} = this._where_sql(id);
+    sql += where;
+
+    var rs = this.DB.prepared_query(sql, values);
     if (rs.getStatement)
         rs.getStatement().close();
     return rs;
@@ -176,8 +185,27 @@ exports._select_query = function(filter, options) {
     
     
     sql += " FROM `" + this.TABLENAME + "` ";
-    var values = [];
 
+    // get where,order,limit:
+    var {where, values} = this._where_sql(filter, options);
+    sql += where;
+    
+    return this.DB.prepared_query(sql, values);
+}
+
+
+/**
+ *
+ */
+exports._where_sql = function(filter, options) {
+
+    filter = filter || {};
+    options = options || {};
+    var {offset, limit, order, fields} = options;
+
+    var sql = "";
+
+    var values = [];
     if (Object.keys(filter).length) {
         sql += " WHERE ";
                 var sep = "";
@@ -218,7 +246,10 @@ exports._select_query = function(filter, options) {
     if (offset)
         sql += " OFFSET " + offset;
 
-    return this.DB.prepared_query(sql, values);
+    return {
+        where: sql,
+        values: values
+    };
 }
 
 
