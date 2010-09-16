@@ -26,6 +26,7 @@ var DocQueries = require("PolicyFeed/Crawler/DocQueries");
 var gluestick = require("gluestick");
 var mail = require("ringo/mail");
 var ringo_arrays = require("ringo/utils/arrays");
+var Users = require("PolicyFeed/Users");
 
 // Constants:
 var tpl_dir = module.directory + "/Alerts/tpl/";
@@ -58,17 +59,19 @@ exports.handleDocMatches = function(id, doc, matches) {
         return true;
     }
 
-    // get a list of emails:
-    var alerts = ringo_arrays.union(this.list({ id: ids}, {fields: ["email"]}));
-        
-    alerts.map(function(alert) {
+    // Get a list of emails:
+    var emails = this.list({ id: ids}, {fields: ["email"]}).map(function(item) { return item.email; });
+    emails = ringo_arrays.union(emails);
+
+    // Send emails:
+    emails.map(function(email) {
             mail.send({
-                to: alert.email,
+                to: email,
                 subject: doc.org + '» ' + doc.type + '» ' + doc.title,
                 html: ctlTemplate.fetch(alert_tpl, {
                     id: id,
                     doc: doc,
-                    email: alert.email
+                    email: email
                     })
                 });
             });
@@ -93,6 +96,7 @@ exports.allowRemoveQueries = function(qids) {
  *
  */
 exports._update_qids = function(aid, queries) {
+
     // remove old queries:
     var rem_list = this.a2q.list({ aid: aid });
     this.a2q.remove({aid: aid});
@@ -115,6 +119,9 @@ exports.create = function(id, data) {
 
     if (id = this.parent_create(id, data)) {
         this._update_qids(id, [data.query]);
+        if (!Users.getByEmail(data.email)) {
+            Users.create(false, {email: data.email});
+        }
         return id;
     }
 }
