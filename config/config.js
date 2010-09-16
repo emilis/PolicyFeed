@@ -157,17 +157,15 @@ exports["PolicyFeed/Crawler"] = {
 /**
  * Email sending configuration.
  */
-exports["ringo/mail"] = {
-    template: {
-        to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
-        from: "policyfeed@localhost"
-        // If you use Gmail account to send email, this may be helpful:
-        //host: "smtp.gmail.com",
-        //port: 587,
-        //encrypt: true,
-        //username: "user@example.org",
-        //password: "example-password"
-    }
+exports.mail = {
+    to: "policyfeed@mailinator.com", // go to http://policyfeed.mailinator.com/ to get your email :-)
+    from: "policyfeed@localhost"
+    // If you use Gmail account to send email, this may be helpful:
+    //host: "smtp.gmail.com",
+    //port: 587,
+    //encrypt: true,
+    //username: "user@example.org",
+    //password: "example-password"
 };
 
 
