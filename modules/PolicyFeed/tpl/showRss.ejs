@@ -12,14 +12,14 @@ var {docs} = vars;
     <channel>
         <title>KąVeikiaValdžia.lt</title>
         <description>Visas valdžios naujienų srautas vienoje vietoje.</description>
-        <link>http://kaveikiavaldzia.lt/</link>
+        <link><%= config.URLS.full %>/</link>
         <%
 
 for each (var doc in docs) {
     print('<item>\n');
         print('  <title><![CDATA[' + doc.org + '» ' + doc.type + '» ' + doc.title + ']]></title>\n');
-        print('  <link>http://kaveikiavaldzia.lt' + doc.id + '</link>\n');
-        print('  <guid>http://kaveikiavaldzia.lt' + doc.id + '</guid>\n');
+        print('  <link>', config.URLS.full, doc.id, '</link>\n');
+        print('  <guid>', config.URLS.full, doc.id, '</guid>\n');
         print('  <pubDate>' + ctl_dates.fromUTCString(doc.published).toString() + '</pubDate>\n');
         print('  <description><![CDATA[' + doc.html + ']]></description>');
     print('</item>\n');

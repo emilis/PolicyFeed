@@ -3,7 +3,7 @@
 // Input variables:
 var {doc, key} = vars;
 
-var url = "http://kaveikiavaldzia.lt/" + doc._id;
+var url = config.URLS.full + doc._id;
 
 %><!DOCTYPE html>
 <html>
@@ -26,7 +26,7 @@ var url = "http://kaveikiavaldzia.lt/" + doc._id;
 Sveiki, kažkuris KąVeikiaValdžia.lt
 svetainės lankytojas nusprendė pasidalinti su Jumis šiuo dokumentu. Jei
 nepageidaujate gauti tokių
-pranešimų, ar gavote jį per klaidą, <a href="http://kaveikiavaldzia.lt/?call=PolicyFeed/Users/Preferences.showBlockForm&key=<%= key %>">jų galite atsisakyti čia</a>.<br>
+pranešimų, ar gavote jį per klaidą, <a href="<%= config.URLS.full %>/?call=PolicyFeed/Users/Preferences.showBlockForm&key=<%= key %>">jų galite atsisakyti čia</a>.<br>
 </div>
 <h2><%= doc.title %></h2>
 <p><em>[ <%= doc.organization %> &raquo; <%= doc.type %> @ <%= doc.published %> ]</em></p>
@@ -38,6 +38,6 @@ pranešimų, ar gavote jį per klaidą, <a href="http://kaveikiavaldzia.lt/?call
 <b>Nuoroda:</b> <a href="<%= url %>"><%= url %></a><br>
 <b>Originalus dokumentas:</b> <a href="<%= doc.url %>"><%= doc.url %></a><br>
 </p>
-<p class="small">KąVeikiaValdžia.lt: <a href="http://kaveikiavaldzia.lt/pages/apie">apie projektą</a>, <a href="http://kaveikiavaldzia.lt/">naujausi dokumentai</a>.</p>
+<p class="small">KąVeikiaValdžia.lt: <a href="<%= config.URLS.full %>/pages/apie">apie projektą</a>, <a href="<%= config.URLS.full %>/">naujausi dokumentai</a>.</p>
 </body>
 </html>

@@ -2,6 +2,8 @@
 
 var {id,email,doc} = vars;
 
+var page_url = config.URLS.full + id;
+
 %><!DOCTYPE html>
 <html><head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -22,11 +24,11 @@ font-size: 11px;
 <%= doc.html %>
 <p>&nbsp;</p>
 
-<p style="padding: 10px; background-color: #e2e2e2;" class="small"><b><a href="http://kaveikiavaldzia.lt/?call=PolicyFeed/Alerts/Manager.showList&email=<%= email %>">Peržiūrėti (redaguoti) Jums siunčiamus pranešimus</a>.</b></p>
-<p style="padding: 10px; background-color: #f2f2f2;" class="small">Pasidalink šia naujiena: <a href="http://facebook.com/share.php?u=http://kaveikiavaldzia.lt<%= id %>">Facebook</a>
-| <a href="http://twitter.com/home?status=http://kaveikiavaldzia.lt<%= id %>">Twitter</a><br>
+<p style="padding: 10px; background-color: #e2e2e2;" class="small"><b><a href="<%= config.URLS.full %>/?call=PolicyFeed/Alerts/Manager.showList&email=<%= email %>">Peržiūrėti (redaguoti) Jums siunčiamus pranešimus</a>.</b></p>
+<p style="padding: 10px; background-color: #f2f2f2;" class="small">Pasidalink šia naujiena: <a href="http://facebook.com/share.php?u=<%= page_url %>">Facebook</a>
+| <a href="http://twitter.com/home?status=<%= page_url %>">Twitter</a><br>
 <br>
-<b>Nuoroda:</b> <a href="http://kaveikiavaldzia.lt<%= id %>">http://kaveikiavaldzia.lt<%= id %></a><br>
+<b>Nuoroda:</b> <a href="<%= page_url %>"><%= page_url %></a><br>
 <b>Originalus dokumentas:</b> <a href="<%= doc.url %>"><%= doc.url %></a></p>
-<p class="small">KąVeikiaValdžia.lt: <a href="http://kaveikiavaldzia.lt/pages/apie">apie projektą</a>, <a href="http://kaveikiavaldzia.lt/">naujausi dokumentai</a>.</p>
+<p class="small">KąVeikiaValdžia.lt: <a href="<%= config.URLS.full %>/pages/apie">apie projektą</a>, <a href="<%= config.URLS.full %>/">naujausi dokumentai</a>.</p>
 </body></html>
