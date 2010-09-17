@@ -653,3 +653,7 @@ div.day > div {
         font-weight: normal;
     }
 
+/*--- Comments ---*/
+#idc-container-parent {
+    margin: 33px;
+}
