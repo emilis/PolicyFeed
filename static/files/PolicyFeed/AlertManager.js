@@ -56,7 +56,11 @@ PolicyFeed.AlertManager.addedFromSearch = function(form, data, status) {
     if (!jQuery("#subscribe-message").length) {
         jQuery("#result-subscribe").append('<p id="subscribe-message" class="message"></p>');
     }
-    jQuery("#subscribe-message").html(data.message);
+    var html = data.message;
+    if (data.link) {
+        html = '<a href="' + data.link + '">' + html + '</a>';
+    }
+    jQuery("#subscribe-message").html(html);
     jQuery("#subscribe-message").fadeOut(1, function() { jQuery("#subscribe-message").fadeIn(500) });
 }
 

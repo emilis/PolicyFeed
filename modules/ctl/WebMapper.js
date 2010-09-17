@@ -176,11 +176,15 @@ function isCallAllowed(obj_name, action) {
 
 
 /**
- *  Returns a response object with redirect status and header.
+ *
  */
-exports.redirect = function(module_name, method, params) {
-
-    var url = config.URLS.base + "/?call=" + module_name + "." + method;
+exports.getUrl = function(module_name, method, params, full) {
+    if (full) {
+        var url = config.URLS.full;
+    } else {
+        var url = config.URLS.base;
+    }
+    url += "/?call=" + module_name + "." + method;
 
     if (params) {
         for (var key in params) {
@@ -191,7 +195,17 @@ exports.redirect = function(module_name, method, params) {
         }
     }
 
-    return this.redirectToUrl(url);
+    return url;
+}
+
+
+/**
+ *  Returns a response object with redirect status and header.
+ */
+exports.redirect = function(module_name, method, params) {
+
+    return this.redirectToUrl(
+            this.getUrl( module_name, method, params ));
 }
 
 

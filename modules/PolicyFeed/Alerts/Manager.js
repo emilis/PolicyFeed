@@ -87,6 +87,7 @@ exports.addAlert = function(req) {
     if (req.params.format == "json") {
         return this.WebMapper.returnJson({
                 message: "Pranešimai užsakyti.",
+                link: this.WebMapper.getUrl(module.id, "showList", {email: alert.email }),
                 alert: alert
                 });
     } else {
