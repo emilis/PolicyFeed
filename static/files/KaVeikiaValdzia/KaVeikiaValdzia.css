@@ -656,4 +656,5 @@ div.day > div {
 /*--- Comments ---*/
 #idc-container-parent {
     margin: 33px;
+    clear: both;
 }
