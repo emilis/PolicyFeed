@@ -79,7 +79,7 @@ for each(var doc in docs)
 
     print('<tr id="' + div_id + '">');
     print('<td class="org" nowrap="nowrap" align="right">');
-        print('<a href="', BASE_URL, '/docs/search/?q=org:', doc.org, '" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
+        print('<a href="', BASE_URL, '/docs/search/?q=org:%22', doc.org, '%22" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
     print('<td class="type">');
         print('<a href="', BASE_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
     print('<td class="title">');
