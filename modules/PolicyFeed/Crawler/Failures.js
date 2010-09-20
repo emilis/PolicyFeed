@@ -18,13 +18,14 @@
 */
 
 // Requirements:
+var config = require("config");
 var gluestick = require("gluestick");
 
 // Extend module:
-gluestick.extendModule(exports, "ctl/objectfs/dbtable");
+gluestick.extendModule(exports, "ctl/objectfs/berkeley");
 
 // Connect to DB table:
-exports.connect("DB_urls", "failures");
+exports.connect(config.DIRS.data, "failures");
 
 
 var log = require("ringo/logging").getLogger(module.id);
@@ -33,59 +34,50 @@ var log = require("ringo/logging").getLogger(module.id);
 /**
  *
  */
-exports.serializeFields = function(data) {
-    data.time = data.time || new Date().getTime();
-    if (data.time instanceof Date) {
-        data.time = data.time.getTime();
+exports.exists = function(url) {
+    return this.list({url: url}).length > 0;
+}
+
+
+/**
+ *
+ */
+exports.read = function(url) {
+    return this.list({url: url})[0];
+}
+
+
+/**
+ *
+ */
+exports._parent_write = exports.write;
+exports.write = function(url, data) {
+    log.warn("write", url, uneval(data));
+
+    data.url = data.url || url;
+    data.time = data.time || new Date();
+    data.times = data.times || 1;
+    
+    var oldData = this.read(url);
+    if (oldData) {
+        data.times = oldData.times ? (oldData.times + 1) : data.times;
+        return this._parent_write(oldData._id, data);
+    } else {
+        return this._parent_write(false, data);
     }
-    if (typeof(data.data) == "object") {
-        data.data = uneval(data.data);
+}
+
+
+/**
+ *
+ */
+exports.remove = function(filter, options) {
+    if (typeof(filter) == "string" || filter instanceof String) {
+        filter = { url: filter };
     }
-    return data;
+
+    return this.list(filter, options).map(function (item) { return item.remove(); });
 }
 
 
-/**
- *
- */
-exports.unserializeFields = function(data) {
-    try {
-        data.data = eval(data.data);
-    } catch (e) {
-        data.data = {};
-    }
-    data.time = new Date(data.time);
-    return data;
-}
 
-
-/**
- *
- */
-exports._parent_create = exports.create;
-exports.create = function(id, data) {
-    log.warn("create", uneval(data));
-    data = this.serializeFields(data);
-    return this._parent_create(id, data);
-}
-
-
-/**
- *
- */
-exports._parent_update = exports.update;
-exports.update = function(id, data) {
-    data = this.serializeFields(data);
-    return this._parent_update(id, data);
-}
-
-
-/**
- *
- */
-exports._parent_list = exports.list;
-exports.list = function(filter, options) {
-    return this._parent_list(filter, options).map(function (item) {
-            return exports.unserializeFields(item);
-            });
-}

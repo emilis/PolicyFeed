@@ -139,7 +139,7 @@ exports.parseFeedItem = function(item) {
                     } else if (line[0].slice(0, 18) == "Projektas priimtas") {
                         teises_aktas.priimtas = line[0].slice(20);
                     } else {
-                        Failures.create(false, { parser: name, url: url, data: {
+                        Failures.write(url, { parser: name, url: url, data: {
                                 error: "Unrecognized line",
                                 line: line
                             }});
@@ -185,7 +185,7 @@ exports.parseFeedItem = function(item) {
             break;
 
             default:
-                Failures.create(false, { parser: name, url: url, data: {
+                Failures.write(url, { parser: name, url: url, data: {
                         error: "Unrecognized document type",
                         type: type
                         }});
@@ -196,7 +196,7 @@ exports.parseFeedItem = function(item) {
             var org = orgmap[author].org;
             var organization = orgmap[author].organization;
         } else {
-            Failures.create(false, { parser: name, url: url, data: {
+            Failures.write(url, { parser: name, url: url, data: {
                     error: "Unregognized author",
                     author: author
                     }});
