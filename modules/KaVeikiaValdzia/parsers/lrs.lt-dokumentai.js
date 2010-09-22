@@ -153,6 +153,7 @@ exports.parseFeedItem = function(item) {
             break;
 
             case "Įstatymo projektas":
+            case "Komiteto išvados projektas":
             case "Nutarimo projektas":
             case "Pasiūlymas":
             case "Rezoliucijos projektas":
