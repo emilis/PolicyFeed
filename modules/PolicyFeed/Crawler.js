@@ -31,6 +31,8 @@ var Queue = require(module.id + "/Queue");
 var Urls = require(module.id + "/Urls");
 var Browser = require(module.id + "/Browser");
 
+var organizations = require("KaVeikiaValdzia/tags/organizations");
+
 var filters = {
     "default": require(module.id + "/filters/default"),
     abiword: require(module.id + "/filters/abiword"),
@@ -163,8 +165,19 @@ exports.checkFeed = function(parser_name, url, page) {
             return true;
         });
 
-    // todo: Add orgroups field to originals:
-    // ...
+    if (!urls.length) {
+        return 0;
+    }
+
+    // Add organization info:
+    var orgmap = organizations.getOrgMap();
+    urls = urls.map(function (item) {
+
+            var org = orgmap[item.org];
+            item.organization = org.organization;
+            item.orgroups = org.orgroups.split(",");
+            return item;
+    });
 
     // Save url to originals, add to Urls and Queue:
     urls.map(function (item) {
@@ -188,6 +201,8 @@ exports.checkFeed = function(parser_name, url, page) {
 
     // schedule next check:
     Queue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
+
+    return urls.length;
 }
 
 
