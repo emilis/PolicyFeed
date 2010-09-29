@@ -163,11 +163,15 @@ exports.checkFeed = function(parser_name, url, page) {
             return true;
         });
 
+    // todo: Add orgroups field to originals:
+    // ...
+
     // Save url to originals, add to Urls and Queue:
     urls.map(function (item) {
         // create originals:
         var id = "/originals/" + ctl_dates.formatFromString(item.published, "yyyy/MM/dd/");
         id += Sequence.next();
+        item._id = id;
 
         log.info("adding page:", id, item.published, item.url, item.title);
 
