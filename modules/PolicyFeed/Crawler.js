@@ -175,7 +175,7 @@ exports.checkFeed = function(parser_name, url, page) {
 
             var org = orgmap[item.org];
             item.organization = org.organization;
-            item.orgroups = org.orgroups.split(",");
+            item.orgroups = org.region.split(",");
             return item;
     });
 
