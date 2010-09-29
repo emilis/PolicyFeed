@@ -32,8 +32,9 @@ gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
 
 // Config:
 exports.feed_url = [
-    "http://www3.lrs.lt/pls/inter3/dokpaieska.rezult_l",
-    "http://www3.lrs.lt/pls/inter3/dokpaieska.rezult_l?p_nr=&p_nuo=&p_iki=&p_org=&p_drus=&p_kalb_id=&p_title=&p_text=&p_pub=&p_met=&p_lnr=&p_denr=&p_es=0&p_rus=1&p_tkid=&p_tid=&p_t=0&p_tr1=2&p_tr2=2&p_gal=&p_no=2"
+    "http://www.lrs.lt/pls/proj/dokpaieska.rezult_l"
+    ,"http://www.lrs.lt/pls/proj/dokpaieska.rezult_l?p_tr1=2&p_tr2=2&p_fix=y&p_gov=n&p_no=2"
+    ,"http://www.lrs.lt/pls/proj/dokpaieska.rezult_l?p_tr1=2&p_tr2=2&p_fix=y&p_gov=n&p_no=3"
     ];
 
 exports.domains = {
@@ -51,7 +52,7 @@ exports.doc_template = {
 exports.extractFeedItems = function(page) {
     this.validateFeedPage(page);
 
-    var items = page.getByXPath('/html/body/div/table/tbody/tr[3]/td/table/tbody/tr/td/align/table[2]/tbody/tr').toArray();
+    var items = page.getByXPath('/html/body/div/table/tbody/tr[2]/td/table/tbody/tr/td/align/table[2]/tbody/tr').toArray();
 
     items.shift();
     if (items.length < 1) {
@@ -100,6 +101,27 @@ exports.parseFeedItem = function(item) {
             }
         }
 
+        var small_links = content.getByXPath('./small/a');
+        if (small_links) {
+            small_links = small_links.toArray();
+            for each (var slink in small_links) {
+                switch (slink.asText()) {
+                    case "Priedai":
+                        teises_aktas.priedai = slink.getHrefAttribute().toString();
+                    break;
+                    case "[Susiję dokumentai]":
+                        teises_aktas.susije = slink.getHrefAttribute().toString();
+                    break;
+                    default:
+                        Failures.write(url, { parser: name, error: "Unrecognized small link",
+                                text: slink.asText(),
+                                link: slink.getHrefAttribute().toString()
+                                });
+                }
+                slink.remove();
+            }
+        }
+
         // get non-empty content lines:
         content = content.asText().split(/[\n;]/).filter(function(part) { return part.trim(); });
 
@@ -134,6 +156,12 @@ exports.parseFeedItem = function(item) {
                         teises_aktas.isigaliojo = line[0].slice(11);
                     } else if (line[0].slice(0, 18) == "Projektas priimtas") {
                         teises_aktas.priimtas = line[0].slice(20);
+                    } else if (line[0].slice(0, 20) == "Rengiamas pateikimui") {
+                        teises_aktas.rengiamas_pateikimui = line[0].slice(21);
+                    } else if (line[0].slice(0, 31) == "Pateiktas Vyriausybei svarstyti") {
+                        teises_aktas.pateiktas_vyriausybei_svarstyti = line[0].slice(32);
+                    } else if (line[0].slice(0, 18) == "Pirminis projektas") {
+                        teises_aktas.pirminis_projektas = line[0].slice(19);
                     } else {
                         Failures.write(url, { parser: name, url: url, data: {
                                 error: "Unrecognized line",
@@ -147,10 +175,10 @@ exports.parseFeedItem = function(item) {
         type = parser_utils.getDocType(type);
         if (!type) {
             Failures.write(url, { parser: name, url: url, data: {
-                        error: "Unrecognized document type",
-                        type: oldtype
-                        }});
-                return false;
+                    error: "Unrecognized document type",
+                    type: oldtype
+                    }});
+            return false;
         }
 
         if (orgmap[author]) {
@@ -178,7 +206,6 @@ exports.parseFeedItem = function(item) {
             type: type,
             org: org,
             organization: organization,
-            orgroups: orgroups,
             url: url,
             title: title,
             published: published,
