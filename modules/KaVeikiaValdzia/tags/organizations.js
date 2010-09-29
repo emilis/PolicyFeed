@@ -252,7 +252,7 @@ exports.parseImportFile = function(file_name) {
 
     return csv.parse(content)
             .filter(function (row) { 
-                    if (!row[0] || row[0].indexOf("[") != -1 || row[2] != "y" || row[3] != "LT") {
+                    if (!row[0] || row[0].indexOf("[") != -1 || row[2] != "y" || !row[3]) {
                         return false;
                     } else {
                         return true; 
@@ -262,10 +262,10 @@ exports.parseImportFile = function(file_name) {
                     org: row[0],
                     organization: row[1],
                     active: row[2],
-                    region: row[3],
-                    queries: row[4],
-                    url: row[5],
-                    name_forms: row[6]
+                    region: row[4] ? (row[3] + "," + row[4]) : row[3],
+                    queries: row[5],
+                    url: row[6],
+                    name_forms: row[7]
                     };
                 });
 }

@@ -196,6 +196,7 @@ exports.parseFeedItem = function(item) {
         if (orgmap[author]) {
             var org = orgmap[author].org;
             var organization = orgmap[author].organization;
+            var orgroups = orgmap[author].region.split(",");
         } else {
             Failures.write(url, { parser: name, url: url, data: {
                     error: "Unregognized author",
@@ -217,6 +218,7 @@ exports.parseFeedItem = function(item) {
             type: type,
             org: org,
             organization: organization,
+            orgroups: orgroups,
             url: url,
             title: title,
             published: published,

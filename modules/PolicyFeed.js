@@ -128,7 +128,7 @@ exports.showRss = function(req) {
     log_request("showRss", req, req.params.q);
 
     var search_options =  {limit: 20, fields: ["id","published","type","org","title","html"]};
-    var query = "*:*";
+    var query = "orgroups:LT";
     if (req.params.q)
         query = req.params.q.trim()
 

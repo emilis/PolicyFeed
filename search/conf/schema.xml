@@ -42,10 +42,10 @@
  <fields>
    <field name="id" type="string" indexed="true" stored="true" required="true" /> 
    <field name="published" type="date" indexed="true" stored="true"/>
-   <!--<field name="source" type="string" indexed="true" stored="true"/>-->
    <field name="type" type="string" indexed="true" stored="true"/>
    <field name="org" type="string" indexed="true" stored="true"/>
    <field name="organization" type="string" indexed="true" stored="true"/>
+   <field name="orgroups" type="string" indexed="true" stored="false" multiValued="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
    <field name="html" type="text" indexed="true" stored="true"/>
  </fields>

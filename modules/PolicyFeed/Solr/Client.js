@@ -69,6 +69,7 @@ exports.itemToXml = function(item) {
         + '<field name="type">' + item.type + '</field>'
         + '<field name="org">' + item.org + '</field>'
         + '<field name="organization">' + item.organization + '</field>'
+        + '<field name="orgroups">' + item.orgroups.join('</field><field name="orgroups">') + '</field>'
         + '<field name="title">' + stripTags(item.title) + '</field>'
         + '<field name="html">' + stripTags(text) + '</field>'
         + '</doc>';
@@ -260,5 +261,5 @@ exports.searchByYear = function(year) {
  *
  */
 exports.getLatestDocs = function (options) {
-    return this.search("*:*", options).response;
+    return this.search("orgroups:LT", options).response;
 }
