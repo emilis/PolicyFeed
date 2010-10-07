@@ -62,6 +62,7 @@ var stripTags = function(str) {
 exports.itemToXml = function(item) {
 
     var text = item.text ? item.text : item.html;
+    item.orgroups = item.orgroups || [];
 
     return '<doc>' 
         + '<field name="id">' + item._id + '</field>'
