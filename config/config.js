@@ -193,6 +193,10 @@ exports["ctl/objectfs/json"] = {
     file_dir: exports.DIRS.data + "/jsonfs"
 };
 
+exports["ctl/objectfs/solr"] = {
+    url: "http://localhost:8081/solr"
+};
+
 
 //----------------------------------------------------------------------------
 
