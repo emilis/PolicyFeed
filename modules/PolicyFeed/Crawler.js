@@ -292,7 +292,7 @@ exports.saveOriginal = function(parser_name, url, page) {
 
     // DOC files, etc.:
     if (page instanceof com.gargoylesoftware.htmlunit.UnexpectedPage) {
-        original.original_file = this.saveOriginalFile(original._id, url.url, response);
+        original.original_file = this.saveOriginalFile(original, url.url, response);
         if (original.content_type == "application/msword") {
             var fields = this.getFieldsFromDoc(original.original_file);
             for (var key in fields)
