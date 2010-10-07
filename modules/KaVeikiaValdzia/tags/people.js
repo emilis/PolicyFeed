@@ -189,12 +189,23 @@ exports.import = function(url) {
     if (!this.checkImportList(list))
         return false;
 
+    var newmap = {};
+    for each (var newp in list) {
+        var index = newp.fname + " " + newp.lname;
+        if (newmap[index]) {
+            newmap[index].title += "/" + newp.title;
+        } else {
+            newmap[index] = newp;
+        }
+        //todo: what should we do with other fields like wikipedia,blog,url..?
+    }
+
     var map = this.getMap();
 
     var created = [];
     var updated = [];
-    for each (var newp in list) {
-        var index = newp.fname + " " + newp.lname;
+    for (var index in newmap) {
+        var newp = newmap[index];
         if (!map[index]) {
             newp.id = this.create(false, newp);
             created.push(newp);
@@ -272,16 +283,10 @@ exports.checkImportList = function(list) {
     if (typeof(list) == "string" || list instanceof String)
         list = this.parseImportFile(list);
 
-    var map = {};
     var queries = {};
 
     for each (var item in list) {
         var index = item.fname + " " + item.lname;
-        if (map[index]) {
-            throw Error("Duplicate person '" + index + "' found.");
-        } else {
-            map[index] = item;
-        }
 
         if (item.queries) {
             if (queries[item.queries]) {
