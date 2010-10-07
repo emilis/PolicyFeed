@@ -51,6 +51,7 @@ exports.extractFeedItems = function(page) {
     var items = page.getByXPath(path).toArray();
 
     var name = this.name;
+    var doc_template = this.doc_template;
     if (items.length < 1)
         return [];
     else {
@@ -61,8 +62,8 @@ exports.extractFeedItems = function(page) {
                     published: ringo_dates.format(new Date(), "yyyy-MM-dd HH:mm:ss"),
                     summary: ""
                 };
-                for (var k in this.doc_template) {
-                    doc[k] = this.doc_template[k];
+                for (var k in doc_template) {
+                    doc[k] = doc_template[k];
                 }
                 doc.parser = name;
                 return doc;

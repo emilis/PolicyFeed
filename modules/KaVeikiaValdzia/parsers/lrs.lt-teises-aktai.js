@@ -116,6 +116,7 @@ exports.parseFeedItem = function(item) {
 exports.extractPageData = function(original, page) {
     // create doc from original:
     var doc = original;
+    var original_id = original._id;
     doc._id = doc._id.replace("originals", "docs");
 
     // Warning: No updates to original after this point or you'll regret it.
@@ -180,7 +181,8 @@ exports.extractPageData = function(original, page) {
             url: doc.url,
             domain: "www.lrs.lt",
             parser: this.name,
-            method: "parsePage"
+            method: "parsePage",
+            original_id: original_id
             }, new Date().getTime() + 5*60*1000);
     } else {
         doc.html = '<hml><body>' + doc.html + '</body></html>';

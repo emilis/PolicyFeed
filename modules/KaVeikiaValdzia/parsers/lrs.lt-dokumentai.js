@@ -85,20 +85,15 @@ exports.parseFeedItem = function(item) {
         var type = item.getFirstByXPath('./td[5]').asText();
 
         // url and title:
-        try {
-            var tspan = content.getFirstByXPath('./span');
-            var tlink = tspan.getFirstByXPath('./a');
-            var title = tlink.asText();
-            var url = parser_utils.getCanonicalLrsUrl( tlink.getHrefAttribute().toString() );
-            tspan.remove();
-        } catch(e) {
-            if (num % 30 == 0) {
-                // Link is always missing for item #30 (might be a HtmlUnit bug):
-                return false;
-            } else {
-                throw e;
-            }
+        var tspan = content.getFirstByXPath('./span');
+        if (!tspan && (num % 30 == 0)) {
+            // Link is always missing for item #30 (might be a HtmlUnit bug):
+            return false;
         }
+        var tlink = tspan.getFirstByXPath('./a');
+        var title = tlink.asText();
+        var url = parser_utils.getCanonicalLrsUrl( tlink.getHrefAttribute().toString() );
+        tspan.remove();
 
         // get non-empty content lines:
         content = content.asText().split(/[\n;]/).filter(function(part) { return part.trim(); });
@@ -196,6 +191,7 @@ exports.parseFeedItem = function(item) {
 exports.extractPageData = function(original, page) {
     // create doc from original:
     var doc = original;
+    var original_id = original._id;
     doc._id = doc._id.replace("originals", "docs");
 
     // Warning: No updates to original after this point or you'll regret it.
@@ -262,7 +258,8 @@ exports.extractPageData = function(original, page) {
             url: doc.url,
             domain: "www.lrs.lt",
             parser: this.name,
-            method: "parsePage"
+            method: "parsePage",
+            original_id: original_id
             }, new Date().getTime() + 5*60*1000);
     } else {
         doc.html = '<hml><body>' + doc.html + '</body></html>';
