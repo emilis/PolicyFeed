@@ -165,39 +165,38 @@ exports.checkFeed = function(parser_name, url, page) {
             return true;
         });
 
-    if (!urls.length) {
-        return 0;
+    if (urls.length) {
+
+        // Add organization info:
+        var orgmap = organizations.getOrgMap();
+        urls = urls.map(function (item) {
+
+                var org = orgmap[item.org];
+                item.organization = org.organization;
+                item.orgroups = org.region.split(",");
+                return item;
+        });
+
+        // Save url to originals, add to Urls and Queue:
+        urls.map(function (item) {
+            // create originals:
+            var id = "/originals/" + ctl_dates.formatFromString(item.published, "yyyy/MM/dd/");
+            id += Sequence.next();
+            item._id = id;
+
+            log.info("adding page:", id, item.published, item.url, item.title);
+
+            jsonfs.write(id, item);
+            Urls.addUrl(item.url, id);
+
+            Queue.addUrl({
+                url: item.url,
+                parser: parser_name,
+                method: "parsePage",
+                original_id: id
+                });
+        });
     }
-
-    // Add organization info:
-    var orgmap = organizations.getOrgMap();
-    urls = urls.map(function (item) {
-
-            var org = orgmap[item.org];
-            item.organization = org.organization;
-            item.orgroups = org.region.split(",");
-            return item;
-    });
-
-    // Save url to originals, add to Urls and Queue:
-    urls.map(function (item) {
-        // create originals:
-        var id = "/originals/" + ctl_dates.formatFromString(item.published, "yyyy/MM/dd/");
-        id += Sequence.next();
-        item._id = id;
-
-        log.info("adding page:", id, item.published, item.url, item.title);
-
-        jsonfs.write(id, item);
-        Urls.addUrl(item.url, id);
-
-        Queue.addUrl({
-            url: item.url,
-            parser: parser_name,
-            method: "parsePage",
-            original_id: id
-            });
-    });
 
     // schedule next check:
     Queue.scheduleUrl(url, new Date(new Date().getTime() + 5*60*1000));
@@ -324,10 +323,17 @@ exports.saveOriginal = function(parser_name, url, page) {
 /**
  *
  */
-exports.saveOriginalFile = function(original_id, url, response) {
-    var dir_name = config.DIRS.uploads + original_id.replace("/originals/", "/");
-    var file_name = dir_name + "/"
-        + url.split("/").pop().replace(/[^-._a-z0-9]/gi, "-");
+exports.saveOriginalFile = function(original, url, response) {
+    var dir_name = config.DIRS.uploads + original._id.replace("/originals/", "/");
+    var file_name = url.split("/").pop().replace(/[^._a-z0-9]/gi, "_");
+
+    // add extension to file name:
+    if (file_name.indexOf(".") == -1) {
+        if (original.content_type == "application/msword") {
+            file_name += ".doc";
+        }
+    }
+    file_name = dir_name + "/" + file_name;
 
     if (!fs.exists(dir_name))
         fs.makeTree(dir_name);
