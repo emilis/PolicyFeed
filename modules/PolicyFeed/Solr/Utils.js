@@ -95,10 +95,18 @@ exports.queryDocument = function(doc, queries) {
 
     // Run queries and return the matching ones:
     return queries.filter(function (query) {
-            if (typeof(query) == "string")
-                return mi.search(exports.parseQuery(query));
-            else
+            if (!query) {
+                return false;
+            } else if (typeof(query) == "string") {
+                try {
+                    query = exports.parseQuery(query);
+                    return mi.search(query);
+                } catch (e) {
+                    return false;
+                }
+            } else {
                 return mi.search(query);
+            }
         });
 }
 
