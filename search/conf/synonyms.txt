@@ -5,3 +5,5 @@ ccc => cccc1,cccc2
 a\=>a => b\=>b
 a\,a => b\,b
 fooaaa,baraaa,bazaaa
+mokestis,mokesčiai
+alytus,alytaus,alytui,alytų,alytum,alytumi,alytuje
