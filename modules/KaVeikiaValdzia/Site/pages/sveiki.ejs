@@ -1,0 +1,25 @@
+<%
+
+exports.title = "Sveiki!";
+
+%>
+<div id="page"><div>
+<h1>Sveiki!</h1>
+
+<p>Šioje svetainėje yra pateikiama labai daug naujų dokumentų, kuriuos per dieną paskelbia įvairios valdžios įstaigos.</p>
+
+<p>Siūlome atsifiltruoti srautą pagal tai, kas įdomu jums.</p>
+
+<p>Atfiltruotas naujienas galite užsisakyti į el. paštu arba prenumeruoti per RSS.</p>
+
+<p>Artimiausiu metu ketiname prijungti patogesnius įrankius srauto filtravimui. Jei jus tai domina, įveskite savo el. paštą:</p>
+
+<form method="post" action="<%= config.BASE_URL %>/">
+<input type="hidden" name="call" value="Site.subscribe">
+
+<input name="email" value="įveskite el. paštą" onFocus="this.value=''">
+<input type="submit" value="užsisakykite pranešimą">
+
+<p><em>Taip pat mūsų svetainės naujienas galite sekti <a href="http://manovalstybe.lt/2010/01/14/pasiulymai-kaveikiavaldzia-lt-svetainei/">mūsų tinklaraštyje</a> arba <a href="http://www.facebook.com/pages/KaVeikiaValdzialt/248440466844">Facebook puslapyje</a></em></p>
+
+</div></div>

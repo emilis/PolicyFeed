@@ -17,9 +17,10 @@
     along with KąVeikiaValdžia.lt.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var fs = require("fs");
+var config = require("config");
 var ctlTemplate = require("ctl/Template/Cached");
 var ctlRequest = require("ctl/Request");
+var fs = require("fs");
 var WebMapper = require("ctl/WebMapper");
 
 __defineGetter__("PolicyFeed", function() { return this._PolicyFeed || (this._PolicyFeed = require("PolicyFeed")) });
@@ -99,3 +100,22 @@ exports.showBlock = function(name) {
     return ctlTemplate.fetch( this.dirname + "/blocks/" + name + ".ejs" );
 }
 
+
+/**
+ *
+ */
+exports.subscribe = function(req) {
+    // Write email to subscribers file:
+    var f = fs.open(config.DIRS.data + "/subscribers.txt", {append: true});
+    f.write(req.params.email + "\n");
+    f.close();
+
+    return WebMapper.redirect("Site", "showSubscribeOk");
+}
+
+/**
+ *
+ */
+exports.showSubscribeOk = function(req) {
+    return this.showPage(req, "showSubscribeOk");
+}
