@@ -9,3 +9,6 @@ src/search/build
 
 # vim swap files
 *.swp
+
+# log4j config copy:
+/config/log4j.properties
