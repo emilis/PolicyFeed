@@ -7,9 +7,6 @@ CONFIG_DIR="$ROOT_DIR/config";
 MODULES_DIR="$ROOT_DIR/modules";
 TEST_DIR="$ROOT_DIR/test";
 
-# set monitor mode for resuming java job from background
-set -o monitor
-
 java \
     -Dringo.classpath="./**"\
     -jar "$LIB_DIR/run.jar"\
