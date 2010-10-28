@@ -20,6 +20,7 @@
 // Requirements:
 var DomElement = com.gargoylesoftware.htmlunit.html.DomElement;
 
+var assert = require("assert");
 var config = require("config");
 var ctl_dates = require("ctl/utils/dates");
 var fs = require("fs");
@@ -157,6 +158,18 @@ exports.checkFeed = function(parser_name, url, page) {
 
     var urls = this.parsers[parser_name].extractFeedItems(page);
 
+    // Check urls for consistency:
+    urls.map(function (item) {
+
+            assert.ok(item.parser);
+            assert.ok(item.url);
+            assert.ok(item.published);
+            assert.ok(item.type);
+            assert.ok(item.org);
+            assert.ok(item.title);
+
+    });
+
     // Remove existing urls:
     urls = urls.filter(function (item) {
         if (Urls.exists(item.url))
@@ -233,6 +246,11 @@ exports.parsePage = function(parser_name, url, page) {
                 htmlunit.getPageFromHtml(doc.html, url.url, window_name, "UTF-8")
                 );
         }
+
+        // validate before writing:
+        assert.ok(doc.published);
+        assert.ok(doc.title);
+        assert.ok(doc.html);
 
         jsonfs.write(doc._id, doc);
     }

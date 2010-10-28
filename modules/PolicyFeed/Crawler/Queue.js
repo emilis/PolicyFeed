@@ -18,6 +18,7 @@
 */
 
 // Requirements:
+var assert = require("assert");
 var Errors = require("PolicyFeed/Crawler/Errors");
 var jsonfs = require("ctl/objectfs/json");
 var ringo_arrays = require("ringo/utils/arrays");
@@ -252,7 +253,15 @@ exports.makeUrl = function(url, time) {
  *
  */
 exports.addUrl = function(url) {
-    fifo.push(this.makeUrl(url));
+    url = this.makeUrl(url);
+
+    // check if the url has fields required for processing it:
+    assert.ok(url.url);
+    assert.ok(url.domain);
+    assert.ok(url.parser);
+    assert.ok(url.method);
+
+    fifo.push(url);
     fifo.save();
 }
 
@@ -263,7 +272,16 @@ exports.addUrl = function(url) {
 exports.scheduleUrl = function(url, time) {
     if (!time)
         time = new Date();
-    schedule.push(this.makeUrl(url, time));
+    url = this.makeUrl(url, time);
+
+    // check if the url has fields required for processing it:
+    assert.ok(url.url);
+    assert.ok(url.domain);
+    assert.ok(url.time);
+    assert.ok(url.parser);
+    assert.ok(url.method);
+
+    schedule.push(url);
     schedule.sort(time_sort);
     schedule.save();
 
