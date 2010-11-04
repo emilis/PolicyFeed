@@ -29,6 +29,9 @@ var ringo_dates = require("ringo/utils/dates");
 
 // Extends:
 gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
+gluestick.extendModule(exports, "KaVeikiaValdzia/parsers/lrs.lt-common");
+
+exports.disabled = false;
 
 // Config:
 exports.feed_url = [
@@ -36,13 +39,6 @@ exports.feed_url = [
     "http://www3.lrs.lt/pls/inter3/dokpaieska.rezult_l?p_nr=&p_nuo=&p_iki=&p_org=&p_drus=&p_kalb_id=&p_title=&p_text=&p_pub=&p_met=&p_lnr=&p_denr=&p_es=0&p_rus=1&p_tkid=&p_tid=&p_t=0&p_tr1=2&p_tr2=2&p_gal=&p_no=2"
     ];
 
-exports.domains = {
-    "www.lrs.lt": 3000,
-    "www3.lrs.lt": 3000
-};
-
-exports.doc_template = {
-};
 
 
 /**
@@ -274,14 +270,4 @@ exports.extractPageData = function(original, page) {
 }
 
 
-/**
- *
- */
-exports.parseNonHtml = function(original, page, url) {
-    if (page.webResponse.contentType == "text/plain") {
-        Queue.scheduleUrl(url, new Date(new Date().getTime() + 3*60*1000));
-        throw Error(module.id + ".parseNonHtml: rescheduled page that is temporarily unavailable.");
-    } else {
-        throw Error(module.id + ".parseNonHtml: unknown page type.");
-    }
-}
+

@@ -26,14 +26,12 @@ var Queue = require("PolicyFeed/Crawler/Queue");
 
 // Extends:
 gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
+gluestick.extendModule(exports, "KaVeikiaValdzia/parsers/lrs.lt-common");
+
+exports.disabled = false;
 
 // Config:
 exports.feed_url = "http://www3.lrs.lt/pls/inter/lrs_rss.teises_aktai";
-
-exports.domains = {
-    "www.lrs.lt": 3000,
-    "www3.lrs.lt": 3000
-};
 
 exports.doc_template = {
     type: "projektas",
@@ -197,14 +195,4 @@ exports.extractPageData = function(original, page) {
 }
 
 
-/**
- *
- */
-exports.parseNonHtml = function(original, page, url) {
-    if (page.webResponse.contentType == "text/plain") {
-        Queue.scheduleUrl(url, new Date(new Date().getTime() + 3*60*1000));
-        throw Error(module.id + ".parseNonHtml: rescheduled page that is temporarily unavailable.");
-    } else {
-        throw Error(module.id + ".parseNonHtml: unknown page type.");
-    }
-}
+
