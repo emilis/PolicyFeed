@@ -17,6 +17,8 @@
     along with PolicyFeed.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var Queue = require("PolicyFeed/Crawler/Queue");
+
 exports.disabled = true;
 
 exports.domains = {
