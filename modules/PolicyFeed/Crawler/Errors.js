@@ -42,23 +42,6 @@ module.config = config[module.id] || {
 
 
 /**
- * Minutes to delay subsequent error notifications.
- */
-var delays = [1,2,5,10,30,60];
-
-/**
- *
- */
-var current_delay = 0;
-
-
-/**
- *
- */
-var waiting = false;
-
-
-/**
  *
  */
 var last_error;
@@ -73,7 +56,17 @@ var last_error_time;
 /**
  *
  */
-var last_notify_time;
+var last_notify_time = new Date();
+
+
+// --- Init: ---
+// ATTENTION: this gets executed when the module is required!
+// Send new error reports every 10 minutes:
+exports.scheduler = scheduler.setInterval(function () { exports.notify(); }, 10*60*1000);
+
+
+
+// --- functions: ---
 
 
 /**
@@ -82,14 +75,15 @@ var last_notify_time;
 exports.addUrl = function(url, error) {
     last_error = [url, error];
     last_error_time = new Date();
+    this.save(url);
 
     try {
-        if (!waiting) {
+        if (url.method == "checkFeed") {
             this.notify();
-            waiting = this.schedule(0);
         }
-    } finally {
-        this.save(url);
+    } catch (e) {
+        log.error("addUrl", "Failed to notify about checkFeed error.", e);
+        // do nothing.
     }
 }
 
@@ -227,9 +221,12 @@ exports.removeUrl = function(url) {
  *
  */
 exports.notify = function() {
-    this.sendMessage(this.showStats(last_notify_time));
-
-    last_notify_time = new Date();
+    log.debug("notify", "call");
+    if (this.getUrlStats(last_notify_time).length) {
+        log.info("notify", "Sending message");
+        this.sendMessage(this.showStats(last_notify_time));
+        last_notify_time = new Date();
+    }
 }
 
 
@@ -243,38 +240,5 @@ exports.sendMessage = function(text) {
 
     mail.send(message);
 }
-
-
-/**
- *
- */
-exports.schedule = function(delay) {
-    if (delay !== undefined) 
-        current_delay = delay;
-    else
-        current_delay++;
-
-    if (current_delay > delays.length)
-        current_delay = delays.length - 1;
-    else if (current_delay < 0)
-        return false;
-
-    var that = this;
-
-    return scheduler.setTimeout(function () {
-            try {
-                var list = that.getUrlStats(last_notify_time);
-                if (list.length) {
-                    that.notify();
-                    waiting = that.schedule();
-                } else {
-                    waiting = that.schedule(current_delay - 1);
-                }
-            } catch (e) {
-                log.error("(scheduled)", e);
-            }
-        }, delays[current_delay]*60*1000);
-}
-
 
 
