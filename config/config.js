@@ -12,7 +12,7 @@ exports.httpConfig = {
 
 exports.urls = [
     // docs:
-    [ /(docs\/\d\d\d\d\/\d\d\/\d\d\/\d+)\.(json)/,  "PolicyFeed", "showDocumentFormat" ],
+    [ /(docs\/\d\d\d\d\/\d\d\/\d\d\/\d+)\.(json|html)/,  "PolicyFeed", "showDocumentFormat" ],
     [ /(docs\/\d\d\d\d\/\d\d\/\d\d\/\d+)/,          "PolicyFeed", "showDocument" ],
     [ /docs\/(\d\d\d\d\/\d\d\/\d\d)/,               "PolicyFeed", "showDay" ],
     [ /docs\/(\d\d\d\d\/\d\d)/,                     "PolicyFeed", "showMonth" ],

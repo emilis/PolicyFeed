@@ -233,6 +233,8 @@ exports.showDocumentFormat = function(req, id, format) {
         return this.showError(404);
     else if (format == "json")
         return this.WebMapper.returnJson(doc);
+    else if (format == "html")
+        return this.WebMapper.returnHtml(this.showHtml("showDocumentFormat-html", { doc: doc }));
     else
         return this.showError(404);
 }
