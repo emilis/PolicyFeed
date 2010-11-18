@@ -25,7 +25,7 @@ var gluestick = require("gluestick");
 gluestick.extendModule(exports, "ctl/objectfs/berkeley");
 
 // Connect to DB table:
-exports.connect(config.DIRS.data, "failures");
+exports.connect(config.DIRS.data + "/failures", "failures");
 
 
 var log = require("ringo/logging").getLogger(module.id);

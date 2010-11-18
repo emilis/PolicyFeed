@@ -23,7 +23,7 @@ var config = require("config");
 var ringo_strings = require("ringo/utils/strings");
 
 // Internal vars:
-var store = new bs.Store( config.DIRS.data );
+var store = new bs.Store( config.DIRS.data + "/urls" );
 
 
 /**

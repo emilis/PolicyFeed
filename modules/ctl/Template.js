@@ -133,8 +133,7 @@ exports.fileToFunction = function(tpl_file_name) {
  */
 exports.codeToFunction = function(str) {
 
-    var prefix = 'function (vars, __output_name) { \n\
-        vars = vars || {}; \n\
+    var prefix = 'vars = vars || {}; \n\
         __output_name = __output_name || "content"; \n\
         var exports = {}; \n\
         var export = function(k, v) { exports[k] = v; }; \n\
@@ -145,10 +144,9 @@ exports.codeToFunction = function(str) {
 
     var suffix = ';\n\
         exports[__output_name] = __output; \n\
-        return exports;\n\
-        }';
+        return exports;';
 
-    return eval(prefix + this.compileCode(str) + suffix);
+    return new Function('vars, __output_name', prefix + this.compileCode(str) + suffix);
 }
 
 
