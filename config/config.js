@@ -185,7 +185,8 @@ exports["PolicyFeed/Crawler/DocQueries"] = {
     handlers: [
         "PolicyFeed/Alerts",
         "KaVeikiaValdzia/tags/organizations",
-        "KaVeikiaValdzia/tags/people"
+        "KaVeikiaValdzia/tags/people",
+        "KaVeikiaValdzia/tags/laws"
     ]
 };
 
