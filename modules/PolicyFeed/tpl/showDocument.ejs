@@ -139,6 +139,14 @@ if (doc.tags) {
         }
         print('</ul>');
     }
+    if (doc.tags.laws) {
+        print('<p style="margin-left: 1em;"><strong>Įstatymai:</strong></p><ul>');
+        for each (var l in doc.tags.laws) {
+            print('<li><a href="/docs/search/?q=', ringo_strings.entitize(l.query), '">', l.title, '</a>');
+            print('&nbsp;<sup><a href="http://istatymai.manovalstybe.lt/compare.php?left=', config.URLS.full, doc._id, '.html&right=', ringo_strings.entitize(l.url), '">palyginti</a></sup>');
+            print('</li>');
+        }
+    }
 }
 
 
