@@ -40,6 +40,18 @@ exports.TABLENAME = false;
 /**
  *
  */
+var escape_value = function(value) {
+    if (value.replace) {
+        return value.replace(/'/g, "''");
+    } else {
+        return value.toString().replace(/'/g, "''");
+    }
+}
+
+
+/**
+ *
+ */
 exports.connect = function(db, table) {
     if (typeof(db) != "string" && db.get_all)
         this.DB = db;
@@ -213,7 +225,7 @@ exports._where_sql = function(filter, options) {
 
             var value = filter[field];
             if (value instanceof Array) {
-                sql += sep + field + " IN ('" + value.join("','") + "')";
+                sql += sep + field + " IN ('" + value.map(escape_value).join("','") + "')";
             } else if (value instanceof RegExp) {
                 sql += sep + field + " LIKE ?";
                 values.push(value.toString().slice(1, -1));
