@@ -263,11 +263,12 @@ exports.move = function(from, to) {
  */
 exports.list = function(path) {
     path = this.file_dir + this.canonical(path);
+    var extension = this.extension;
     return fs.list(path).filter(function (item) {
-        return fs.isFile(path + "/" + item) && (item.slice(0 - this.extension.length) == this.extension);
+        return fs.isFile(path + "/" + item) && (item.slice(0 - extension.length) == extension);
         }).map (function (item) {
             // Remove extension:
-            return item.slice(0, 0 - this.extension.length);
+            return item.slice(0, 0 - extension.length);
             }).sort();
 }
 
