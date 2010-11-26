@@ -48,10 +48,11 @@ exports.handleDocMatches = function(id, doc, matches) {
     var oids = this.org2q.list({ qid: matches }).map(function(row) { return row.oid; });
     var orgs = this.list({ id: oids });
 
-    doc.tags = doc.tags || {};
-    doc.tags.organizations = orgs;
-
-    return jsonfs.write(id, doc);
+    if (orgs.length) {
+        doc.tags = doc.tags || {};
+        doc.tags.organizations = orgs;
+        return jsonfs.write(id, doc);
+    }
 }
 
 

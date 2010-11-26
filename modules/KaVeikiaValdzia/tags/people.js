@@ -48,10 +48,11 @@ exports.handleDocMatches = function(id, doc, matches) {
     var pids = this.p2q.list({ qid: matches }).map(function(row) { return row.pid; });
     var people = this.list({ id: pids });
 
-    doc.tags = doc.tags || {};
-    doc.tags.people = people;
-
-    return jsonfs.write(id, doc);
+    if (people.length) {
+        doc.tags = doc.tags || {};
+        doc.tags.people = people;
+        return jsonfs.write(id, doc);
+    }
 }
 
 

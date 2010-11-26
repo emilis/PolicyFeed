@@ -47,10 +47,11 @@ exports.handleDocMatches = function(id, doc, matches) {
     var lids = this.l2q.list({ qid: matches }).map(function(row) { return row.lid; });
     var laws = this.list({ id: lids });
 
-    doc.tags = doc.tags || {};
-    doc.tags.laws = laws;
-
-    return jsonfs.write(id, doc);
+    if (laws.length) {
+        doc.tags.laws = laws;
+        doc.tags = doc.tags || {};
+        return jsonfs.write(id, doc);
+    }
 }
 
 
