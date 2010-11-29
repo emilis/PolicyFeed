@@ -185,6 +185,31 @@ exports.getNameMap = function() {
 }
 
 
+/**
+ *
+ */
+exports.getGroupMap = function() {
+    var list = this.list();
+    var map = {};
+    while (org = list.pop()) {
+        var groups = org.region.split(",");
+        for each (var group in groups) {
+            if (map[group]) {
+                map[group].push(org);
+            } else {
+                map[group] = [org];
+            }
+        }
+    }
+
+    for (var k in map) {
+        map[k].sort(function (a, b) {
+            return a.organization > b.organization;
+            });
+    }
+    return map;
+}
+
 //----------------------------------------------------------------------------
 
 /**
