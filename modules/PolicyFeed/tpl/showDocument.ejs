@@ -24,7 +24,7 @@ if (!doc.org)
 exports.title = doc.title;
 
 // breadcrumbs:
-//*
+/*
 exports.breadcrumbs = [
     [ doc._id.substr(0, 10), doc._id.substr(6, 4) ],
     [ doc._id.substr(0, 13), doc._id.substr(11, 2) ],
@@ -57,13 +57,9 @@ function obj_key_value(obj) {
 %>
 <div id="breadcrumbs">
     <a href="<%= BASE_URL %>/">Pradžia</a> » 
-<%
-
-    print('<a href="', BASE_URL, doc._id.substr(0, 10), '">', doc._id.substr(6, 4), '</a> » ');
-    print('<a href="', BASE_URL, doc._id.substr(0, 13), '">', doc._id.substr(11, 2), '</a> » ');
-    print('<a href="', BASE_URL, doc._id.substr(0, 16), '">', doc._id.substr(14, 2), '</a>');
-
-%></div>
+    <a href="<%= BASE_URL %>/docs/search/?q=org:%22<%= doc.org %>%22"><%= doc.organization %></a> »
+    <a href="<%= BASE_URL %>/docs/search/?q=org:%22<%= doc.org %>%22+type:<%= doc.type %>"><%= doc.type %></a> »
+</div>
 
 <div id="document"><div>
 
@@ -73,8 +69,8 @@ function obj_key_value(obj) {
 <table><tbody><%
 
     obj_key_value({
-        "Įstaiga": doc.organization,
-        "Tipas": doc.type,
+//        "Įstaiga": doc.organization,
+//        "Tipas": doc.type,
         "Publikuotas": ctl_dates.formatFromString(doc.published, "yyyy-MM-dd HH:mm")
         });
 
