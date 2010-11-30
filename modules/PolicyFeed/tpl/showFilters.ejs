@@ -1,0 +1,261 @@
+<%
+
+var {organizations, people} = vars;
+
+exports.title = "KąVeikiaValdžia.lt tai svetainė, kurioje surenkame valdžios paskelbtus nutarimus, pranešimus, projektus, darbotvarkes ir kitus dokumentus";
+
+print('<h1>', exports.title, '</h1>');
+
+%><div id="page" style="background-color: white">
+<h2>Atsifiltruokite srautą pagal tai, kas įdomu Jums</h2>
+<p><input name="q">
+<input type="button" value="Ieškoti">
+<a href="/docs/">Visos naujienos</a></p>
+
+<table id="filter-table" border="0" cellspacing="10" cellpadding="0">
+<thead><tr>
+    <th>Įstaigos, organizacijos</th>
+    <th>Politikai, tarnautojai</th>
+    <th>Savivaldybės, vietovės</th>
+</tr></thead>
+<tbody>
+<tr>
+    <td><ul><%
+
+//var orgs = organizations.list().map(function (item) { item.region = item.region.split(","); return item });
+var groupmap = organizations.getGroupMap();
+
+var top = groupmap.top;
+var i = Math.floor(Math.random() * top.length);
+print('<li><a href="">', top[i].org, '</a></li>');
+
+var ministerijos = groupmap.ministerijos;
+var i = Math.floor(Math.random() * ministerijos.length);
+print('<li><a href="">', ministerijos[i].organization, '</a></li>');
+
+var i = Math.floor(Math.random() * groupmap.LT.length);
+print('<li><a href="">', groupmap.LT[i].organization, '</a></li>');
+
+
+%></ul>
+<a href="javascript:PolicyFeed.expandFilters('orgs');">Daugiau įstaigų</a>
+</td>
+<td><ul><%
+
+var ppl = people.list();
+//print(ppl.map(uneval).join("<br>"));
+
+for (var i=0;i<3;i++) {
+    var k = Math.floor(Math.random() * ppl.length);
+    print('<li><a href="">', ppl[k].fname, " ", ppl[k].lname, '</a></li>');
+}
+
+
+%></ul>
+<a href="javascript:PolicyFeed.expandFilters('people');">Daugiau asmenų</a>
+</td>
+<td><%
+
+var savivaldybes = [
+    ["Akmenė", "Akmenės rajonas", "Akmenė"],
+    ["Alytaus m.", "Alytaus miestas", "Alytus"],
+    ["Alytaus r.", "Alytaus rajonas"],
+    ["Anykščių r.", "Anykščių rajonas", "Anykščiai"],
+    ["Birštonas", "Birštonas"],
+    ["Biržų r.", "Biržų rajonas", "Biržai"],
+    ["Druskininkai", "Druskininkai"],
+    ["Elektrėnai", "Elektrėnai"],
+    ["Ignalinos r.", "Ignalinos rajonas", "Ignalina"],
+    ["Jonavos r.", "Jonavos rajonas", "Jonava"],
+    ["Joniškio r.", "Joniškio rajonas", "Joniškis"],
+    ["Jurbarko r.", "Jurbarko rajonas", "Jurbarkas"],
+    ["Kaišiadorių r.", "Kaišiadorių rajonas", "Kaišiadorys"],
+    ["Kalvarija", "Kalvarija"],
+    ["Kauno m.", "Kauno miestas", "Kaunas"],
+    ["Kauno r.", "Kauno rajonas"],
+    ["Kazlų Rūda", "Kazlų Rūda"],
+    ["Kėdainių r.", "Kėdainių rajonas", "Kėdainiai"],
+    ["Kelmės r.", "Kelmės rajonas", "Kelmė"],
+    ["Klaipėdos m.", "Klaipėdos miestas", "Klaipėda"],
+    ["Klaipėdos r.", "Klaipėdos rajonas"],
+    ["Kretingos r.", "Kretingos rajonas", "Kretinga"],
+    ["Kupiškio r.", "Kupiškio rajonas", "Kupiškis"],
+    ["Lazdijų r.", "Lazdijų rajonas", "Lazdijai"],
+    ["Marijampolė", "Marijampolė"],
+    ["Mažeikių r.", "Mažeikių rajonas", "Mažeikiai"],
+    ["Molėtų r.", "Molėtų rajonas", "Molėtai"],
+    ["Neringa", "Neringa", "Nida"],
+    ["Pagėgiai", "Pagėgiai"],  
+    ["Pakruojo r.", "Pakruojo rajonas", "Pakruojis"],
+    ["Palangos m.", "Palangos miestas", "Palanga"],
+    ["Panevėžio m.", "Panevėžio miestas", "Panevėžys"],
+    ["Panevėžio r.", "Panevėžio rajonas"],
+    ["Pasvalio r.", "Pasvalio rajonas", "Pasvalys"],
+    ["Plungės r.", "Plungės rajonas", "Plungė"],
+    ["Prienų r.", "Prienų rajonas", "Prienai"],
+    ["Radviliškio r.", "Radviliškio rajonas", "Radviliškis"],
+    ["Raseinių r.", "Raseinių rajonas", "Raseiniai"],
+    ["Rietavas", "Rietavas"],
+    ["Rokiškio r.", "Rokiškio rajonas", "Rokiškis"],
+    ["Skuodo r.", "Skuodo rajonas", "Skuodas"],
+    ["Šakių r.", "Šakių rajonas", "Šakiai"],
+    ["Šalčininkų r.", "Šalčininkų rajonas", "Šalčininkai"],
+    ["Šiaulių m.", "Šiaulių miestas", "Šiauliai"],
+    ["Šiaulių r.", "Šiaulių rajonas"],
+    ["Šilalės r.", "Šilalės rajonas", "Šilalė"],
+    ["Šilutės r.", "Šilutės rajonas", "Šilutė"],
+    ["Širvintų r.", "Širvintų rajonas", "Širvintos"],
+    ["Švenčionių r.", "Švenčionių rajonas", "Švenčionys"],
+    ["Tauragės r.", "Tauragės rajonas", "Tauragė"],
+    ["Telšių r.", "Telšių rajonas", "Telšiai"],
+    ["Trakų r.", "Trakų rajonas", "Trakai"],
+    ["Ukmergės r.", "Ukmergės rajonas", "Ukmergė"],
+    ["Utenos r.", "Utenos rajonas", "Utena"],
+    ["Varėnos r.", "Varėnos rajonas", "Varėna"],
+    ["Vilkaviškio r.", "Vilkaviškio rajonas", "Vilkaviškis"],
+    ["Vilniaus m.", "Vilniaus miestas"],
+    ["Vilniaus r.", "Vilniaus rajonas"],
+    ["Visaginas", "Visaginas"],
+    ["Zarasų r.", "Zarasų rajonas", "Zarasai"]
+];
+
+savivaldybes = savivaldybes.map(function (item) {
+        item[2] = item[2] || "";
+        item = {
+            group: item[0],
+            title: item[1],
+            queries: item[2]
+            };
+        item.query = 'orgroups:"' + item.group + '","' + item.title + '"';
+        if (item.queries) {
+            item.query += ',"' + item.queries + '"';
+        }
+        return item;
+    });
+
+print('<ul>');
+for (var i=0;i<3;i++) {
+    var k = Math.floor(Math.random() * savivaldybes.length);
+    var sav = savivaldybes[k];
+    if (sav) {
+        print('<li><a href="/docs/search/?q=', encodeURIComponent(sav.query), '">', sav.title, '</a></li>');
+    } else {
+        print(k);
+    }
+}
+
+%></ul>
+<a href="javascript:PolicyFeed.expandFilters('regions');">Daugiau savivaldybių</a>
+</td></tr>
+</tbody>
+<tbody id="expansion">
+<tr class="orgs"><td colspan="3"><h3>Įstaigos ir organizacijos</h3></td></tr>
+<tr class="orgs">
+<%
+
+groups = {
+    top: "Aukščiausios valstybės institucijos",
+    ministerijos: "Ministerijos",
+    Prezidentas: "Prezidentui atskaitingos institucijos",
+    Seimas: "Seimui atskaitingos institucijos",
+    "Vyriausybė": "Vyriausybei atskaitingos institucijos",
+    AM: "Aplinkos ministerijos įstaigos",
+    EnMin: "Energetikos ministerijos įstaigos",
+    FinMin: "Finansų ministerijos įstaigos",
+    KAM: "Krašto apsaugos ministerijos įstaigos",
+    LRKM: "Kultūros ministerijos įstaigos",
+    SocMin: "Socialinės apsaugos ir darbo ministerijos įstaigos",
+    SM: "Susisiekimo ministerijos įstaigos",
+    SAM: "Sveikatos apsaugos ministerijos įstaigos",
+    "ŠMM": "Švietimo ir mokslo ministerijos įstaigos",
+    TM: "Teisingumo ministerijos įstaigos",
+    "ŪkMin": "Ūkio ministerijos įstaigos",
+    URM: "Užsienio reikalų ministerijos įstaigos",
+    VRM: "Vidaus reikalų ministerijos įstaigos",
+    "ŽŪM": "Žemės ūkio reikalų ministerijos įstaigos",
+    partijos: "Politinės partijos"
+};
+
+var total = 0;
+for (var k in groups) {
+    if (groupmap[k]) {
+        total += groupmap[k].length;
+    }
+}
+
+var column = Math.ceil(total / 3);
+
+var current = 0;
+print('<td>');
+for (var k in groups) {
+    if (current > column) {
+        print('</td><td>');
+        current = 0;
+    }
+
+    if (groupmap[k]) {
+        current += groupmap[k].length;
+
+        print('<h4><a href="/docs/search/?q=orgroups:', k, '">', groups[k], '</a></h4><ul>');
+        for each (var org in groupmap[k]) {
+            var name = org.organization
+                .replace("Lietuvos Respublikos", "LR")
+                .replace("Valstybės įmonė", "VĮ")
+                .replace("Viešoji įstaiga", "VšĮ");
+            print('<li><a href="/docs/search/?q=', encodeURIComponent(org.query), '">', name, '</a></li>');
+        }
+        print('</ul>');
+    }
+}
+print('</td>');
+
+%>
+</tr>
+<tr class="people"><td colspan="3"><h3>Politikai, tarnautojai, pareigūnai</h3></td></tr>
+<tr class="people">
+<%
+
+ppl.sort(function (a, b) { return a.lname > b.lname; });
+var column = Math.ceil(ppl.length / 3);
+
+var last_letter = "";
+for (var i=0;i<3;i++) {
+    print('<td><ul>');
+    for (var j=0;j<column;j++) {
+        var k = i*column + j;
+        if (ppl[k]) {
+            if (ppl[k].lname[0] != last_letter) {
+                last_letter = ppl[k].lname[0];
+                print('<li><b>', last_letter, '</b></li>');
+            }
+            print('<li><a href="/docs/search/?q=', encodeURIComponent(ppl[k].query), '">', ppl[k].fname, ' ', ppl[k].lname, '</a></li>');
+        }
+
+    }
+    print('</ul></td>');
+}
+
+%>
+</tr>
+<tr class="regions"><td colspan="3"><h3>Savivaldybės, vietovės</h2></td></tr>
+<tr class="regions">
+<%
+
+var column = Math.ceil(savivaldybes.length / 3);
+for (var i=0;i<3;i++) {
+    print('<td><ul>');
+    for (var j=0;j<column;j++) {
+        var k = i*column + j;
+        if (savivaldybes[k]) {
+            print('<li><a href="/docs/search/?q=', encodeURIComponent(savivaldybes[k].query), '">', savivaldybes[k].title, '</a></li>');
+        }
+    }
+    print('</ul></td>');
+}
+
+%></tr>
+
+</tbody>
+</table>
+
+</div>

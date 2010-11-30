@@ -185,3 +185,12 @@ PolicyFeed.showSharedStatus = function(data, status) {
     status.html(data.message);
     status.fadeIn(2000); //, function() { jQuery(status).css("background-color", "white")});
 }
+
+
+/**
+ *
+ */
+PolicyFeed.expandFilters = function(name) {
+    jQuery("#expansion > tr").hide();
+    jQuery("#expansion > tr." + name).show();
+}

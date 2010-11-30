@@ -658,3 +658,33 @@ div.day > div {
     margin: 33px;
     clear: both;
 }
+
+
+/*--- Filter page ---*/
+#filter-table ul {
+    list-style: none;
+    padding-left: 0px;
+}
+
+#filter-table a {
+    font-size: 13px;
+}
+
+#filter-table > tbody > tr > td {
+    vertical-align: top;
+    width: 33%;
+}
+
+tbody#expansion > tr {
+    display: none;
+}
+
+tbody#expansion li {
+    margin: 2px 0;
+    border-bottom: 1px dotted #ccc;
+}
+
+tbody#expansion a {
+    text-decoration: none;
+    font-size: 12px;
+}

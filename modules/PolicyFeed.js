@@ -155,6 +155,20 @@ exports.showRss = function(req) {
 /**
  *
  */
+exports.showFilters = function(req) {
+    var organizations = require("KaVeikiaValdzia/tags/organizations");
+    var people = require("KaVeikiaValdzia/tags/people");
+
+    return this.returnHtml("showFilters", {
+        organizations: organizations,
+        people: people
+        });
+}
+
+
+/**
+ *
+ */
 exports.showDay = function(req, day) {
     log_request("showDay", req, day);
 
