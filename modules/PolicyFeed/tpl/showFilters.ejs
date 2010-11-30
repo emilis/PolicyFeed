@@ -2,43 +2,39 @@
 
 var {organizations, people} = vars;
 
-exports.title = "KąVeikiaValdžia.lt tai svetainė, kurioje surenkame valdžios paskelbtus nutarimus, pranešimus, projektus, darbotvarkes ir kitus dokumentus";
+%>
+<div style="padding: 0 10px;">
+<h1 class="silent">KąVeikiaValdžia.lt yra:<br><small>&nbsp;&bull; Per 20000 valdžios įstaigų nutarimų, pranešimų, darbotvarkių.<br>&nbsp;&bull; Operatyviai atnaujinama informacija.</small></h1>
 
-print('<h1>', exports.title, '</h1>');
+<h2 class="silent">Raskite ir užsisakykite tai, kas aktualu Jums:</h2>
+<form id="search" method="get" action="/docs/search/">
+<p><input id="q" name="q">
+<input id="search-submit" type="submit" value="Ieškoti">
+<a id="search-all-link" href="/docs/">Visos naujienos</a></p>
+</form>
+<!--<span class="silent">Pavyzdžiai:</span>-->
+</div>
 
-%><div id="page" style="background-color: white">
-<h2>Atsifiltruokite srautą pagal tai, kas įdomu Jums</h2>
-<p><input name="q">
-<input type="button" value="Ieškoti">
-<a href="/docs/">Visos naujienos</a></p>
-
-<table id="filter-table" border="0" cellspacing="10" cellpadding="0">
-<thead><tr>
-    <th>Įstaigos, organizacijos</th>
-    <th>Politikai, tarnautojai</th>
-    <th>Savivaldybės, vietovės</th>
-</tr></thead>
-<tbody>
+<table id="filter-table" border="0" cellspacing="0" cellpadding="10">
+<tbody id="filter-examples">
 <tr>
     <td><ul><%
 
-//var orgs = organizations.list().map(function (item) { item.region = item.region.split(","); return item });
 var groupmap = organizations.getGroupMap();
 
 var top = groupmap.top;
 var i = Math.floor(Math.random() * top.length);
-print('<li><a href="">', top[i].org, '</a></li>');
+print('<li><a href="/docs/search/?q=', encodeURIComponent(top[i].query), '">', top[i].org, '</a></li>');
 
 var ministerijos = groupmap.ministerijos;
 var i = Math.floor(Math.random() * ministerijos.length);
-print('<li><a href="">', ministerijos[i].organization, '</a></li>');
+print('<li><a href="/docs/search/?q=', encodeURIComponent(ministerijos[i].query), '">', ministerijos[i].organization, '</a></li>');
 
 var i = Math.floor(Math.random() * groupmap.LT.length);
-print('<li><a href="">', groupmap.LT[i].organization, '</a></li>');
+print('<li><a href="/docs/search/?q=', encodeURIComponent(groupmap.LT[i].query), '">', groupmap.LT[i].organization, '</a></li>');
 
 
 %></ul>
-<a href="javascript:PolicyFeed.expandFilters('orgs');">Daugiau įstaigų</a>
 </td>
 <td><ul><%
 
@@ -47,12 +43,11 @@ var ppl = people.list();
 
 for (var i=0;i<3;i++) {
     var k = Math.floor(Math.random() * ppl.length);
-    print('<li><a href="">', ppl[k].fname, " ", ppl[k].lname, '</a></li>');
+    print('<li><a href="/docs/search/?q=', encodeURIComponent(ppl[k].query), '">', ppl[k].fname, " ", ppl[k].lname, '</a></li>');
 }
 
 
 %></ul>
-<a href="javascript:PolicyFeed.expandFilters('people');">Daugiau asmenų</a>
 </td>
 <td><%
 
@@ -145,11 +140,13 @@ for (var i=0;i<3;i++) {
 }
 
 %></ul>
-<a href="javascript:PolicyFeed.expandFilters('regions');">Daugiau savivaldybių</a>
 </td></tr>
+<tr id="expand-links">
+<td class="orgs"><a href="javascript:PolicyFeed.expandFilters('orgs');">Daugiau įstaigų ir organizacijų &hellip;</a></td>
+<td class="people"><a href="javascript:PolicyFeed.expandFilters('people');">Daugiau politikų, tarnautojų, pareigūnų &hellip;</a></td>
+<td class="regions"><a href="javascript:PolicyFeed.expandFilters('regions');">Daugiau savivaldybių &hellip;</a></td>
 </tbody>
 <tbody id="expansion">
-<tr class="orgs"><td colspan="3"><h3>Įstaigos ir organizacijos</h3></td></tr>
 <tr class="orgs">
 <%
 
@@ -211,7 +208,6 @@ print('</td>');
 
 %>
 </tr>
-<tr class="people"><td colspan="3"><h3>Politikai, tarnautojai, pareigūnai</h3></td></tr>
 <tr class="people">
 <%
 
@@ -237,7 +233,6 @@ for (var i=0;i<3;i++) {
 
 %>
 </tr>
-<tr class="regions"><td colspan="3"><h3>Savivaldybės, vietovės</h2></td></tr>
 <tr class="regions">
 <%
 
@@ -258,4 +253,9 @@ for (var i=0;i<3;i++) {
 </tbody>
 </table>
 
-</div>
+<ul class="silent">
+<li>Ar žinote ką veikia jūsų rinktas Seimo narys?</li>
+<li>Ar žinote ką veikia valdžia jūsų mieste ar rajone?</li>
+<li>Jums aktualias naujienas galite užsisakyti el. paštu, RSS, įsikelti į savo tinklalapį ar Facebook puslapį.</li>
+</ul>
+

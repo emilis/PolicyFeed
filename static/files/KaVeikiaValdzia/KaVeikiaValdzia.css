@@ -666,8 +666,14 @@ div.day > div {
     padding-left: 0px;
 }
 
+#filter-table li {
+    margin: 2px 0;
+    border-bottom: 1px dotted #ccc;
+}
+
 #filter-table a {
-    font-size: 13px;
+    text-decoration: none;
+    font-size: 12px;
 }
 
 #filter-table > tbody > tr > td {
@@ -675,16 +681,35 @@ div.day > div {
     width: 33%;
 }
 
-tbody#expansion > tr {
+#expansion {
+    background-color: #f8f8f8;
+}
+
+#expansion > tr {
     display: none;
 }
 
-tbody#expansion li {
-    margin: 2px 0;
-    border-bottom: 1px dotted #ccc;
+
+#expand-links > td > a {
+    font-weight: bold;
+    font-size: 15px;
+    text-decoration: underline;
 }
 
-tbody#expansion a {
-    text-decoration: none;
+#expand-links > td.active {
+    background-color: #f8f8f8;
+}
+
+.silent {
+    color: #999;
+}
+
+#filter-examples ul {
+    margin: 0;
+    padding: 0;
+}
+
+#search-all-link {
+    font-weight: bold;
     font-size: 12px;
 }

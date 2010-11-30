@@ -193,4 +193,7 @@ PolicyFeed.showSharedStatus = function(data, status) {
 PolicyFeed.expandFilters = function(name) {
     jQuery("#expansion > tr").hide();
     jQuery("#expansion > tr." + name).show();
+
+    jQuery("#expand-links > td").removeClass("active");
+    jQuery("#expand-links > td." + name).addClass("active");
 }
