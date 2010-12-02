@@ -97,7 +97,7 @@ exports.unserializeFields = function(data) {
  */
 exports.createQueryField = function(data) {
     if (!data.query) {
-        data.query = 'org:"' + data.org + '","' + data.organization + '"';
+        data.query = 'org:"' + data.org.replace(/"/g, "") + '","' + data.organization.replace(/"/g, "") + '"';
         if (data.name_forms) {
             data.query += ',"' + data.name_forms + '"';
         }

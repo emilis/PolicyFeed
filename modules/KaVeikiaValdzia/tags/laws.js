@@ -95,9 +95,9 @@ exports.unserializeFields = function(data) {
 exports.createQueryField = function(data) {
 
     if (!data.query) {
-        data.query = '"' + data.title + '"';
+        data.query = '"' + data.title.replace(/"/g, "") + '"';
         if (data.nr && !data.nr.match(/^\d+$/)) {
-            data.query += ',"' + data.nr + '"';
+            data.query += ',"' + data.nr.replace(/"/g, "") + '"';
         }
     }
     return data;

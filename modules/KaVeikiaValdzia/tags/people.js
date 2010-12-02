@@ -109,6 +109,9 @@ exports.createQueryField = function(data) {
             q.push(initials[0] + " " + data.lname);
         }
 
+        // strip quotes from names:
+        q = q.map(function (item) { return item.replace(/"/g, ""); });
+
         data.query = '"' + q.join('","') + '"';
         if (data.queries) {
             data.query += "," + data.queries;
