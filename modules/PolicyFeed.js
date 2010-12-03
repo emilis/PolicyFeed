@@ -155,22 +155,6 @@ exports.showRss = function(req) {
 /**
  *
  */
-exports.showFilters = function(req) {
-    var organizations = require("KaVeikiaValdzia/tags/organizations");
-    var people = require("KaVeikiaValdzia/tags/people");
-    var savivaldybes = require("KaVeikiaValdzia/tags/savivaldybes");
-
-    return this.returnHtml("showFilters", {
-        org_group_map: organizations.getGroupMap(),
-        people: people.list(false, {order: { lname: 1}}),
-        savivaldybes: savivaldybes.list()
-        });
-}
-
-
-/**
- *
- */
 exports.showDay = function(req, day) {
     log_request("showDay", req, day);
 

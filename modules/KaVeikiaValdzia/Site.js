@@ -36,7 +36,19 @@ var log = require("ringo/logging").getLogger(module.id);
  * Home page of the website.
  */
 exports.showIndex = function(req) {
-    return PolicyFeed.showDocumentList(req);
+    var organizations = require("KaVeikiaValdzia/tags/organizations");
+    var people = require("KaVeikiaValdzia/tags/people");
+    var savivaldybes = require("KaVeikiaValdzia/tags/savivaldybes");
+
+    var vars = {
+        org_group_map: organizations.getGroupMap(),
+        people: people.list(false, {order: { lname: 1}}),
+        savivaldybes: savivaldybes.list()
+        };
+
+    return WebMapper.returnHtml(
+            this.showContent(
+                ctlTemplate.fetchObject(this.dirname + "/tpl/showIndex.ejs", vars)));
 }
 
 
