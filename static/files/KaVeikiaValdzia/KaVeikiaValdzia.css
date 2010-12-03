@@ -350,6 +350,7 @@ div.day > div {
                             font-style: normal;
                             background-color: #fff595;
                             padding: 0px 1px 0px 3px;
+                            border-radius: 2px;
                             -moz-border-radius: 2px;
                         }
 
@@ -661,6 +662,16 @@ div.day > div {
 
 
 /*--- Filter page ---*/
+
+#filter-select {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    padding: 10px;
+}
+
 #filter-table ul {
     list-style: none;
     padding-left: 0px;
@@ -712,4 +723,14 @@ div.day > div {
 #search-all-link {
     font-weight: bold;
     font-size: 12px;
+}
+
+#filter-hints{
+    margin: 20px 0;
+    padding: 0 0 0 22px;
+}
+
+#filter-hints > li {
+    padding: 0;
+    margin: 2px 0;
 }

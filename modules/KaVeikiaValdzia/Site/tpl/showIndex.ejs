@@ -3,10 +3,13 @@
 var {org_group_map, people, savivaldybes} = vars;
 var groupmap = org_group_map;
 
-%>
-<div style="padding: 0 10px;">
-<h1 class="silent">KąVeikiaValdžia.lt yra:<br><small>&nbsp;&bull; Per 20000 valdžios įstaigų nutarimų, pranešimų, darbotvarkių.<br>&nbsp;&bull; Operatyviai atnaujinama informacija.</small></h1>
+exports.title = 'Visas srautas vienoje vietoje';
 
+%>
+<h1 class="silent" style="padding: 0 2px;">KąVeikiaValdžia.lt yra:<br><small>&nbsp;&bull; Per 20000 valdžios įstaigų nutarimų, pranešimų, projektų, darbotvarkių.<br>&nbsp;&bull; Operatyviai atnaujinama informacija.</small></h1>
+
+<div id="filter-select">
+<div style="padding: 0 10px;">
 <h2 class="silent">Raskite ir užsisakykite tai, kas aktualu Jums:</h2>
 <form id="search" method="get" action="/docs/search/">
 <p><input id="q" name="q">
@@ -173,10 +176,12 @@ for (var i=0;i<3;i++) {
 
 </tbody>
 </table>
+</div>
 
-<ul class="silent">
+<ul id="filter-hints" class="silent">
 <li>Ar žinote ką veikia jūsų rinktas Seimo narys?</li>
 <li>Ar žinote ką veikia valdžia jūsų mieste ar rajone?</li>
+<li>Iš anksto sužinokite ką planuoja valdžios institucijos &mdash; skelbiame projektus ir darbotvarkes.</li>
 <li>Jums aktualias naujienas galite užsisakyti el. paštu, RSS, įsikelti į savo tinklalapį ar Facebook puslapį.</li>
 </ul>
 
