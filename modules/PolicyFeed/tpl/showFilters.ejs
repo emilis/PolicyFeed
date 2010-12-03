@@ -1,6 +1,7 @@
 <%
 
-var {organizations, people} = vars;
+var {org_group_map, people, savivaldybes} = vars;
+var groupmap = org_group_map;
 
 %>
 <div style="padding: 0 10px;">
@@ -20,8 +21,6 @@ var {organizations, people} = vars;
 <tr>
     <td><ul><%
 
-var groupmap = organizations.getGroupMap();
-
 var top = groupmap.top;
 var i = Math.floor(Math.random() * top.length);
 print('<li><a href="/docs/search/?q=', encodeURIComponent(top[i].query), '">', top[i].org, '</a></li>');
@@ -38,12 +37,10 @@ print('<li><a href="/docs/search/?q=', encodeURIComponent(groupmap.LT[i].query),
 </td>
 <td><ul><%
 
-var ppl = people.list();
-//print(ppl.map(uneval).join("<br>"));
-
 for (var i=0;i<3;i++) {
-    var k = Math.floor(Math.random() * ppl.length);
-    print('<li><a href="/docs/search/?q=', encodeURIComponent(ppl[k].query), '">', ppl[k].fname, " ", ppl[k].lname, '</a></li>');
+    var k = Math.floor(Math.random() * people.length);
+    var person = people[k];
+    print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '">', person.fname, " ", person.lname, '</a></li>');
 }
 
 
@@ -51,82 +48,6 @@ for (var i=0;i<3;i++) {
 </td>
 <td><%
 
-var savivaldybes = [
-    ["Akmenė", "Akmenės rajonas", "Akmenė"],
-    ["Alytaus m.", "Alytaus miestas", "Alytus"],
-    ["Alytaus r.", "Alytaus rajonas"],
-    ["Anykščių r.", "Anykščių rajonas", "Anykščiai"],
-    ["Birštonas", "Birštonas"],
-    ["Biržų r.", "Biržų rajonas", "Biržai"],
-    ["Druskininkai", "Druskininkai"],
-    ["Elektrėnai", "Elektrėnai"],
-    ["Ignalinos r.", "Ignalinos rajonas", "Ignalina"],
-    ["Jonavos r.", "Jonavos rajonas", "Jonava"],
-    ["Joniškio r.", "Joniškio rajonas", "Joniškis"],
-    ["Jurbarko r.", "Jurbarko rajonas", "Jurbarkas"],
-    ["Kaišiadorių r.", "Kaišiadorių rajonas", "Kaišiadorys"],
-    ["Kalvarija", "Kalvarija"],
-    ["Kauno m.", "Kauno miestas", "Kaunas"],
-    ["Kauno r.", "Kauno rajonas"],
-    ["Kazlų Rūda", "Kazlų Rūda"],
-    ["Kėdainių r.", "Kėdainių rajonas", "Kėdainiai"],
-    ["Kelmės r.", "Kelmės rajonas", "Kelmė"],
-    ["Klaipėdos m.", "Klaipėdos miestas", "Klaipėda"],
-    ["Klaipėdos r.", "Klaipėdos rajonas"],
-    ["Kretingos r.", "Kretingos rajonas", "Kretinga"],
-    ["Kupiškio r.", "Kupiškio rajonas", "Kupiškis"],
-    ["Lazdijų r.", "Lazdijų rajonas", "Lazdijai"],
-    ["Marijampolė", "Marijampolė"],
-    ["Mažeikių r.", "Mažeikių rajonas", "Mažeikiai"],
-    ["Molėtų r.", "Molėtų rajonas", "Molėtai"],
-    ["Neringa", "Neringa", "Nida"],
-    ["Pagėgiai", "Pagėgiai"],  
-    ["Pakruojo r.", "Pakruojo rajonas", "Pakruojis"],
-    ["Palangos m.", "Palangos miestas", "Palanga"],
-    ["Panevėžio m.", "Panevėžio miestas", "Panevėžys"],
-    ["Panevėžio r.", "Panevėžio rajonas"],
-    ["Pasvalio r.", "Pasvalio rajonas", "Pasvalys"],
-    ["Plungės r.", "Plungės rajonas", "Plungė"],
-    ["Prienų r.", "Prienų rajonas", "Prienai"],
-    ["Radviliškio r.", "Radviliškio rajonas", "Radviliškis"],
-    ["Raseinių r.", "Raseinių rajonas", "Raseiniai"],
-    ["Rietavas", "Rietavas"],
-    ["Rokiškio r.", "Rokiškio rajonas", "Rokiškis"],
-    ["Skuodo r.", "Skuodo rajonas", "Skuodas"],
-    ["Šakių r.", "Šakių rajonas", "Šakiai"],
-    ["Šalčininkų r.", "Šalčininkų rajonas", "Šalčininkai"],
-    ["Šiaulių m.", "Šiaulių miestas", "Šiauliai"],
-    ["Šiaulių r.", "Šiaulių rajonas"],
-    ["Šilalės r.", "Šilalės rajonas", "Šilalė"],
-    ["Šilutės r.", "Šilutės rajonas", "Šilutė"],
-    ["Širvintų r.", "Širvintų rajonas", "Širvintos"],
-    ["Švenčionių r.", "Švenčionių rajonas", "Švenčionys"],
-    ["Tauragės r.", "Tauragės rajonas", "Tauragė"],
-    ["Telšių r.", "Telšių rajonas", "Telšiai"],
-    ["Trakų r.", "Trakų rajonas", "Trakai"],
-    ["Ukmergės r.", "Ukmergės rajonas", "Ukmergė"],
-    ["Utenos r.", "Utenos rajonas", "Utena"],
-    ["Varėnos r.", "Varėnos rajonas", "Varėna"],
-    ["Vilkaviškio r.", "Vilkaviškio rajonas", "Vilkaviškis"],
-    ["Vilniaus m.", "Vilniaus miestas"],
-    ["Vilniaus r.", "Vilniaus rajonas"],
-    ["Visaginas", "Visaginas"],
-    ["Zarasų r.", "Zarasų rajonas", "Zarasai"]
-];
-
-savivaldybes = savivaldybes.map(function (item) {
-        item[2] = item[2] || "";
-        item = {
-            group: item[0],
-            title: item[1],
-            queries: item[2]
-            };
-        item.query = 'orgroups:"' + item.group + '","' + item.title + '"';
-        if (item.queries) {
-            item.query += ',"' + item.queries + '"';
-        }
-        return item;
-    });
 
 print('<ul>');
 for (var i=0;i<3;i++) {
@@ -211,20 +132,20 @@ print('</td>');
 <tr class="people">
 <%
 
-ppl.sort(function (a, b) { return a.lname > b.lname; });
-var column = Math.ceil(ppl.length / 3);
+var column = Math.ceil(people.length / 3);
 
 var last_letter = "";
 for (var i=0;i<3;i++) {
     print('<td><ul>');
     for (var j=0;j<column;j++) {
         var k = i*column + j;
-        if (ppl[k]) {
-            if (ppl[k].lname[0] != last_letter) {
-                last_letter = ppl[k].lname[0];
+        var person = people[k];
+        if (person) {
+            if (person.lname[0] != last_letter) {
+                last_letter = person.lname[0];
                 print('<li><b>', last_letter, '</b></li>');
             }
-            print('<li><a href="/docs/search/?q=', encodeURIComponent(ppl[k].query), '">', ppl[k].fname, ' ', ppl[k].lname, '</a></li>');
+            print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '">', person.fname, ' ', person.lname, '</a></li>');
         }
 
     }
