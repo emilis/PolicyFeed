@@ -1,24 +1,77 @@
 <div id="page"><div>
-<h1>Apie paiešką</h1>
+<h1>Kaip veikia paieška?</h1>
 
-<ul>
-    <li><a href="#fraze">Kaip ieškoti tikslios frazės tekste?</a></li>
-    <li><a href="#operacijos">Kaip naudoti logines operacijas (IR / ARBA / NE)?</a></li>
-    <li><a href="#data">Kaip ieškoti dokumentų pagal datą</a></li>
-    <li><a href="#laukai">Kaip ieškoti antraštėse, pagal dokumentų tipą, įstaigą ir kitus laukus?</a></li>
-</ul>
+<p><em>Mūsų svetainėje naudojamas Lucene/Solr paieškos variklis. Detalesnę jo dokumentaciją galite rasti <a href="http://lucene.apache.org/solr/tutorial.html">čia</a>.</em></p>
 
-<h3 id="fraze">Kaip ieškoti tikslios frazės tekste?</h3>
+<h2>Bendri principai</h2>
 
-<p>Norėdami surasti tikslią frazę (pvz. <a href="<%= config.URLS.base %>/docs/search/?q=&quot;žmogaus+teisės&quot;">"žmogaus teisės"</a>) įrašykite ją tarp kabučių.</p>
+<ol>
 
-<p>Kitu atveju sistema ras visus dokumentus, kuriuose žodžiai yra bet kuriose teksto vietose. Tai gali netikti tam ko jūs ieškote (pvz.: <a href="<%= config.URLS.base %>/docs/search/?q=žmogaus+teisės">žmogaus teisės</a>).</p>
+    <li><p>Mūsų paieškos sistema yra pritaikyta lietuvių kalbai ir pati atpažįsta įvairias žodžių formas (linksnius ir pan.), todėl visai nereikia naudoti žvaigždučių ar kitokių būdų surasti visiems žodžio variantams tekste.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=informacija">informacija</a></tt> vietoj <tt>informac*</tt>.</p></li>
 
-<p align="right"><a href="#page">Į viršų</a></p>
+    <li><p>Norėdami ieškoti tikslios frazės, rašykite žodžius tarp kabučių.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=&quot;informacinė visuomenė&quot;">"informacinė visuomenė"</a></tt>.</p></li>
 
+    <li><p>Norėdami ieškoti kelių žodžių ar frazių, kurie visi privalo būti tekste, atskirkite juos tarpais.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=&quot;informacinė visuomene&quot; mokesčiai">"informacinė visuomenė" mokesčiai</a></tt>.</p></li>
 
-<h3 id="operacijos">Kaip naudoti logines operacijas (IR / ARBA / NE)?</h3>
+    <li><p>Norėdami ieškoti kelių žodžių ar frazių, kai ieškote bet kurio iš jų, atskirkite juos kableliais.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=žvejyba, žūklė, medžioklė">žvejyba, žūklė, medžioklė</a></tt>.</p></li>
 
-<p></p>
+    <li><p>Norėdami paslėpti dokumentus, kuriuose minimi tam tikri žodžiai, galite įrašyti tuos žodžius į paieškos laukelį ir prieš juos parašyti minusą.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=mokesčiai -PSD">mokesčiai -PSD</a></tt>.</p></li>
+
+</ol>
+
+<h2>Daugiau galimybių</h2>
+
+<ol start="6">
+
+    <li><p>Norėdami sugrupuoti paieškos dalis, galite naudoti skliaustus.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=(&quot;informacinė visuomenė&quot;, žvejyba, žūklė) mokesčiai">(&quot;informacinė visuomenė&quot;, žvejyba, žūklė) mokesčiai</a></tt> &mdash; suras visus tekstus kuriuose kalbama apie informacinės visuomenės arba žūklės mokesčius.</p></li>
+
+    <li><p>Dėl aiškumo vietoje tarpų, kablelių ir minusų galite naudoti loginius operatorius <em>AND</em>, <em>OR</em> ir <em>NOT()</em>.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=(&quot;informacinė visuomenė&quot; OR žvejyba OR žūklė) AND mokesčiai AND NOT(PSD)">(&quot;informacinė visuomenė&quot; OR žvejyba OR žūklė) AND mokesčiai AND NOT(PSD)</a></tt>.</p></li>
+
+    <li><p>Galima ieškoti ne tik dokumentų tekste, bet ir kituose laukuose. Tokiu atveju reikia įrašyti lauko pavadinimą, po jo &mdash; dvitaškį, o po dvitaškio ieškomą tekstą.</p>
+    <p>Pvz.: <tt><a href="/docs/search/?q=title:stenograma">title:stenograma</a></tt>.</p>
+    <p>Mūsų svetainėje galima ieškoti šiuose dokumentų laukuose:</p>
+    <table class="dict">
+    <thead><tr><th>Laukas</th><th>Pastabos</th></tr></thead>
+    <tbody>
+        <tr><td class="key">id</td>
+        <td>Dokumento ID mūsų svetainėje. Pvz.: <em>/docs/2010/12/03/33007</em></td></tr>
+        <tr><td class="key">published</td>
+        <td><p>Laikas kuomet dokumentas registruotas valdžios įstaigos svetainėje, arba kada jį pastebėjo mūsų sistema.</p>
+            <p>Norėdami paieškoje naudoti šį lauką turėsite naudoti ir specialų formatą laiko riboms nurodyti. Šis formatas yra aprašytas <a href="http://wiki.apache.org/solr/SolrQuerySyntax#Default_QParserPlugin:_LuceneQParserPlugin">Solr dokumentacijoje</a>.</p></td></tr>
+        <tr><td class="key">type</td>
+        <td><p>Mūsų svetainės suteiktas dokumento tipas:</p>
+            <ul>
+                <li><a href="/docs/search/?q=type:pranesimas">pranesimas</a></li>
+                <li><a href="/docs/search/?q=type:nutarimas">nutarimas</a></li>
+                <li><a href="/docs/search/?q=type:projektas">projektas</a></li>
+                <li><a href="/docs/search/?q=type:darbotvarke">darbotvarke</a></li>
+                <li><a href="/docs/search/?q=type:kita">kita</a></li>
+            </ul></td></tr>
+        <tr><td class="key">org</td>
+        <td><p>Įstaigos ar organizacijos santrumpa.</p>
+            <p>Pvz.: <tt><a href="/docs/search/?q=org:VRK">org:VRK</a></tt>.<br>Šios santrumpos yra paruoštos mūsų pačių ir nėra oficialios.</p></td></tr>
+        <tr><td class="key">organization</td>
+        <td><p>Įstaigos ar organizacijos pilnas oficialus pavadinimas.</p>
+            <p>Pvz.: <tt><a href="/docs/search/?q=organization:&quot;Lietuvos Respublikos Seimas&quot;">Lietuvos Respublikos Seimas</a></tt>.</p></td></tr>
+        <tr><td class="key">orgroups</td>
+        <td><p>Grupės, kurioms priskirta dokumentą paskelbusi įstaiga</p>
+            <p>Pvz.: <tt><a href="/docs/search/?q=orgroups:ministerijos">orgroups:ministerijos</a></tt> randa visų ministerijų dokumentus.</p></td></tr>
+        <tr><td class="key">title</td>
+        <td><p>Dokumento antraštė.</p>
+            <p>Pvz.: <tt><a href="/docs/search/?q=title:stenograma">title:stenograma</a></tt>.</p></td></tr>
+        <tr><td class="key">html</td>
+        <td>Dokumento tekstas. Jei nenurodytas joks laukas, teksto ieškoma šiame lauke.</td></tr>
+    </tbody></table></li>
+
+</ol>
+
+<p>Jei turite dar kokių klausimų, pastabų ar pasiūlymų, rašykite: <a href="mailto:emilis.d@gmail.com">emilis.d@gmail.com</a>.</p>
 
 </div></div>

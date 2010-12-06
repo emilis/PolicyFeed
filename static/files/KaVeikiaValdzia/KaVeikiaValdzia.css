@@ -35,6 +35,21 @@ p.message {
     font-weight: bold;
 }
 
+table.dict {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+
+    table.dict th,
+    table.dict td {
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+
+    table.dict > tbody > tr > td.key {
+        font-weight: bold;
+    }
+
 /* --- Rounded double borders: --- */
 #page,
 #document,
@@ -58,6 +73,11 @@ div.day > div {
     background-color: white;
 }
 
+    #page tt {
+        background-color: #fffedf;
+        padding: 2px 5px;
+        border: 1px dotted #ccc;
+    }
 
 /* --- Top: --- */
 #top {
