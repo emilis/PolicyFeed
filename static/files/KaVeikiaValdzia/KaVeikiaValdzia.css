@@ -742,7 +742,9 @@ div.day > div {
 
 #search-all-link {
     font-weight: bold;
-    font-size: 12px;
+    font-size: 13px;
+    text-align: right;
+    margin: 1em 10px 10px;
 }
 
 #filter-hints{
