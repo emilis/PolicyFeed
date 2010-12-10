@@ -20,6 +20,7 @@
 // Requirements:
 var gluestick = require("gluestick");
 var htmlunit = require("htmlunit");
+var parser_utils = require("./utils");
 
 // Extends:
 gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
@@ -63,9 +64,23 @@ exports.extractFeedItems = function (page) {
 
             result.published = result.published.replace(/\./g, "-") + ":00";
 
+
+            result.url = parser_utils.getCanonicalLrsUrl(result.url);
+
             result.parser = name;
-            for (var k in doc_template)
+            for (var k in doc_template) {
                 result[k] = doc_template[k];
+            }
+
+            var patterns = [
+                /Seimo komitetų posėdžių.*darbotvarkės/,
+                /Oficiali Seimo Pirminink.*darbotvarkė/
+                ];
+
+            // Check if any patterns match:
+            if (patterns.some(function (pat) { return result.title.match(pat); })) {
+                result.type = "darbotvarke";
+            }
 
             return result;
         });
