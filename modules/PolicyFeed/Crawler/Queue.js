@@ -82,7 +82,7 @@ Object.defineProperty(schedule, "save", {enumerable:false, value: function() {
  */
 Object.defineProperty(schedule, "hasUrl", {enumerable: false, value: function(the_url, time) {
     for each (var url in this) {
-        if (url.url == the_url) {
+        if (url && url.url && url.url == the_url) {
             if ((time === undefined) || (time > url.time))
                 return true;
         }
