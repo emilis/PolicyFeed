@@ -26,7 +26,7 @@ exports.getCanonicalLrsUrl = function(url) {
     url[1] = url[1].join("&");
     url = url.join("?")
         .replace("http://www3.lrs.lt/pls/inter3/", "http://www.lrs.lt/pls/inter/")
-        .replace("http://www3.lrs.lt/pls/intter/", "http://www.lrs.lt/pls/inter/");
+        .replace("http://www3.lrs.lt/pls/inter/", "http://www.lrs.lt/pls/inter/");
     return url;
 }
 
