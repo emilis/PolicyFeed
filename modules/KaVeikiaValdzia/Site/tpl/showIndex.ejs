@@ -43,7 +43,7 @@ print('<li><a href="/docs/search/?q=', encodeURIComponent(groupmap.LT[i].query),
 for (var i=0;i<3;i++) {
     var k = Math.floor(Math.random() * people.length);
     var person = people[k];
-    print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '">', person.fname, " ", person.lname, '</a></li>');
+    print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '" title="', person.title, '">', person.fname, " ", person.lname, '</a></li>');
 }
 
 
@@ -148,7 +148,7 @@ for (var i=0;i<3;i++) {
                 last_letter = person.lname[0];
                 print('<li><b>', last_letter, '</b></li>');
             }
-            print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '">', person.fname, ' ', person.lname, '</a></li>');
+            print('<li><a href="/docs/search/?q=', encodeURIComponent(person.query), '" title="', person.title, '">', person.fname, ' ', person.lname, '</a></li>');
         }
 
     }
