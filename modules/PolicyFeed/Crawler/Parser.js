@@ -37,7 +37,7 @@ exports.validateFeedPage = function(page) {
 
     if (!page.getByXPath)
         throw this.error("validateFeedPage", page);
-    if (page.webResponse.statusCode >= 400)
+    if (page.webResponse.statusCode >= 400 && page.webResponse.statusCode < 500)
         throw this.error("validateFeedPage", page.webResponse.statusCode, page);
 }
 
