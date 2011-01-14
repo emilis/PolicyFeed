@@ -20,7 +20,6 @@
 
 // Requirements:
 var ctl_dates = require("ctl/utils/dates");
-var Failures = require("PolicyFeed/Crawler/Failures");
 var gluestick = require("gluestick");
 var htmlunit = require("htmlunit");
 var Queue = require("PolicyFeed/Crawler/Queue");
