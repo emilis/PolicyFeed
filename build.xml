@@ -20,6 +20,8 @@
     <property name="query.db" value="queries.sqlite3" />
     <property name="tag.db" value="tags.sqlite3" />
     <property name="alert.db" value="alerts.sqlite3" />
+    <property name="failures.db" value="failures.sqlite3" />
+
 
     <property name="run.jar" location="${lib}/run.jar" />
     <property name="run.ringo.home" value="-D ringo.home='${lib}/ringo.jar'" />
@@ -36,6 +38,7 @@
         <copy file="${pf.src}/${query.db}" tofile="${data}/${query.db}" />
         <copy file="${pf.src}/${tag.db}" tofile="${data}/${tag.db}" />
         <copy file="${pf.src}/${alert.db}" tofile="${data}/${alert.db}" />
+        <copy file="${pf.src}/${failures.db}" tofile="${data}/${failures.db}" />
         <symlink link="${config}/log4j.properties" resource="${config}/config/log4j.properties" />
     </target>
 
