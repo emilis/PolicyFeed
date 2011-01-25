@@ -104,7 +104,8 @@ exports.parseFeedItem = function(item) {
                         teises_aktas.susije = slink.getHrefAttribute().toString();
                     break;
                     default:
-                        Failures.write(url, { parser: name, error: "Unrecognized small link",
+                        Failures.write(url, { parser: name, url: url, data: {
+                                error: "Unrecognized small link",
                                 text: slink.asText(),
                                 link: slink.getHrefAttribute().toString()
                                 });
