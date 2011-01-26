@@ -160,7 +160,8 @@ exports.codeToFunction = function(str) {
 function quote(str) {
     return "'"
         // escape backslashes and quotes, replace NULL characters and newlines:
-        + (""+str).replace(/([\\"'])/g, "\\$1").replace(/\u0000/g, "\\0").replace(/\n/g, "\\u000a")
+        + (""+str).replace(/([\\"'])/g, "\\$1")
+            .replace(/\u0000/g, "\\0").replace(/\n/g, "\\u000a").replace(/\r/g, "\\u000d")
         + "'";
 }
 
