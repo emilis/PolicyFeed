@@ -36,7 +36,12 @@ exports.next = function() {
     } else if (!fs.exists(file_name)) {
         this.setValue( current );
     } else {
-        this.setValue( parseInt(fs.read(file_name), 10) );
+        var fs_value = parseInt(fs.read(file_name), 10);
+        if (fs_value && fs_value != NaN) {
+            this.setValue( fs_value );
+        } else {
+            throw Error("ctl/SimpleSequence failed to sync its counter to the data file.");
+        }
     }
 
     return current;
