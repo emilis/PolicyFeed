@@ -20,6 +20,7 @@
 // Requirements:
 var config = require("config");
 var gluestick = require("gluestick");
+var objects = require("ringo/utils/objects");
 var serializable = require("ctl/objectfs/serializable");
 
 // Create functions for this module and connect to a DB table:
@@ -120,6 +121,7 @@ exports.write = function(id, data) {
     var oldData = this.read(data.url);
     if (oldData) {
         data.times = oldData.times ? (oldData.times + 1) : data.times;
+        data.data = data.data ? objects.merge(oldData.data, data.data) : oldData.data;
         return this._parent_write(oldData.id, data);
     } else {
         return this._parent_write(id, data);
