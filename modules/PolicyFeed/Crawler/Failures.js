@@ -76,7 +76,9 @@ exports.serialize = function(data) {
 exports.unserialize = function(data) {
 
     data.time = new Date(data.time);
-    data.data = eval(data.data);
+    if ((typeof(data.data) == "string") || (data.data instanceof String)) {
+        data.data = eval(data.data);
+    }
 
     return data;
 }
