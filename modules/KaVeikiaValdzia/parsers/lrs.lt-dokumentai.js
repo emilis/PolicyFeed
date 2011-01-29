@@ -150,7 +150,7 @@ exports.parseFeedItem = function(item) {
             var orgroups = orgmap[author].region.split(",");
         } else {
             Failures.write(url, { parser: name, url: url, data: {
-                    error: "Unregognized author",
+                    error: "Unrecognized author",
                     author: author
                     }});
             return false;
