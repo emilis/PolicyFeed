@@ -157,6 +157,9 @@ exports.importOldDatabase = function() {
         if (item.error == "Unregognized author") {
             item.error = "Unrecognized author";
         }
+        if (!item.error && item.reason) {
+            item.error = item.reason;
+        }
 
         this.write(false, item);
     }
