@@ -104,11 +104,12 @@ exports.parseFeedItem = function(item) {
                         teises_aktas.susije = slink.getHrefAttribute().toString();
                     break;
                     default:
-                        Failures.write(url, { parser: name, url: url, data: {
+                        Failures.write(false, {
+                                parser: name,
+                                url: url,
                                 error: "Unrecognized small link",
-                                text: slink.asText(),
-                                link: slink.getHrefAttribute().toString()
-                                });
+                                data: { text: slink.asText(), link: slink.getHrefAttribute().toString() }
+                            });
                 }
                 slink.remove();
             }
@@ -155,10 +156,12 @@ exports.parseFeedItem = function(item) {
                     } else if (line[0].slice(0, 18) == "Pirminis projektas") {
                         teises_aktas.pirminis_projektas = line[0].slice(19);
                     } else {
-                        Failures.write(url, { parser: name, url: url, data: {
+                        Failures.write(false, {
+                                parser: name,
+                                url: url,
                                 error: "Unrecognized line",
-                                line: line
-                            }});
+                                data: { line: line }
+                            });
                     }
             }
         }
@@ -170,10 +173,12 @@ exports.parseFeedItem = function(item) {
             type = "projektas";
         }
         if (!type) {
-            Failures.write(url, { parser: name, url: url, data: {
+            Failures.write(false, {
+                    parser: name,
+                    url: url,
                     error: "Unrecognized document type",
-                    type: oldtype
-                    }});
+                    data: { type: oldtype }
+                });
             return false;
         }
 
@@ -182,10 +187,12 @@ exports.parseFeedItem = function(item) {
             var organization = orgmap[author].organization;
             var orgroups = orgmap[author].region.split(",");
         } else {
-            Failures.write(url, { parser: name, url: url, data: {
+            Failures.write(false, {
+                    parser: name,
+                    url: url,
                     error: "Unrecognized author",
-                    author: author
-                    }});
+                    data: { author: author }
+                });
             return false;
         }
 

@@ -91,6 +91,8 @@ exports.parseFeedItem = function(item) {
         var url = parser_utils.getCanonicalLrsUrl( tlink.getHrefAttribute().toString() );
         tspan.remove();
 
+        // small_links from lrs.lt projektai should go here?
+
         // get non-empty content lines:
         content = content.asText().split(/[\n;]/).filter(function(part) { return part.trim(); });
 
@@ -126,10 +128,12 @@ exports.parseFeedItem = function(item) {
                     } else if (line[0].slice(0, 18) == "Projektas priimtas") {
                         teises_aktas.priimtas = line[0].slice(20);
                     } else {
-                        Failures.write(url, { parser: name, url: url, data: {
+                        Failures.write(false, {
+                                parser: name,
+                                url: url,
                                 error: "Unrecognized line",
-                                line: line
-                            }});
+                                data: { line: line }
+                            });
                     }
             }
         }
@@ -137,10 +141,12 @@ exports.parseFeedItem = function(item) {
         var oldtype = type;
         type = parser_utils.getDocType(type);
         if (!type) {
-            Failures.write(url, { parser: name, url: url, data: {
+            Failures.write(false, {
+                        parser: name,
+                        url: url,
                         error: "Unrecognized document type",
-                        type: oldtype
-                        }});
+                        data: { type: oldtype }
+                    });
                 return false;
         }
 
@@ -149,10 +155,12 @@ exports.parseFeedItem = function(item) {
             var organization = orgmap[author].organization;
             var orgroups = orgmap[author].region.split(",");
         } else {
-            Failures.write(url, { parser: name, url: url, data: {
+            Failures.write(false, {
+                    parser: name,
+                    url: url,
                     error: "Unrecognized author",
-                    author: author
-                    }});
+                    data: { author: author }
+                });
             return false;
         }
 
