@@ -115,6 +115,11 @@ exports.gluestick = {
             clone: true,
             config: { filename: exports.DIRS.data + "/users.sqlite3" }
         },
+        DB_failures: {
+            module: "ctl/DB/Sqlite",
+            clone: true,
+            config: { filename: exports.DIRS.data + "/failures.sqlite3" }
+        },
         Events: {
             module: "ctl/Events",
             config: {
