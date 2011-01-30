@@ -1,0 +1,74 @@
+<%
+
+var ringo_dates = require("ringo/utils/dates");
+var ringo_strings = require("ringo/utils/strings");
+
+// Constants:
+var BASE_URL = config.URLS.full;
+var site_files = config.URLS.files + "/KaVeikiaValdzia";
+
+var {query, docs, numFound, limit} = vars;
+query = ringo_strings.entitize(query);
+
+
+/**
+ * Converts an ISO string back to Date object.
+ */
+function isoToJsDate(str)
+{
+    var arr = str.replace(/[-T:.Z]/g, "-").split("-");
+    arr[1] = parseInt(arr[1], 10) - 1;
+    return new Date( Date.UTC.apply(undefined, arr) );
+}
+
+
+%><!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>KąVeikiaValdžia.lt: <%= query %></title>
+    <link rel="stylesheet" type="text/css" href="<%= config.URLS.files %>/KaVeikiaValdzia/KaVeikiaValdzia.css">
+    <link rel="stylesheet" type="text/css" href="<%= config.URLS.files %>/PolicyFeed/PolicyFeed.css">
+</head>
+<body style="background: white;">
+<table id="results-table">
+<tbody>
+<%
+
+var url = "";
+var tr_id = "";
+
+for each(var doc in docs)
+{
+    if (!doc.type)
+        doc.type = "unknown";
+    if (!doc.org)
+        doc.org = "???";
+    if (!doc.organization)
+        doc.organization = "???";
+
+    url = BASE_URL + doc.id;
+    tr_id = doc.id.replace(/\//g, "-");
+
+    doc.published = isoToJsDate(doc.published);
+
+    print('<tr id="' + tr_id + '">');
+    print('<td class="org" nowrap="nowrap" align="right">');
+        print('<a href="', BASE_URL, '/docs/search/?q=org:%22', doc.org, '%22" title="', doc.organization, '">', doc.org, '&nbsp;&raquo;</a></td>');
+    print('<td class="type">');
+        print('<a href="', BASE_URL, '/docs/search/?q=type:', doc.type, '" title="', doc.type, '"><img src="', site_files, '/', doc.type, '.png"></a></td>');
+    print('<td class="title"><a href="', url, '" class="title">', doc.title, '</a></td>');
+    
+    print('<td class="time" nowrap="nowrap">', ringo_dates.format(doc.published, "yyyy-MM-dd"), "</td>");
+    print('</tr>');
+}
+
+%>
+</tbody>
+<tfoot><tr><td colspan="4" align="center">
+<p>Šios naujienos jus pasiekė iš svetainės <a href="<%= BASE_URL %>/"><img src="<%= site_files %>/logo-embed-18px.png" align="absmiddle" title="KąVeikiaValdžia.lt"></a>.<br>
+Joje rasite daugiau <a href="<%= BASE_URL %>/docs/search/?q=<%= query %>">šios temos</a> ir <a href="<%= BASE_URL %>/">kitų temų</a> naujienų. Taip pat galėsite užsisakyti naujienas <a href="<%= BASE_URL %>/docs/search/?q=<%= query %>">el. paštu</a> ar <a href="<%= BASE_URL %>/docs/rss/?q=<%= query %>">RSS</a>.</p>
+</td></tr></tfoot>
+</table>
+</body>
+</html>

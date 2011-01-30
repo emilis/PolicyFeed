@@ -71,8 +71,13 @@ exports.showDocumentList = function(req) {
  *
  */
 exports.search = function(req) {
-    if (req.params.format && req.params.format == "json")
-        return this.loadSearchResults(req);
+    if (req.params.format) {
+        if (req.params.format == "json") {
+            return this.loadSearchResults(req);
+        } else if (req.params.format == "embedded") {
+            return this.embedSearchResults(req);
+        }
+    }
 
     log_request("search", req, req.params.q);
 
@@ -117,6 +122,32 @@ exports.loadSearchResults = function(req) {
             docs: docs,
             snippets: highlighting
             });
+}
+
+
+/**
+ *
+ */
+exports.embedSearchResults = function(req) {
+    log_request("search", req, req.params.q);
+
+    var limit = 20;
+    var results = SolrClient.search(req.params.q.trim(), {limit: limit, highlight: false});
+    var docs = [];
+    var numFound = 0;
+
+    if (results && results.response) {
+        docs = results.response.docs || docs;
+        numFound = results.response.numFound || numFound;
+    }
+    
+    return this.WebMapper.returnHtml(
+            this.showHtml("embedSearchResults", {
+                "query": req.params.q,
+                "docs": docs,
+                "numFound": numFound,
+                "limit": limit
+        }));
 }
 
 
