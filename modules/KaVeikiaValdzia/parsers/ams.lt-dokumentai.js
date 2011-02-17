@@ -39,6 +39,8 @@ exports.domains = {
     "www.ams.lt": 3000,
 };
 
+exports.retry_limit = 480; // 8 hours
+
 exports.doc_template = {
 };
 

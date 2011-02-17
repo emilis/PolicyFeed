@@ -126,7 +126,8 @@ exports.checkUpdates = function() {
                 Queue.scheduleUrl({
                     url: url,
                     parser: name,
-                    method: "checkFeed"
+                    method: "checkFeed",
+                    retry_limit: this.parsers[name].retry_limit
                     }, 0);
             }
         }

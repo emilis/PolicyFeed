@@ -97,7 +97,9 @@ var runThread = function(id) {
                 // Add url back to queue and hope the network problems will resolve:
                 url.retries = url.retries || 0;
                 url.retries++;
-                if (url.retries > 10) {
+
+                url.retry_limit = url.retry_limit || 10;
+                if (url.retries > url.retry_limit) {
                     Queue.failedUrl(id, url, e);
                     log.error("runThread():processUrl", id, e, "\n", e.stack);
                 } else { 
