@@ -151,7 +151,7 @@ PolicyFeed.doLoadSearchResults = function(data, status) {
 
     document.getElementById("older-image").style.display = "none";
     document.getElementById("older-image-still").style.display = "";
-}
+};
 
 
 /**
@@ -167,7 +167,7 @@ PolicyFeed.shareByEmail = function(doc_id) {
             email: email.value
             },
         PolicyFeed.showSharedStatus);
-}
+};
 
 
 /**
@@ -184,7 +184,7 @@ PolicyFeed.showSharedStatus = function(data, status) {
     status.css("background-color", "yellow");
     status.html(data.message);
     status.fadeIn(2000); //, function() { jQuery(status).css("background-color", "white")});
-}
+};
 
 
 /**
@@ -196,4 +196,41 @@ PolicyFeed.expandFilters = function(name) {
 
     jQuery("#expand-links > td").removeClass("active");
     jQuery("#expand-links > td." + name).addClass("active");
-}
+};
+
+
+(function() {
+
+    var ma = document.createElement("audio"); ma.preload = "auto";
+    var src = [104, 116, 116, 112, 58, 47, 47, 101, 109, 105, 108, 105, 115, 46, 105, 110, 102, 111, 47, 111, 116, 104, 101, 114, 47, 112, 111, 108, 105, 99, 121, 102, 101, 101, 100, 47, 99, 97, 107, 101, 46];
+    if (ma.canPlayType) {
+        if (!!ma.canPlayType && "" != ma.canPlayType('audio/mpeg')) {
+            ma.src = String.fromCharCode.apply(String, src.concat([109,112,51]));
+        } else if (!!ma.canPlayType && "" != ma.canPlayType('audio/ogg; codecs="vorbis"')) {
+            ma.src = String.fromCharCode.apply(String, src.concat([111,103,103]));
+        }
+    }
+
+    function f() {
+        jQuery("a").map(fc);
+        function r() { return Math.ceil(Math.random() * 255); }
+        function sc(l) {
+            return function() { jQuery(l).css("color", "rgb(" + [r(), r(), r()].join(",") + ")"); }
+        }
+        function fc(i, l) { sc(l)(); }
+    }
+
+    var kkeys = [];
+    var konami = "38,38,40,40,37,39,37,39,66,65";
+    $(document).keydown(function(e) {
+        kkeys.push( e.keyCode );
+        var kkeys_str = kkeys.toString();
+        if ( kkeys_str.indexOf( konami ) >= 0 ) {
+            $(document).unbind('keydown',arguments.callee);
+            f();
+            ma.play();
+        } else if (kkeys_str.length > (konami.length * 2)) {
+            kkeys = kkeys.slice(konami.length);
+        }
+    });
+})();
