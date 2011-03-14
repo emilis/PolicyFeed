@@ -160,7 +160,7 @@ exports.fixPageUrls = function(page) {
     anchors.map(function (a) {
             if (a.hasAttribute("href")) {
                 var href = a.getAttribute("href").toString();
-                if (href.indexOf("://") == -1) {
+                if (href.indexOf("://") == -1 && href.indexOf("mailto:") != 0) {
                     a.setAttribute("href", page.getFullyQualifiedUrl(href));
                 }
             }
