@@ -287,7 +287,8 @@ exports.reindexUrl = function(url) {
                     Queue.scheduleUrl({
                         url: url,
                         parser: parser.name,
-                        method: "checkFeed"
+                        method: "checkFeed",
+                        retry_limit: this.parsers[name].retry_limit
                         }, 0);
                 }
                 return true;
