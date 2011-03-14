@@ -20,3 +20,31 @@ var Crawler = require("PolicyFeed/Crawler");
 Crawler.init(require("config")["PolicyFeed/Crawler"]);
 Crawler.checkUpdates();
 
+// Some vars and functions for easier error handling:
+var CrawlerErrors = require("PolicyFeed/Crawler/Errors");
+var CrawlerFailures = require("PolicyFeed/Crawler/Failures");
+
+function retryUrl(url) {
+    print(url);
+    CrawlerErrors.removeUrl(url);
+    Crawler.reindexUrl(url);
+}
+
+function failUrl(url, reason) {
+    reason = reason || "Unknown (manual).".
+    CrawlerErrors.removeUrl(url);
+    CrawlerFailures.write(false, { url: url, reason: reason });
+}
+
+function retryAllUrls() {
+    return CrawlerErrors.getUrlStats().map(function(item) {
+            try {
+                retryUrl(item.url);
+                return true;
+            } catch (e) {
+                print(e);
+                return false;
+            }
+    });
+}
+
