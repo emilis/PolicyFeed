@@ -31,7 +31,7 @@ function retryUrl(url) {
 }
 
 function failUrl(url, reason) {
-    reason = reason || "Unknown (manual).".
+    reason = reason || "Unknown (manual).";
     CrawlerErrors.removeUrl(url);
     CrawlerFailures.write(false, { url: url, reason: reason });
 }
