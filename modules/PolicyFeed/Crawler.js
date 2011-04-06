@@ -288,7 +288,7 @@ exports.reindexUrl = function(url) {
                         url: url,
                         parser: parser.name,
                         method: "checkFeed",
-                        retry_limit: this.parsers[name].retry_limit
+                        retry_limit: parser.retry_limit
                         }, 0);
                 }
                 return true;
