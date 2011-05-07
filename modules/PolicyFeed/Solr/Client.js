@@ -52,7 +52,7 @@ var prepareDate = function(str) {
  *
  */
 var stripTags = function(str) {
-    return str.replace(/<[^>]*>/g, " ").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&\w+;/g, " ").trim();
+    return str.replace(/<[^>]*>/g, " ").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\u001f|\u000b|\u0000/g, "").trim();
 }
 
 
