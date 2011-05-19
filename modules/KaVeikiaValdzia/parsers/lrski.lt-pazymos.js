@@ -29,11 +29,10 @@ gluestick.extendModule(exports, "PolicyFeed/Crawler/Parser");
 
 
 // --- Parser config: ---
-var search_params = "&search=1&metai=1990&metai2=2099";
+var search_params = "&search=0&metai=1990&metai2=2099";
 exports.feed_url = [
     "http://www.lrski.lt/index_neig.php?p=0&l=LT&n=62" + search_params,
-    "http://www.lrski.lt/index_neig.php?p=0&l=LT&n=62" + search_params + "&praleisti=10",
-    "http://www.lrski.lt/index_neig.php?p=0&l=LT&n=62" + search_params + "&praleisti=20",
+    "http://www.lrski.lt/index_neig.php?p=0&l=LT&n=62" + search_params + "&praleisti=30"
 ];
 
 exports.doc_template = {
@@ -54,7 +53,7 @@ exports.extractFeedItems = function(page)
 
     var rows = page.getByXPath('//body/table/tbody/tr').toArray().slice(2, -2);
 
-    if (rows.length != 10) {
+    if (rows.length != 30) {
         return this.error("Incorrect number of links in feed.");
     } else {
         return rows.map(this.parseFeedItem());
@@ -81,7 +80,8 @@ exports.parseFeedItem = function() {
 
         var url = row.getFirstByXPath("./td[3]/a")
             .getAttribute("href").toString()
-            .replace(search_params, "");
+            .replace(search_params, "")
+            .replace("&praleisti=30", "");
 
         return objects.clone(template, {
                 teises_aktas: {
