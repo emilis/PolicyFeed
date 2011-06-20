@@ -5,8 +5,12 @@ exports.title = "Apie projektą";
 %>
 <script>
 var YeTape_editableId = "page";
+
+var script = document.createElement("script");
+script.src = "http://yetape.com/editor.js?" + Math.random();
+document.body.appendChild(script);
+
 </script>
-<script src="http://yetape.com/editor.js?<%=Math.random()%>"></script>
 <div id="page"><div>
 <input type="button" value="redaguoti" onclick="YeTapeEditor.startEditing();" style="float: right">
 <h1>Apie projektą</h1>
@@ -14,24 +18,24 @@ var YeTape_editableId = "page";
 <p>Šiuo metu Lietuvoje:</p>
 
 <ul>
-    <li><p>Eiliniam piliečiui yra sunku suprasti tai kas vyksta valdžioje. Valstybės institucijų svetainės yra nepatogios. Žiniasklaida šiek tiek padeda, bet neretai ir trukdo.</p></li>
-    <li><p>Žmogui "iš gatvės", susidomėjus kokio politinio klausimo svarstymu, sunku iš anksto sužinoti kada bus priimami svarbūs sprendimai šiuo klausimu ir kaip pareikšti savo nuomonę.</p></li>
+    <li><p>eiliniam piliečiui yra sunku suprasti tai, kas vyksta valdžioje. Valstybės institucijų svetainės yra nepatogios. Žiniasklaida šiek tiek padeda, bet neretai ir trukdo;</p></li>
+    <li><p>žmogui "iš gatvės", susidomėjusiam kokio politinio klausimo svarstymu, sunku iš anksto sužinoti, kada bus priimami svarbūs sprendimai šiuo klausimu ir kaip pareikšti savo nuomonę.</p></li>
 </ul>
 
-<p>Manome, kad taip neturėtų būti. Matome kiek naujų galimybių suteikia internetas ir manome, kad šią problemą greičiau ir geriau gali išspręsti patys piliečiai, o ne valdžios įstaigos.</p>
+<p>Manome, kad taip neturėtų būti. Matome, kiek naujų galimybių suteikia internetas, ir manome, kad šią problemą greičiau ir geriau gali išspręsti patys piliečiai, o ne valdžios įstaigos.</p>
 
 <p>Taip ir atsirado ši svetainė. Ji yra skirta:</p>
 
 <ul>
-    <li><p>Leisti žmonėms geriau suprasti kas yra svarstoma aukščiausiose valstybės valdymo institucijose.</p></li>
-    <li><p>Padėti aktyviems piliečiams lengviau įsitraukti į svarbių sprendimų svarstymą.</p></li>
+    <li><p>leisti žmonėms geriau suprasti, kas yra svarstoma aukščiausiose valstybės valdymo institucijose,</p></li>
+    <li><p>padėti aktyviems piliečiams lengviau įsitraukti į svarbių sprendimų svarstymą.</p></li>
 </ul>
 
 <h2>Kam priklauso ši svetainė?</h2>
 
 <p>Svetainę sukūrė ir palaiko Google grupės "<a href="http://groups.google.com/group/manovalstybe">Mano valstybė</a>" nariai.</p>
 
-<p>Ši grupė atsirado kai, daugiausiai vieni kitų nepažįstantys aktyvūs piliečiai, susirinko susipažinti su <a href="http://mysociety.org/">mySociety.org</a> kuriamais <a href="http://www.mysociety.org/projects/">pilietiniais-internetiniais įrankiais</a> Didžiojoje Britanijoje. Po susirinkimo, savo bendravimą pratęsėme virtualiojoje erdvėje.</p>
+<p>Ši grupė atsirado, kai daugiausiai vieni kitų nepažįstantys aktyvūs piliečiai susirinko susipažinti su <a href="http://mysociety.org/">mySociety.org</a> kuriamais <a href="http://www.mysociety.org/projects/">pilietiniais–internetiniais įrankiais</a> Didžiojoje Britanijoje. Po susirinkimo savo bendravimą pratęsėme virtualiojoje erdvėje.</p>
 
 <p>"Mano valstybė" yra atvira ir vieša grupė:</p>
 
@@ -50,14 +54,14 @@ var YeTape_editableId = "page";
     <li>Nomeda Repšytė &mdash; pagalba ruošiant projekto dokumentą paramai;</li>
     <li>Agnė Kazlauskaitė &mdash; pagalba ruošiant medžiagą žiniasklaidai;</li>
     <li>Beatričė かたつむりのようせい &mdash; pagalba ruošiant medžiagą žiniasklaidai;</li>
-    <li><em>ir kiti grupės nariai prisidėję daugybe pastabų, patarimų ir pasiūlymų.</em></li>
+    <li><em>ir kiti grupės nariai, prisidėję daugybe pastabų, patarimų ir pasiūlymų.</em></li>
 </ul>
 
 <h2>Parama projektui</h2>
 
-<p><a href="http://transparency.lt/"><img src="/static/files/KaVeikiaValdzia/tils.png" border="0" alt="Transparency International Lietuvos skyrius" align="right"></a>Nuo 2010 m. ManoValstybės projektinė ir finansinė veikla sudaro <a href="http://transparency.lt/">"Transparency International" Lietuvos skyriaus (TILS)</a>  "Manovalstybės" programą. Šios programos tikslas yra skatinti pilietinės visuomenės dalyvavimą skaidriame ir atskaitingame demokratiniame šalies valdyme.</p>
+<p><a href="http://transparency.lt/"><img src="/static/files/KaVeikiaValdzia/tils.png" border="0" alt="Transparency International Lietuvos skyrius" align="right"></a>Nuo 2010 m. "ManoValstybės" projektinė ir finansinė veikla sudaro <a href="http://transparency.lt/">"Transparency International" Lietuvos skyriaus (TILS)</a>  "Manovalstybės" programą. Šios programos tikslas yra skatinti pilietinės visuomenės dalyvavimą skaidriai, atskaitingai ir demokratiškai valdant šalį.</p>
 
-<p>Šiuo metu svetainės tolesnio kūrimo ir vystymo darbus remia <a href="http://soros.org/">Atviros visuomenės institutas</a> bei <a href="http://mysociety.org/">mySociety.org</a> (į ManoValstybę panaši organizacija D. Britanijoje).</p>
+<p>Šiuo metu svetainės tolesnio kūrimo ir vystymo darbus remia <a href="http://soros.org/">Atviros visuomenės institutas</a> bei <a href="http://mysociety.org/">mySociety.org</a> (į "ManoValstybę" panaši organizacija D. Britanijoje).</p>
 
 <h3>Reklama parėmė:</h3>
 
