@@ -3,7 +3,12 @@
 exports.title = "Apie projektą";
 
 %>
+<script>
+var YeTape_editableId = "page";
+</script>
+<script src="http://yetape.com/editor.js?<%=Math.random()%>"></script>
 <div id="page"><div>
+<input type="button" value="redaguoti" onclick="YeTapeEditor.startEditing();" style="float: right">
 <h1>Apie projektą</h1>
 
 <p>Šiuo metu Lietuvoje:</p>
