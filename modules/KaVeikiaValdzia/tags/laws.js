@@ -25,7 +25,7 @@ var gluestick = require("gluestick");
 var jsonfs = require("ctl/objectfs/json");
 
 // Constants:
-var update_url = 'http://istatymai.manovalstybe.lt/laws.json';
+var update_url = 'http://teisynas.lt/files/laws.json';
 
 
 // Extend and connect to db table:
