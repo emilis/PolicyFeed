@@ -263,7 +263,9 @@ exports.checkImportList = function(list) {
 
         var key = item.title + "|" + item.nr.trim();
         if (keys[key]) {
-            throw Error("Duplicate nr and title for '" + keys[key].url + "' and '" + item.url + "': '" + item.title + "'.");
+            if (item.url > keys[key].url) {
+                keys[key] = item;
+            }
         } else {
             keys[key] = item;
         }
