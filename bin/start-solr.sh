@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MEM=64m
+MEM=128m
 
 ROOT_DIR=$(dirname $(cd $(dirname "$0"); pwd););
 
