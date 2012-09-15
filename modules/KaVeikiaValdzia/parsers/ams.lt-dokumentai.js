@@ -36,7 +36,8 @@ exports.feed_url = [
     ];
 
 exports.domains = {
-    "www.ams.lt": 3000,
+    "www.ams.lt":       3000,
+    "www.ams.lt:8080":  3000,
 };
 
 exports.retry_limit = 480; // 8 hours
