@@ -137,13 +137,13 @@ exports.codeToFunction = function(str) {
         __output_name = __output_name || "content"; \n\
         var exports = {}; \n\
         var export = function(k, v) { exports[k] = v; }; \n\
-        var __output = ""; \n\
-        var print = function() { __output += Array.prototype.slice.call(arguments).join(""); }; \n\
+        var __output = []; \n\
+        var print = function() { __output = __output.concat(Array.prototype.slice.call(arguments)); }; \n\
         var config = require("config"); \n\
         ';
 
     var suffix = ';\n\
-        exports[__output_name] = __output; \n\
+        exports[__output_name] = __output.join(""); \n\
         return exports;';
 
     return new Function('vars, __output_name', prefix + this.compileCode(str) + suffix);
