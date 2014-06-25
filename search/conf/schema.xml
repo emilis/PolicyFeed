@@ -21,6 +21,12 @@
                 />
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
+        <!-- Nuimk komentara jei nori kad hunspel padirbetu pries Snowball-->
+        <!--
+        <filter class="solr.HunspellStemFilterFactory"
+        dictionary="lt_LT_utf8.dic"
+        affix="lt_LT_utf8.aff"/>
+        -->
         <filter class="solr.SnowballPorterFilterFactory" language="Lithuanian" protected="protwords.txt"/>
       </analyzer>
       <analyzer type="query">
@@ -33,6 +39,12 @@
                 />
         <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
         <filter class="solr.LowerCaseFilterFactory"/>
+        <!-- Nuimk komentara jei nori kad hunspel padirbetu pries Snowball-->
+        <!--
+        <filter class="solr.HunspellStemFilterFactory"
+        dictionary="lt_LT_utf8.dic"
+        affix="lt_LT_utf8.aff"/> 
+        -->
         <filter class="solr.SnowballPorterFilterFactory" language="Lithuanian" protected="protwords.txt"/>
       </analyzer>
     </fieldType>
